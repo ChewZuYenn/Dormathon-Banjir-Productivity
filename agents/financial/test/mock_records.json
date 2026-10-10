@@ -225,6 +225,7 @@
       "amount": 850.00,
       "tax_amount": null,
       "invoice_reference": null,
+      "direction": "in",
       "currency": "MYR",
       "source_ref": "docs/SALES-2026-09-20.jpg",
       "confidence": {"vendor_name": 0.80, "receipt_date": 0.90, "amount": 0.85, "payment_method": 0.95},

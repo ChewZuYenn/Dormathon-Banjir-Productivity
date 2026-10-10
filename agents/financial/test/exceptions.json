@@ -1,1012 +1,699 @@
 {
   "period": "2026-09",
-  "generated_at": "2026-10-10T15:46:49.549471",
+  "generated_at": "2026-10-10T16:10:41.983313",
   "exceptions": [
     {
       "exception_id": "EXC-0001",
-      "source_ref": "invoice_001.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Subtotal RM 400.00 on INV-2026-040 does not match sum of line items RM 325.00 (delta: RM 75.00, exceeds tolerance of RM 1.00)",
-      "document_number": "INV-2026-040",
-      "document_type": "invoice",
-      "vendor_name": "Pulau Ketel Sdn Bhd",
+      "source_ref": "test-documents/invoices/p01_01.png",
+      "type": "conflicting_printed_values",
+      "reason": "INV-2026-016 prints conflicting figures: Two totals printed: 'TOTAL AMOUNT: RM 425.00' and a large 'RM45.70' below it. grand_total records the labelled TOTAL AMOUNT.",
       "severity": "critical",
-      "delta": 75.0,
-      "details": {
-        "expected": 325.0,
-        "actual": 400.0,
-        "tolerance": 1.0,
-        "check": "subtotal_vs_line_items"
-      },
-      "suggested_action": "Verify the subtotal on INV-2026-040 — it does not match the sum of line item amounts."
+      "suggested_action": "Check the original INV-2026-016 and confirm which figure is correct.",
+      "document_number": "INV-2026-016",
+      "document_type": "invoice",
+      "vendor_name": "Puteri Kraf Sdn Bhd"
     },
     {
       "exception_id": "EXC-0002",
-      "source_ref": "invoice_001.png",
+      "source_ref": "test-documents/invoices/p01_01.png",
       "type": "arithmetic_mismatch",
-      "reason": "Grand total RM 45.70 does not match subtotal + tax = RM 440.00 (delta: RM 394.30, exceeds tolerance of RM 1.00)",
-      "document_number": "INV-2026-040",
-      "document_type": "invoice",
-      "vendor_name": "Pulau Ketel Sdn Bhd",
+      "reason": "Grand total RM 425.00 does not match subtotal + tax = RM 440.00 (delta: RM 15.00, exceeds tolerance of RM 1.00)",
       "severity": "critical",
-      "delta": 394.3,
+      "delta": 15.0,
       "details": {
         "expected": 440.0,
-        "actual": 45.7,
+        "actual": 425.0,
         "tolerance": 1.0
       },
-      "suggested_action": "Verify the total on INV-2026-040 — the printed grand total does not match the sum of subtotal and tax."
+      "suggested_action": "Verify the total on INV-2026-016 — the printed grand total does not match the sum of subtotal and tax.",
+      "document_number": "INV-2026-016",
+      "document_type": "invoice",
+      "vendor_name": "Puteri Kraf Sdn Bhd"
     },
     {
       "exception_id": "EXC-0003",
-      "source_ref": "invoice_001.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Total tax RM 40.00 on INV-2026-040 does not match sum of line item taxes RM 0.00 (delta: RM 40.00)",
-      "document_number": "INV-2026-040",
+      "source_ref": "test-documents/invoices/p03_13.png",
+      "type": "conflicting_printed_values",
+      "reason": "INV-2026-033 prints conflicting figures: SST printed twice: 'SST 10%: 9.50' and 9.00 in the amount column. total_tax records the labelled 9.50.",
+      "severity": "critical",
+      "suggested_action": "Check the original INV-2026-033 and confirm which figure is correct.",
+      "document_number": "INV-2026-033",
       "document_type": "invoice",
-      "vendor_name": "Pulau Ketel Sdn Bhd",
-      "severity": "warning",
-      "delta": 40.0,
-      "details": {
-        "expected": 0,
-        "actual": 40.0,
-        "tolerance": 1.0,
-        "check": "total_tax_vs_line_items"
-      },
-      "suggested_action": "Verify the tax total on INV-2026-040 — it does not match the sum of line item tax amounts."
+      "vendor_name": "Buku Nusa Enterprise"
     },
     {
       "exception_id": "EXC-0004",
-      "source_ref": "invoice_002.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Subtotal RM 405.00 on INV-2026-029 does not match sum of line items RM 360.00 (delta: RM 45.00, exceeds tolerance of RM 1.00)",
-      "document_number": "INV-2026-029",
-      "document_type": "invoice",
-      "vendor_name": "Minuma Supply",
+      "source_ref": "test-documents/orders/p02_04.png",
+      "type": "conflicting_printed_values",
+      "reason": "PO-2026-A05 prints conflicting figures: Two totals printed: 'Grand Total: RM2310.00' and a large 'RM2100.00' below it. grand_total records the labelled Grand Total.",
       "severity": "critical",
-      "delta": 45.0,
-      "details": {
-        "expected": 360.0,
-        "actual": 405.0,
-        "tolerance": 1.0,
-        "check": "subtotal_vs_line_items"
-      },
-      "suggested_action": "Verify the subtotal on INV-2026-029 — it does not match the sum of line item amounts."
+      "suggested_action": "Check the original PO-2026-A05 and confirm which figure is correct.",
+      "document_number": "PO-2026-A05",
+      "document_type": "order",
+      "vendor_name": "Peralatan Keselamatan Sdn Bhd"
     },
     {
       "exception_id": "EXC-0005",
-      "source_ref": "invoice_002.png",
+      "source_ref": "test-documents/orders/p02_04.png",
       "type": "arithmetic_mismatch",
-      "reason": "Grand total RM 665.50 does not match subtotal + tax = RM 426.60 (delta: RM 238.90, exceeds tolerance of RM 1.00)",
-      "document_number": "INV-2026-029",
-      "document_type": "invoice",
-      "vendor_name": "Minuma Supply",
+      "reason": "Grand total RM 2310.00 does not match subtotal + tax = RM 2121.00 (delta: RM 189.00, exceeds tolerance of RM 5.00)",
       "severity": "critical",
-      "delta": 238.9,
+      "delta": 189.0,
       "details": {
-        "expected": 426.6,
-        "actual": 665.5,
-        "tolerance": 1.0
+        "expected": 2121.0,
+        "actual": 2310.0,
+        "tolerance": 5.0
       },
-      "suggested_action": "Verify the total on INV-2026-029 — the printed grand total does not match the sum of subtotal and tax."
+      "suggested_action": "Verify the total on PO-2026-A05 — the printed grand total does not match the sum of subtotal and tax.",
+      "document_number": "PO-2026-A05",
+      "document_type": "order",
+      "vendor_name": "Peralatan Keselamatan Sdn Bhd"
     },
     {
       "exception_id": "EXC-0006",
-      "source_ref": "invoice_003.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Subtotal RM 675.00 on INV-2026-026 does not match sum of line items RM 165.00 (delta: RM 510.00, exceeds tolerance of RM 1.00)",
-      "document_number": "INV-2026-026",
-      "document_type": "invoice",
-      "vendor_name": "Syarikat Makmal Sdn Bhd",
+      "source_ref": "test-documents/orders/p03_10.png",
+      "type": "conflicting_printed_values",
+      "reason": "PO-2026-A04 prints conflicting figures: Two totals printed: 'Grand Total: RM1309.00' and a large 'RM1390.00' below it. grand_total records the labelled Grand Total.",
       "severity": "critical",
-      "delta": 510.0,
-      "details": {
-        "expected": 165.0,
-        "actual": 675.0,
-        "tolerance": 1.0,
-        "check": "subtotal_vs_line_items"
-      },
-      "suggested_action": "Verify the subtotal on INV-2026-026 — it does not match the sum of line item amounts."
+      "suggested_action": "Check the original PO-2026-A04 and confirm which figure is correct.",
+      "document_number": "PO-2026-A04",
+      "document_type": "order",
+      "vendor_name": "Taman Hijau Landskap Sdn Bhd"
     },
     {
       "exception_id": "EXC-0007",
-      "source_ref": "invoice_003.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Grand total RM 957.00 does not match subtotal + tax = RM 682.00 (delta: RM 275.00, exceeds tolerance of RM 1.00)",
-      "document_number": "INV-2026-026",
-      "document_type": "invoice",
-      "vendor_name": "Syarikat Makmal Sdn Bhd",
+      "source_ref": "test-documents/orders/p04_03.png",
+      "type": "conflicting_printed_values",
+      "reason": "PO-2026-A06 prints conflicting figures: An unlabelled '49.00' is printed under the subtotal.",
       "severity": "critical",
-      "delta": 275.0,
-      "details": {
-        "expected": 682.0,
-        "actual": 957.0,
-        "tolerance": 1.0
-      },
-      "suggested_action": "Verify the total on INV-2026-026 — the printed grand total does not match the sum of subtotal and tax."
+      "suggested_action": "Check the original PO-2026-A06 and confirm which figure is correct.",
+      "document_number": "PO-2026-A06",
+      "document_type": "order",
+      "vendor_name": "Tekno Supply Sdn Bhd"
     },
     {
       "exception_id": "EXC-0008",
-      "source_ref": "invoice_004.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Subtotal RM 522.00 on INV-2026-018 does not match sum of line items RM 100.00 (delta: RM 422.00, exceeds tolerance of RM 1.00)",
-      "document_number": "INV-2026-018",
+      "source_ref": "test-documents/invoices/p01_01.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on INV-2026-016: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "INV-2026-016",
       "document_type": "invoice",
-      "vendor_name": "Minuma Office Supplies Sdn Bhd",
-      "severity": "critical",
-      "delta": 422.0,
+      "vendor_name": "Puteri Kraf Sdn Bhd",
+      "severity": "warning",
       "details": {
-        "expected": 100.0,
-        "actual": 522.0,
-        "tolerance": 1.0,
-        "check": "subtotal_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the subtotal on INV-2026-018 — it does not match the sum of line item amounts."
+      "suggested_action": "Check the SST on INV-2026-016."
     },
     {
       "exception_id": "EXC-0009",
-      "source_ref": "invoice_004.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Grand total RM 585.20 does not match subtotal + tax = RM 525.00 (delta: RM 60.20, exceeds tolerance of RM 1.00)",
-      "document_number": "INV-2026-018",
+      "source_ref": "test-documents/invoices/p01_02.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on INV-2026-029: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "INV-2026-029",
       "document_type": "invoice",
-      "vendor_name": "Minuma Office Supplies Sdn Bhd",
-      "severity": "critical",
-      "delta": 60.2,
+      "vendor_name": "Warisan Supply",
+      "severity": "warning",
       "details": {
-        "expected": 525.0,
-        "actual": 585.2,
-        "tolerance": 1.0
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the total on INV-2026-018 — the printed grand total does not match the sum of subtotal and tax."
+      "suggested_action": "Check the SST on INV-2026-029."
     },
     {
       "exception_id": "EXC-0010",
-      "source_ref": "invoice_004.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Total tax RM 3.00 on INV-2026-018 does not match sum of line item taxes RM 6.00 (delta: RM 3.00)",
-      "document_number": "INV-2026-018",
+      "source_ref": "test-documents/invoices/p01_03.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on INV-2026-028: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "INV-2026-028",
       "document_type": "invoice",
-      "vendor_name": "Minuma Office Supplies Sdn Bhd",
+      "vendor_name": "Seri Murni Pembekal Sdn Bhd",
       "severity": "warning",
-      "delta": 3.0,
       "details": {
-        "expected": 6.0,
-        "actual": 3.0,
-        "tolerance": 1.0,
-        "check": "total_tax_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the tax total on INV-2026-018 — it does not match the sum of line item tax amounts."
+      "suggested_action": "Check the SST on INV-2026-028."
     },
     {
       "exception_id": "EXC-0011",
-      "source_ref": "invoice_005.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Subtotal RM 52.00 on INV-2026-012 does not match sum of line items RM 5.80 (delta: RM 46.20, exceeds tolerance of RM 1.00)",
-      "document_number": "INV-2026-012",
+      "source_ref": "test-documents/invoices/p02_02.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on INV-2026-018: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "INV-2026-018",
       "document_type": "invoice",
-      "vendor_name": "Sri Jaya Trading Sdn Bhd",
-      "severity": "critical",
-      "delta": 46.2,
+      "vendor_name": "Delta Office Supplies Sdn Bhd",
+      "severity": "warning",
       "details": {
-        "expected": 5.8,
-        "actual": 52.0,
-        "tolerance": 1.0,
-        "check": "subtotal_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the subtotal on INV-2026-012 — it does not match the sum of line item amounts."
+      "suggested_action": "Check the SST on INV-2026-018."
     },
     {
       "exception_id": "EXC-0012",
-      "source_ref": "invoice_005.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Grand total RM 80.00 does not match subtotal + tax = RM 53.00 (delta: RM 27.00, exceeds tolerance of RM 1.00)",
+      "source_ref": "test-documents/invoices/p02_03.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on INV-2026-012: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
       "document_number": "INV-2026-012",
       "document_type": "invoice",
       "vendor_name": "Sri Jaya Trading Sdn Bhd",
-      "severity": "critical",
-      "delta": 27.0,
+      "severity": "warning",
       "details": {
-        "expected": 53.0,
-        "actual": 80.0,
-        "tolerance": 1.0
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the total on INV-2026-012 — the printed grand total does not match the sum of subtotal and tax."
+      "suggested_action": "Check the SST on INV-2026-012."
     },
     {
       "exception_id": "EXC-0013",
-      "source_ref": "invoice_006.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Subtotal RM 400.00 on INV-2026-014 does not match sum of line items RM 49.00 (delta: RM 351.00, exceeds tolerance of RM 1.00)",
+      "source_ref": "test-documents/invoices/p02_06.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on INV-2026-014: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
       "document_number": "INV-2026-014",
       "document_type": "invoice",
-      "vendor_name": "Tulus Logistik Sdn Bhd",
-      "severity": "critical",
-      "delta": 351.0,
+      "vendor_name": "Tekun Logistik Sdn Bhd",
+      "severity": "warning",
       "details": {
-        "expected": 49.0,
-        "actual": 400.0,
-        "tolerance": 1.0,
-        "check": "subtotal_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the subtotal on INV-2026-014 — it does not match the sum of line item amounts."
+      "suggested_action": "Check the SST on INV-2026-014."
     },
     {
       "exception_id": "EXC-0014",
-      "source_ref": "invoice_006.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Grand total RM 445.50 does not match subtotal + tax = RM 403.00 (delta: RM 42.50, exceeds tolerance of RM 1.00)",
-      "document_number": "INV-2026-014",
+      "source_ref": "test-documents/invoices/p02_07.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on INV-2026-020: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "INV-2026-020",
       "document_type": "invoice",
-      "vendor_name": "Tulus Logistik Sdn Bhd",
-      "severity": "critical",
-      "delta": 42.5,
+      "vendor_name": "Mesin Teknik Malaysia Sdn Bhd",
+      "severity": "warning",
       "details": {
-        "expected": 403.0,
-        "actual": 445.5,
-        "tolerance": 1.0
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the total on INV-2026-014 — the printed grand total does not match the sum of subtotal and tax."
+      "suggested_action": "Check the SST on INV-2026-020."
     },
     {
       "exception_id": "EXC-0015",
-      "source_ref": "invoice_007.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Subtotal RM 1080.00 on INV-2026-025 does not match sum of line items RM 55.00 (delta: RM 1025.00, exceeds tolerance of RM 5.00)",
-      "document_number": "INV-2026-025",
+      "source_ref": "test-documents/invoices/p02_08.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on INV-2026-021: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "INV-2026-021",
       "document_type": "invoice",
-      "vendor_name": "Kedai Tanda Maju Mulia Sdn Bhd",
-      "severity": "critical",
-      "delta": 1025.0,
+      "vendor_name": "Fast Courier Sdn Bhd",
+      "severity": "warning",
       "details": {
-        "expected": 55.0,
-        "actual": 1080.0,
-        "tolerance": 5.0,
-        "check": "subtotal_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the subtotal on INV-2026-025 — it does not match the sum of line item amounts."
+      "suggested_action": "Check the SST on INV-2026-021."
     },
     {
       "exception_id": "EXC-0016",
-      "source_ref": "invoice_007.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Grand total RM 1111.00 does not match subtotal + tax = RM 1081.00 (delta: RM 30.00, exceeds tolerance of RM 5.00)",
-      "document_number": "INV-2026-025",
+      "source_ref": "test-documents/invoices/p02_09.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on INV-2026-022: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "INV-2026-022",
       "document_type": "invoice",
-      "vendor_name": "Kedai Tanda Maju Mulia Sdn Bhd",
-      "severity": "critical",
-      "delta": 30.0,
+      "vendor_name": "Cat Warna Sdn Bhd",
+      "severity": "warning",
       "details": {
-        "expected": 1081.0,
-        "actual": 1111.0,
-        "tolerance": 5.0
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the total on INV-2026-025 — the printed grand total does not match the sum of subtotal and tax."
+      "suggested_action": "Check the SST on INV-2026-022."
     },
     {
       "exception_id": "EXC-0017",
-      "source_ref": "invoice_007.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Total tax RM 1.00 on INV-2026-025 does not match sum of line item taxes RM 3.30 (delta: RM 2.30)",
-      "document_number": "INV-2026-025",
+      "source_ref": "test-documents/invoices/p02_10.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on INV-2026-023: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "INV-2026-023",
       "document_type": "invoice",
-      "vendor_name": "Kedai Tanda Maju Mulia Sdn Bhd",
+      "vendor_name": "Sistem Komputer MY Sdn Bhd",
       "severity": "warning",
-      "delta": 2.3,
       "details": {
-        "expected": 3.3,
-        "actual": 1.0,
-        "tolerance": 1.0,
-        "check": "total_tax_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the tax total on INV-2026-025 — it does not match the sum of line item tax amounts."
+      "suggested_action": "Check the SST on INV-2026-023."
     },
     {
       "exception_id": "EXC-0018",
-      "source_ref": "invoice_008.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Subtotal RM 720.00 on INV-2026-019 does not match sum of line items RM 140.00 (delta: RM 580.00, exceeds tolerance of RM 1.00)",
-      "document_number": "INV-2026-019",
+      "source_ref": "test-documents/invoices/p02_11.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on INV-2026-024: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "INV-2026-024",
       "document_type": "invoice",
-      "vendor_name": "Fast Courier Sdn Bhd",
-      "severity": "critical",
-      "delta": 580.0,
+      "vendor_name": "Rumah Kaca Sdn Bhd",
+      "severity": "warning",
       "details": {
-        "expected": 140.0,
-        "actual": 720.0,
-        "tolerance": 1.0,
-        "check": "subtotal_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the subtotal on INV-2026-019 — it does not match the sum of line item amounts."
+      "suggested_action": "Check the SST on INV-2026-024."
     },
     {
       "exception_id": "EXC-0019",
-      "source_ref": "invoice_008.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Grand total RM 808.50 does not match subtotal + tax = RM 738.00 (delta: RM 70.50, exceeds tolerance of RM 1.00)",
-      "document_number": "INV-2026-019",
+      "source_ref": "test-documents/invoices/p02_12.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on INV-2026-026: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "INV-2026-026",
       "document_type": "invoice",
-      "vendor_name": "Fast Courier Sdn Bhd",
-      "severity": "critical",
-      "delta": 70.5,
+      "vendor_name": "Taman Hijau Landskap Sdn Bhd",
+      "severity": "warning",
       "details": {
-        "expected": 738.0,
-        "actual": 808.5,
-        "tolerance": 1.0
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the total on INV-2026-019 — the printed grand total does not match the sum of subtotal and tax."
+      "suggested_action": "Check the SST on INV-2026-026."
     },
     {
       "exception_id": "EXC-0020",
-      "source_ref": "invoice_008.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Total tax RM 18.00 on INV-2026-019 does not match sum of line item taxes RM 8.40 (delta: RM 9.60)",
-      "document_number": "INV-2026-019",
+      "source_ref": "test-documents/invoices/p03_01.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on INV-2026-013: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "INV-2026-013",
       "document_type": "invoice",
-      "vendor_name": "Fast Courier Sdn Bhd",
+      "vendor_name": "Central Supply MY Sdn Bhd",
       "severity": "warning",
-      "delta": 9.6,
       "details": {
-        "expected": 8.4,
-        "actual": 18.0,
-        "tolerance": 1.0,
-        "check": "total_tax_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the tax total on INV-2026-019 — it does not match the sum of line item tax amounts."
+      "suggested_action": "Check the SST on INV-2026-013."
     },
     {
       "exception_id": "EXC-0021",
-      "source_ref": "invoice_009.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Subtotal RM 1395.00 on INV-2026-022 does not match sum of line items RM 930.00 (delta: RM 465.00, exceeds tolerance of RM 5.00)",
-      "document_number": "INV-2026-022",
+      "source_ref": "test-documents/invoices/p03_02.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on INV-2026-011: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "INV-2026-011",
       "document_type": "invoice",
-      "vendor_name": "Car Wipers Sdn Bhd",
-      "severity": "critical",
-      "delta": 465.0,
+      "vendor_name": "Maju Teknik Sdn Bhd",
+      "severity": "warning",
       "details": {
-        "expected": 930.0,
-        "actual": 1395.0,
-        "tolerance": 5.0,
-        "check": "subtotal_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the subtotal on INV-2026-022 — it does not match the sum of line item amounts."
+      "suggested_action": "Check the SST on INV-2026-011."
     },
     {
       "exception_id": "EXC-0022",
-      "source_ref": "invoice_009.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Grand total RM 1534.50 does not match subtotal + tax = RM 1410.00 (delta: RM 124.50, exceeds tolerance of RM 5.00)",
-      "document_number": "INV-2026-022",
+      "source_ref": "test-documents/invoices/p03_11.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on INV-2026-020: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "INV-2026-020",
       "document_type": "invoice",
-      "vendor_name": "Car Wipers Sdn Bhd",
-      "severity": "critical",
-      "delta": 124.5,
+      "vendor_name": "Mesin Teknik Malaysia Sdn Bhd",
+      "severity": "warning",
       "details": {
-        "expected": 1410.0,
-        "actual": 1534.5,
-        "tolerance": 5.0
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the total on INV-2026-022 — the printed grand total does not match the sum of subtotal and tax."
+      "suggested_action": "Check the SST on INV-2026-020."
     },
     {
       "exception_id": "EXC-0023",
-      "source_ref": "invoice_009.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Total tax RM 15.00 on INV-2026-022 does not match sum of line item taxes RM 55.80 (delta: RM 40.80)",
-      "document_number": "INV-2026-022",
+      "source_ref": "test-documents/invoices/p03_12.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on INV-2026-032: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "INV-2026-032",
       "document_type": "invoice",
-      "vendor_name": "Car Wipers Sdn Bhd",
+      "vendor_name": "Tekno Supply Sdn Bhd",
       "severity": "warning",
-      "delta": 40.8,
       "details": {
-        "expected": 55.8,
-        "actual": 15.0,
-        "tolerance": 1.0,
-        "check": "total_tax_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the tax total on INV-2026-022 — it does not match the sum of line item tax amounts."
+      "suggested_action": "Check the SST on INV-2026-032."
     },
     {
       "exception_id": "EXC-0024",
-      "source_ref": "invoice_010.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Subtotal RM 840.00 on INV-2026-023 does not match sum of line items RM 735.00 (delta: RM 105.00, exceeds tolerance of RM 1.00)",
-      "document_number": "INV-2026-023",
+      "source_ref": "test-documents/invoices/p03_13.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on INV-2026-033: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "INV-2026-033",
       "document_type": "invoice",
-      "vendor_name": "Sistem Komputer MT Sdn Bhd",
-      "severity": "critical",
-      "delta": 105.0,
+      "vendor_name": "Buku Nusa Enterprise",
+      "severity": "warning",
       "details": {
-        "expected": 735.0,
-        "actual": 840.0,
-        "tolerance": 1.0,
-        "check": "subtotal_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the subtotal on INV-2026-023 — it does not match the sum of line item amounts."
+      "suggested_action": "Check the SST on INV-2026-033."
     },
     {
       "exception_id": "EXC-0025",
-      "source_ref": "invoice_010.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Grand total RM 924.00 does not match subtotal + tax = RM 850.00 (delta: RM 74.00, exceeds tolerance of RM 1.00)",
-      "document_number": "INV-2026-023",
+      "source_ref": "test-documents/invoices/p03_14.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on INV-2026-034: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "INV-2026-034",
       "document_type": "invoice",
-      "vendor_name": "Sistem Komputer MT Sdn Bhd",
-      "severity": "critical",
-      "delta": 74.0,
+      "vendor_name": "Bersih Gadget Sdn Bhd",
+      "severity": "warning",
       "details": {
-        "expected": 850.0,
-        "actual": 924.0,
-        "tolerance": 1.0
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the total on INV-2026-023 — the printed grand total does not match the sum of subtotal and tax."
+      "suggested_action": "Check the SST on INV-2026-034."
     },
     {
       "exception_id": "EXC-0026",
-      "source_ref": "invoice_010.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Total tax RM 10.00 on INV-2026-023 does not match sum of line item taxes RM 44.10 (delta: RM 34.10)",
-      "document_number": "INV-2026-023",
+      "source_ref": "test-documents/invoices/p04_05.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on INV-2026-035: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "INV-2026-035",
       "document_type": "invoice",
-      "vendor_name": "Sistem Komputer MT Sdn Bhd",
+      "vendor_name": "Logam Maju Sdn Bhd",
       "severity": "warning",
-      "delta": 34.1,
       "details": {
-        "expected": 44.1,
-        "actual": 10.0,
-        "tolerance": 1.0,
-        "check": "total_tax_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the tax total on INV-2026-023 — it does not match the sum of line item tax amounts."
+      "suggested_action": "Check the SST on INV-2026-035."
     },
     {
       "exception_id": "EXC-0027",
-      "source_ref": "invoice_011.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Subtotal RM 1178.00 on INV-2026-024 does not match sum of line items RM 38.00 (delta: RM 1140.00, exceeds tolerance of RM 5.00)",
-      "document_number": "INV-2026-024",
+      "source_ref": "test-documents/invoices/p04_07.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on INV-2026-036: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "INV-2026-036",
       "document_type": "invoice",
-      "vendor_name": "Rumahku Harum Sdn Bhd",
-      "severity": "critical",
-      "delta": 1140.0,
+      "vendor_name": "Lampu Terang Sdn Bhd",
+      "severity": "warning",
       "details": {
-        "expected": 38.0,
-        "actual": 1178.0,
-        "tolerance": 5.0,
-        "check": "subtotal_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the subtotal on INV-2026-024 — it does not match the sum of line item amounts."
+      "suggested_action": "Check the SST on INV-2026-036."
     },
     {
       "exception_id": "EXC-0028",
-      "source_ref": "invoice_011.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Grand total RM 1293.00 does not match subtotal + tax = RM 1185.00 (delta: RM 108.00, exceeds tolerance of RM 5.00)",
-      "document_number": "INV-2026-024",
-      "document_type": "invoice",
-      "vendor_name": "Rumahku Harum Sdn Bhd",
-      "severity": "critical",
-      "delta": 108.0,
+      "source_ref": "test-documents/orders/p02_04.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on PO-2026-A05: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%); RM 21.00 is 1.0% of the RM 2100.00 subtotal, not the printed 10%",
+      "document_number": "PO-2026-A05",
+      "document_type": "order",
+      "vendor_name": "Peralatan Keselamatan Sdn Bhd",
+      "severity": "warning",
       "details": {
-        "expected": 1185.0,
-        "actual": 1293.0,
-        "tolerance": 5.0
+        "expected": 10,
+        "actual": 1.0
       },
-      "suggested_action": "Verify the total on INV-2026-024 — the printed grand total does not match the sum of subtotal and tax."
+      "suggested_action": "Check the SST on PO-2026-A05."
     },
     {
       "exception_id": "EXC-0029",
-      "source_ref": "invoice_011.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Total tax RM 7.00 on INV-2026-024 does not match sum of line item taxes RM 2.28 (delta: RM 4.72)",
-      "document_number": "INV-2026-024",
-      "document_type": "invoice",
-      "vendor_name": "Rumahku Harum Sdn Bhd",
+      "source_ref": "test-documents/orders/p03_09.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on PO-2026-A03: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "PO-2026-A03",
+      "document_type": "order",
+      "vendor_name": "Lumi Elektrik Sdn Bhd",
       "severity": "warning",
-      "delta": 4.72,
       "details": {
-        "expected": 2.2800000000000002,
-        "actual": 7.0,
-        "tolerance": 1.0,
-        "check": "total_tax_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the tax total on INV-2026-024 — it does not match the sum of line item tax amounts."
+      "suggested_action": "Check the SST on PO-2026-A03."
     },
     {
       "exception_id": "EXC-0030",
-      "source_ref": "invoice_012.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Subtotal RM 1116.00 on INV-2026-028 does not match sum of line items RM 250.00 (delta: RM 866.00, exceeds tolerance of RM 5.00)",
-      "document_number": "INV-2026-028",
-      "document_type": "invoice",
+      "source_ref": "test-documents/orders/p03_10.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on PO-2026-A04: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "PO-2026-A04",
+      "document_type": "order",
       "vendor_name": "Taman Hijau Landskap Sdn Bhd",
-      "severity": "critical",
-      "delta": 866.0,
+      "severity": "warning",
       "details": {
-        "expected": 250.0,
-        "actual": 1116.0,
-        "tolerance": 5.0,
-        "check": "subtotal_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the subtotal on INV-2026-028 — it does not match the sum of line item amounts."
+      "suggested_action": "Check the SST on PO-2026-A04."
     },
     {
       "exception_id": "EXC-0031",
-      "source_ref": "invoice_012.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Grand total RM 1209.00 does not match subtotal + tax = RM 1119.00 (delta: RM 90.00, exceeds tolerance of RM 5.00)",
-      "document_number": "INV-2026-028",
-      "document_type": "invoice",
-      "vendor_name": "Taman Hijau Landskap Sdn Bhd",
-      "severity": "critical",
-      "delta": 90.0,
+      "source_ref": "test-documents/orders/p04_03.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on PO-2026-A06: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "PO-2026-A06",
+      "document_type": "order",
+      "vendor_name": "Tekno Supply Sdn Bhd",
+      "severity": "warning",
       "details": {
-        "expected": 1119.0,
-        "actual": 1209.0,
-        "tolerance": 5.0
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the total on INV-2026-028 — the printed grand total does not match the sum of subtotal and tax."
+      "suggested_action": "Check the SST on PO-2026-A06."
     },
     {
       "exception_id": "EXC-0032",
-      "source_ref": "invoice_012.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Total tax RM 3.00 on INV-2026-028 does not match sum of line item taxes RM 15.00 (delta: RM 12.00)",
-      "document_number": "INV-2026-028",
-      "document_type": "invoice",
-      "vendor_name": "Taman Hijau Landskap Sdn Bhd",
+      "source_ref": "test-documents/orders/p04_04.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on PO-2026-A07: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "PO-2026-A07",
+      "document_type": "order",
+      "vendor_name": "Buku Nusa Enterprise",
       "severity": "warning",
-      "delta": 12.0,
       "details": {
-        "expected": 15.0,
-        "actual": 3.0,
-        "tolerance": 1.0,
-        "check": "total_tax_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the tax total on INV-2026-028 — it does not match the sum of line item tax amounts."
+      "suggested_action": "Check the SST on PO-2026-A07."
     },
     {
       "exception_id": "EXC-0033",
-      "source_ref": "invoice_013.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Subtotal RM 570.00 on INV-2026-013 does not match sum of line items RM 10.70 (delta: RM 559.30, exceeds tolerance of RM 1.00)",
-      "document_number": "INV-2026-013",
-      "document_type": "invoice",
-      "vendor_name": "Cermin Tuanku MY Sdn Bhd",
-      "severity": "critical",
-      "delta": 559.3,
+      "source_ref": "test-documents/receipts/p02_01.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on REC-009: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "REC-009",
+      "document_type": "receipt",
+      "vendor_name": "Kedai Runcit Aman",
+      "severity": "warning",
       "details": {
-        "expected": 10.7,
-        "actual": 570.0,
-        "tolerance": 1.0,
-        "check": "subtotal_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the subtotal on INV-2026-013 — it does not match the sum of line item amounts."
+      "suggested_action": "Check the SST on REC-009."
     },
     {
       "exception_id": "EXC-0034",
-      "source_ref": "invoice_013.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Total tax RM 57.00 on INV-2026-013 does not match sum of line item taxes RM 0.64 (delta: RM 56.36)",
-      "document_number": "INV-2026-013",
-      "document_type": "invoice",
-      "vendor_name": "Cermin Tuanku MY Sdn Bhd",
+      "source_ref": "test-documents/receipts/p02_05.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on REC-012: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "REC-012",
+      "document_type": "receipt",
+      "vendor_name": "Kafe Mesra",
       "severity": "warning",
-      "delta": 56.36,
       "details": {
-        "expected": 0.64,
-        "actual": 57.0,
-        "tolerance": 1.0,
-        "check": "total_tax_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the tax total on INV-2026-013 — it does not match the sum of line item tax amounts."
+      "suggested_action": "Check the SST on REC-012."
     },
     {
       "exception_id": "EXC-0035",
-      "source_ref": "invoice_014.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Subtotal RM 192.00 on INV-2026-011 does not match sum of line items RM 20.00 (delta: RM 172.00, exceeds tolerance of RM 1.00)",
-      "document_number": "INV-2026-011",
-      "document_type": "invoice",
-      "vendor_name": "Maja Snack Sdn Bhd",
-      "severity": "critical",
-      "delta": 172.0,
+      "source_ref": "test-documents/receipts/p03_03.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on REC-011: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "REC-011",
+      "document_type": "receipt",
+      "vendor_name": "Print Express",
+      "severity": "warning",
       "details": {
-        "expected": 20.0,
-        "actual": 192.0,
-        "tolerance": 1.0,
-        "check": "subtotal_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the subtotal on INV-2026-011 — it does not match the sum of line item amounts."
+      "suggested_action": "Check the SST on REC-011."
     },
     {
       "exception_id": "EXC-0036",
-      "source_ref": "invoice_014.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Total tax RM 11.50 on INV-2026-011 does not match sum of line item taxes RM 1.20 (delta: RM 10.30)",
-      "document_number": "INV-2026-011",
-      "document_type": "invoice",
-      "vendor_name": "Maja Snack Sdn Bhd",
+      "source_ref": "test-documents/receipts/p03_04.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on REC-013: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "REC-013",
+      "document_type": "receipt",
+      "vendor_name": "Kedai Kabel & Wayar",
       "severity": "warning",
-      "delta": 10.3,
       "details": {
-        "expected": 1.2,
-        "actual": 11.5,
-        "tolerance": 1.0,
-        "check": "total_tax_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the tax total on INV-2026-011 — it does not match the sum of line item tax amounts."
+      "suggested_action": "Check the SST on REC-013."
     },
     {
       "exception_id": "EXC-0037",
-      "source_ref": "invoice_015.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Subtotal RM 108.00 on INV-2026-003 does not match sum of line items RM 21.00 (delta: RM 87.00, exceeds tolerance of RM 1.00)",
-      "document_number": "INV-2026-003",
-      "document_type": "invoice",
-      "vendor_name": "Kasut Tentera Malaysia Sdn Bhd",
-      "severity": "critical",
-      "delta": 87.0,
+      "source_ref": "test-documents/receipts/p03_05.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on REC-015: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "REC-015",
+      "document_type": "receipt",
+      "vendor_name": "Kedai Hadiah & Pembalut",
+      "severity": "warning",
       "details": {
-        "expected": 21.0,
-        "actual": 108.0,
-        "tolerance": 1.0,
-        "check": "subtotal_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the subtotal on INV-2026-003 — it does not match the sum of line item amounts."
+      "suggested_action": "Check the SST on REC-015."
     },
     {
       "exception_id": "EXC-0038",
-      "source_ref": "invoice_015.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Total tax RM 3.00 on INV-2026-003 does not match sum of line item taxes RM 1.26 (delta: RM 1.74)",
-      "document_number": "INV-2026-003",
-      "document_type": "invoice",
-      "vendor_name": "Kasut Tentera Malaysia Sdn Bhd",
+      "source_ref": "test-documents/receipts/p03_06.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on REC-016: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "REC-016",
+      "document_type": "receipt",
+      "vendor_name": "Kedai Tayar & Pam",
       "severity": "warning",
-      "delta": 1.74,
       "details": {
-        "expected": 1.26,
-        "actual": 3.0,
-        "tolerance": 1.0,
-        "check": "total_tax_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the tax total on INV-2026-003 — it does not match the sum of line item tax amounts."
+      "suggested_action": "Check the SST on REC-016."
     },
     {
       "exception_id": "EXC-0039",
-      "source_ref": "invoice_016.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Subtotal RM 100.00 on INV-2026-030 does not match sum of line items RM 75.00 (delta: RM 25.00, exceeds tolerance of RM 1.00)",
-      "document_number": "INV-2026-030",
-      "document_type": "invoice",
-      "vendor_name": "Baka Busa Enterprise",
-      "severity": "critical",
-      "delta": 25.0,
+      "source_ref": "test-documents/receipts/p03_07.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on REC-017: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "REC-017",
+      "document_type": "receipt",
+      "vendor_name": "Kedai Buku & Alat Tulis",
+      "severity": "warning",
       "details": {
-        "expected": 75.0,
-        "actual": 100.0,
-        "tolerance": 1.0,
-        "check": "subtotal_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the subtotal on INV-2026-030 — it does not match the sum of line item amounts."
+      "suggested_action": "Check the SST on REC-017."
     },
     {
       "exception_id": "EXC-0040",
-      "source_ref": "invoice_017.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Subtotal RM 120.00 on INV-2026-034 does not match sum of line items RM 48.00 (delta: RM 72.00, exceeds tolerance of RM 1.00)",
-      "document_number": "INV-2026-034",
-      "document_type": "invoice",
-      "vendor_name": "Berris Gadget Sdn Bhd",
-      "severity": "critical",
-      "delta": 72.0,
+      "source_ref": "test-documents/receipts/p03_08.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on REC-018: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "REC-018",
+      "document_type": "receipt",
+      "vendor_name": "Kedai Minyak & Gas",
+      "severity": "warning",
       "details": {
-        "expected": 48.0,
-        "actual": 120.0,
-        "tolerance": 1.0,
-        "check": "subtotal_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the subtotal on INV-2026-034 — it does not match the sum of line item amounts."
+      "suggested_action": "Check the SST on REC-018."
     },
     {
       "exception_id": "EXC-0041",
-      "source_ref": "invoice_017.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Total tax RM 12.00 on INV-2026-034 does not match sum of line item taxes RM 2.88 (delta: RM 9.12)",
-      "document_number": "INV-2026-034",
-      "document_type": "invoice",
-      "vendor_name": "Berris Gadget Sdn Bhd",
+      "source_ref": "test-documents/receipts/p04_01.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on REC-031: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "REC-031",
+      "document_type": "receipt",
+      "vendor_name": "Kedai Makan Mesra",
       "severity": "warning",
-      "delta": 9.12,
       "details": {
-        "expected": 2.88,
-        "actual": 12.0,
-        "tolerance": 1.0,
-        "check": "total_tax_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the tax total on INV-2026-034 — it does not match the sum of line item tax amounts."
+      "suggested_action": "Check the SST on REC-031."
     },
     {
       "exception_id": "EXC-0042",
-      "source_ref": "invoice_018.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Subtotal RM 250.00 on INV-2026-035 does not match sum of line items RM 40.00 (delta: RM 210.00, exceeds tolerance of RM 1.00)",
-      "document_number": "INV-2026-035",
-      "document_type": "invoice",
-      "vendor_name": "Logam Maju Sdn Bhd",
-      "severity": "critical",
-      "delta": 210.0,
+      "source_ref": "test-documents/receipts/p04_02.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on REC-032: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "REC-032",
+      "document_type": "receipt",
+      "vendor_name": "Kedai Alat Tulis Cepat",
+      "severity": "warning",
       "details": {
-        "expected": 40.0,
-        "actual": 250.0,
-        "tolerance": 1.0,
-        "check": "subtotal_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the subtotal on INV-2026-035 — it does not match the sum of line item amounts."
+      "suggested_action": "Check the SST on REC-032."
     },
     {
       "exception_id": "EXC-0043",
-      "source_ref": "invoice_018.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Total tax RM 20.00 on INV-2026-035 does not match sum of line item taxes RM 2.40 (delta: RM 17.60)",
-      "document_number": "INV-2026-035",
-      "document_type": "invoice",
-      "vendor_name": "Logam Maju Sdn Bhd",
+      "source_ref": "test-documents/receipts/p04_06.png",
+      "type": "tax_rate_anomaly",
+      "reason": "SST on REC-033: printed rate 10% is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "REC-033",
+      "document_type": "receipt",
+      "vendor_name": "Kedai Hardware Murah",
       "severity": "warning",
-      "delta": 17.6,
       "details": {
-        "expected": 2.4,
-        "actual": 20.0,
-        "tolerance": 1.0,
-        "check": "total_tax_vs_line_items"
+        "expected": 10,
+        "actual": 10.0
       },
-      "suggested_action": "Verify the tax total on INV-2026-035 — it does not match the sum of line item tax amounts."
+      "suggested_action": "Check the SST on REC-033."
     },
     {
       "exception_id": "EXC-0044",
-      "source_ref": "invoice_019.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Subtotal RM 195.00 on INV-2026-036 does not match sum of line items RM 132.00 (delta: RM 63.00, exceeds tolerance of RM 1.00)",
-      "document_number": "INV-2026-036",
+      "source_ref": "test-documents/invoices/p02_07.png",
+      "type": "duplicate_similar_confidence",
+      "reason": "Duplicate detected: INV-2026-020 and INV-2026-020 — same number and vendor",
+      "document_number": "INV-2026-020",
       "document_type": "invoice",
-      "vendor_name": "Lapop Tuning Sdn Bhd",
+      "vendor_name": "Mesin Teknik Malaysia Sdn Bhd",
       "severity": "critical",
-      "delta": 63.0,
       "details": {
-        "expected": 132.0,
-        "actual": 195.0,
-        "tolerance": 1.0,
-        "check": "subtotal_vs_line_items"
+        "matched_with": "test-documents/invoices/p03_11.png"
       },
-      "suggested_action": "Verify the subtotal on INV-2026-036 — it does not match the sum of line item amounts."
+      "suggested_action": "Verify which document is the correct one — INV-2026-020 and INV-2026-020 appear to be duplicates."
     },
     {
       "exception_id": "EXC-0045",
-      "source_ref": "invoice_019.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Total tax RM 11.00 on INV-2026-036 does not match sum of line item taxes RM 7.92 (delta: RM 3.08)",
-      "document_number": "INV-2026-036",
+      "source_ref": "test-documents/invoices/p01_01.png",
+      "type": "missing_po_match",
+      "reason": "Invoice INV-2026-016 references PO-PK-9900, but that purchase order is not among the documents",
+      "document_number": "INV-2026-016",
       "document_type": "invoice",
-      "vendor_name": "Lapop Tuning Sdn Bhd",
+      "vendor_name": "Puteri Kraf Sdn Bhd",
       "severity": "warning",
-      "delta": 3.08,
-      "details": {
-        "expected": 7.92,
-        "actual": 11.0,
-        "tolerance": 1.0,
-        "check": "total_tax_vs_line_items"
-      },
-      "suggested_action": "Verify the tax total on INV-2026-036 — it does not match the sum of line item tax amounts."
+      "suggested_action": "Locate the PO for invoice INV-2026-016 from Puteri Kraf Sdn Bhd, or confirm the purchase was without a PO."
     },
     {
       "exception_id": "EXC-0046",
-      "source_ref": "po_001.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Total tax RM 450.00 on PB-2026-003 does not match sum of line item taxes RM 0.00 (delta: RM 450.00)",
-      "document_number": "PB-2026-003",
-      "document_type": "order",
-      "vendor_name": "Tukang Kebun, Sdn. Bhd",
+      "source_ref": "test-documents/invoices/p01_02.png",
+      "type": "missing_po_match",
+      "reason": "Invoice INV-2026-029 references PO-WS-1010, but that purchase order is not among the documents",
+      "document_number": "INV-2026-029",
+      "document_type": "invoice",
+      "vendor_name": "Warisan Supply",
       "severity": "warning",
-      "delta": 450.0,
-      "details": {
-        "expected": 0,
-        "actual": 450.0,
-        "tolerance": 1.0,
-        "check": "total_tax_vs_line_items"
-      },
-      "suggested_action": "Verify the tax total on PB-2026-003 — it does not match the sum of line item tax amounts."
+      "suggested_action": "Locate the PO for invoice INV-2026-029 from Warisan Supply, or confirm the purchase was without a PO."
     },
     {
       "exception_id": "EXC-0047",
-      "source_ref": "po_002.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Subtotal RM 270.00 on PB-2026-006 does not match sum of line items RM 275.00 (delta: RM 5.00, exceeds tolerance of RM 1.00)",
-      "document_number": "PB-2026-006",
-      "document_type": "order",
-      "vendor_name": "Kekalkan Operasional",
-      "severity": "critical",
-      "delta": 5.0,
-      "details": {
-        "expected": 275.0,
-        "actual": 270.0,
-        "tolerance": 1.0,
-        "check": "subtotal_vs_line_items"
-      },
-      "suggested_action": "Verify the subtotal on PB-2026-006 — it does not match the sum of line item amounts."
+      "source_ref": "test-documents/invoices/p01_03.png",
+      "type": "missing_po_match",
+      "reason": "No purchase order found matching invoice INV-2026-028",
+      "document_number": "INV-2026-028",
+      "document_type": "invoice",
+      "vendor_name": "Seri Murni Pembekal Sdn Bhd",
+      "severity": "warning",
+      "suggested_action": "Locate the PO for invoice INV-2026-028 from Seri Murni Pembekal Sdn Bhd, or confirm the purchase was without a PO."
     },
     {
       "exception_id": "EXC-0048",
-      "source_ref": "po_002.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Total tax RM 60.00 on PB-2026-006 does not match sum of line item taxes RM 16.50 (delta: RM 43.50)",
-      "document_number": "PB-2026-006",
-      "document_type": "order",
-      "vendor_name": "Kekalkan Operasional",
+      "source_ref": "test-documents/invoices/p02_02.png",
+      "type": "missing_po_match",
+      "reason": "Invoice INV-2026-018 references PO-DO-1313, but that purchase order is not among the documents",
+      "document_number": "INV-2026-018",
+      "document_type": "invoice",
+      "vendor_name": "Delta Office Supplies Sdn Bhd",
       "severity": "warning",
-      "delta": 43.5,
-      "details": {
-        "expected": 16.5,
-        "actual": 60.0,
-        "tolerance": 1.0,
-        "check": "total_tax_vs_line_items"
-      },
-      "suggested_action": "Verify the tax total on PB-2026-006 — it does not match the sum of line item tax amounts."
+      "suggested_action": "Locate the PO for invoice INV-2026-018 from Delta Office Supplies Sdn Bhd, or confirm the purchase was without a PO."
     },
     {
       "exception_id": "EXC-0049",
-      "source_ref": "po_003.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Grand total RM 390.00 does not match subtotal + tax = RM 266.00 (delta: RM 124.00, exceeds tolerance of RM 1.00)",
-      "document_number": "PB-2026-001",
-      "document_type": "order",
-      "vendor_name": "Permata Niaga Sdn Bhd",
-      "severity": "critical",
-      "delta": 124.0,
-      "details": {
-        "expected": 266.0,
-        "actual": 390.0,
-        "tolerance": 1.0
-      },
-      "suggested_action": "Verify the total on PB-2026-001 — the printed grand total does not match the sum of subtotal and tax."
-    },
-    {
-      "exception_id": "EXC-0050",
-      "source_ref": "po_003.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Total tax RM 26.00 on PB-2026-001 does not match sum of line item taxes RM 14.40 (delta: RM 11.60)",
-      "document_number": "PB-2026-001",
-      "document_type": "order",
-      "vendor_name": "Permata Niaga Sdn Bhd",
-      "severity": "warning",
-      "delta": 11.6,
-      "details": {
-        "expected": 14.4,
-        "actual": 26.0,
-        "tolerance": 1.0,
-        "check": "total_tax_vs_line_items"
-      },
-      "suggested_action": "Verify the tax total on PB-2026-001 — it does not match the sum of line item tax amounts."
-    },
-    {
-      "exception_id": "EXC-0051",
-      "source_ref": "po_004.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Subtotal RM 230.00 on PO-2026-406 does not match sum of line items RM 190.00 (delta: RM 40.00, exceeds tolerance of RM 1.00)",
-      "document_number": "PO-2026-406",
-      "document_type": "order",
-      "vendor_name": "Tekno Supply Sdn Bhd",
-      "severity": "critical",
-      "delta": 40.0,
-      "details": {
-        "expected": 190.0,
-        "actual": 230.0,
-        "tolerance": 1.0,
-        "check": "subtotal_vs_line_items"
-      },
-      "suggested_action": "Verify the subtotal on PO-2026-406 — it does not match the sum of line item amounts."
-    },
-    {
-      "exception_id": "EXC-0052",
-      "source_ref": "po_004.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Total tax RM 23.00 on PO-2026-406 does not match sum of line item taxes RM 11.40 (delta: RM 11.60)",
-      "document_number": "PO-2026-406",
-      "document_type": "order",
-      "vendor_name": "Tekno Supply Sdn Bhd",
-      "severity": "warning",
-      "delta": 11.6,
-      "details": {
-        "expected": 11.4,
-        "actual": 23.0,
-        "tolerance": 1.0,
-        "check": "total_tax_vs_line_items"
-      },
-      "suggested_action": "Verify the tax total on PO-2026-406 — it does not match the sum of line item tax amounts."
-    },
-    {
-      "exception_id": "EXC-0053",
-      "source_ref": "po_005.png",
-      "type": "arithmetic_mismatch",
-      "reason": "Total tax RM 28.00 on PO-2026-407 does not match sum of line item taxes RM 14.40 (delta: RM 13.60)",
-      "document_number": "PO-2026-407",
-      "document_type": "order",
-      "vendor_name": "Buku Niaga Enterprise",
-      "severity": "warning",
-      "delta": 13.6,
-      "details": {
-        "expected": 14.4,
-        "actual": 28.0,
-        "tolerance": 1.0,
-        "check": "total_tax_vs_line_items"
-      },
-      "suggested_action": "Verify the tax total on PO-2026-407 — it does not match the sum of line item tax amounts."
-    },
-    {
-      "exception_id": "EXC-0054",
-      "source_ref": "invoice_013.png",
-      "type": "tax_rate_anomaly",
-      "reason": "SST rate on line 'Pengilat cermin / Mirror polish' in INV-2026-013 is 5.0%, which is not a standard Malaysian rate (0%, 6%, 8%)",
-      "document_number": "INV-2026-013",
-      "document_type": "invoice",
-      "vendor_name": "Cermin Tuanku MY Sdn Bhd",
-      "severity": "warning",
-      "details": {
-        "field": "line_item_sst_rate:Pengilat cermin / Mirror polish",
-        "confidence_score": null
-      },
-      "suggested_action": "Check the SST calculation on line 'Pengilat cermin / Mirror polish' in INV-2026-013."
-    },
-    {
-      "exception_id": "EXC-0055",
-      "source_ref": "invoice_001.png",
+      "source_ref": "test-documents/invoices/p02_03.png",
       "type": "missing_po_match",
-      "reason": "No purchase order found matching invoice INV-2026-040",
-      "document_number": "INV-2026-040",
-      "document_type": "invoice",
-      "vendor_name": "Pulau Ketel Sdn Bhd",
-      "severity": "warning",
-      "suggested_action": "Locate the PO for invoice INV-2026-040 from Pulau Ketel Sdn Bhd, or confirm the purchase was without a PO."
-    },
-    {
-      "exception_id": "EXC-0056",
-      "source_ref": "invoice_002.png",
-      "type": "missing_po_match",
-      "reason": "No purchase order found matching invoice INV-2026-029",
-      "document_number": "INV-2026-029",
-      "document_type": "invoice",
-      "vendor_name": "Minuma Supply",
-      "severity": "warning",
-      "suggested_action": "Locate the PO for invoice INV-2026-029 from Minuma Supply, or confirm the purchase was without a PO."
-    },
-    {
-      "exception_id": "EXC-0057",
-      "source_ref": "invoice_003.png",
-      "type": "missing_po_match",
-      "reason": "No purchase order found matching invoice INV-2026-026",
-      "document_number": "INV-2026-026",
-      "document_type": "invoice",
-      "vendor_name": "Syarikat Makmal Sdn Bhd",
-      "severity": "warning",
-      "suggested_action": "Locate the PO for invoice INV-2026-026 from Syarikat Makmal Sdn Bhd, or confirm the purchase was without a PO."
-    },
-    {
-      "exception_id": "EXC-0058",
-      "source_ref": "invoice_004.png",
-      "type": "missing_po_match",
-      "reason": "No purchase order found matching invoice INV-2026-018",
-      "document_number": "INV-2026-018",
-      "document_type": "invoice",
-      "vendor_name": "Minuma Office Supplies Sdn Bhd",
-      "severity": "warning",
-      "suggested_action": "Locate the PO for invoice INV-2026-018 from Minuma Office Supplies Sdn Bhd, or confirm the purchase was without a PO."
-    },
-    {
-      "exception_id": "EXC-0059",
-      "source_ref": "invoice_005.png",
-      "type": "missing_po_match",
-      "reason": "No purchase order found matching invoice INV-2026-012",
+      "reason": "Invoice INV-2026-012 references PO-SJ-1122, but that purchase order is not among the documents",
       "document_number": "INV-2026-012",
       "document_type": "invoice",
       "vendor_name": "Sri Jaya Trading Sdn Bhd",
@@ -1014,142 +701,188 @@
       "suggested_action": "Locate the PO for invoice INV-2026-012 from Sri Jaya Trading Sdn Bhd, or confirm the purchase was without a PO."
     },
     {
-      "exception_id": "EXC-0060",
-      "source_ref": "invoice_006.png",
+      "exception_id": "EXC-0050",
+      "source_ref": "test-documents/invoices/p02_06.png",
       "type": "missing_po_match",
-      "reason": "No purchase order found matching invoice INV-2026-014",
+      "reason": "Invoice INV-2026-014 references PO-TL-5566, but that purchase order is not among the documents",
       "document_number": "INV-2026-014",
       "document_type": "invoice",
-      "vendor_name": "Tulus Logistik Sdn Bhd",
+      "vendor_name": "Tekun Logistik Sdn Bhd",
       "severity": "warning",
-      "suggested_action": "Locate the PO for invoice INV-2026-014 from Tulus Logistik Sdn Bhd, or confirm the purchase was without a PO."
+      "suggested_action": "Locate the PO for invoice INV-2026-014 from Tekun Logistik Sdn Bhd, or confirm the purchase was without a PO."
     },
     {
-      "exception_id": "EXC-0061",
-      "source_ref": "invoice_007.png",
+      "exception_id": "EXC-0051",
+      "source_ref": "test-documents/invoices/p02_07.png",
       "type": "missing_po_match",
-      "reason": "No purchase order found matching invoice INV-2026-025",
-      "document_number": "INV-2026-025",
+      "reason": "Invoice INV-2026-020 references PO-MT-3535, but that purchase order is not among the documents",
+      "document_number": "INV-2026-020",
       "document_type": "invoice",
-      "vendor_name": "Kedai Tanda Maju Mulia Sdn Bhd",
+      "vendor_name": "Mesin Teknik Malaysia Sdn Bhd",
       "severity": "warning",
-      "suggested_action": "Locate the PO for invoice INV-2026-025 from Kedai Tanda Maju Mulia Sdn Bhd, or confirm the purchase was without a PO."
+      "suggested_action": "Locate the PO for invoice INV-2026-020 from Mesin Teknik Malaysia Sdn Bhd, or confirm the purchase was without a PO."
     },
     {
-      "exception_id": "EXC-0062",
-      "source_ref": "invoice_008.png",
+      "exception_id": "EXC-0052",
+      "source_ref": "test-documents/invoices/p02_08.png",
       "type": "missing_po_match",
-      "reason": "No purchase order found matching invoice INV-2026-019",
-      "document_number": "INV-2026-019",
+      "reason": "Invoice INV-2026-021 references PO-FC-4646, but that purchase order is not among the documents",
+      "document_number": "INV-2026-021",
       "document_type": "invoice",
       "vendor_name": "Fast Courier Sdn Bhd",
       "severity": "warning",
-      "suggested_action": "Locate the PO for invoice INV-2026-019 from Fast Courier Sdn Bhd, or confirm the purchase was without a PO."
+      "suggested_action": "Locate the PO for invoice INV-2026-021 from Fast Courier Sdn Bhd, or confirm the purchase was without a PO."
+    },
+    {
+      "exception_id": "EXC-0053",
+      "source_ref": "test-documents/invoices/p02_09.png",
+      "type": "missing_po_match",
+      "reason": "Invoice INV-2026-022 references PO-CW-5757, but that purchase order is not among the documents",
+      "document_number": "INV-2026-022",
+      "document_type": "invoice",
+      "vendor_name": "Cat Warna Sdn Bhd",
+      "severity": "warning",
+      "suggested_action": "Locate the PO for invoice INV-2026-022 from Cat Warna Sdn Bhd, or confirm the purchase was without a PO."
+    },
+    {
+      "exception_id": "EXC-0054",
+      "source_ref": "test-documents/invoices/p02_10.png",
+      "type": "missing_po_match",
+      "reason": "Invoice INV-2026-023 references PO-SK-6868, but that purchase order is not among the documents",
+      "document_number": "INV-2026-023",
+      "document_type": "invoice",
+      "vendor_name": "Sistem Komputer MY Sdn Bhd",
+      "severity": "warning",
+      "suggested_action": "Locate the PO for invoice INV-2026-023 from Sistem Komputer MY Sdn Bhd, or confirm the purchase was without a PO."
+    },
+    {
+      "exception_id": "EXC-0055",
+      "source_ref": "test-documents/invoices/p02_11.png",
+      "type": "missing_po_match",
+      "reason": "Invoice INV-2026-024 references PO-RK-7979, but that purchase order is not among the documents",
+      "document_number": "INV-2026-024",
+      "document_type": "invoice",
+      "vendor_name": "Rumah Kaca Sdn Bhd",
+      "severity": "warning",
+      "suggested_action": "Locate the PO for invoice INV-2026-024 from Rumah Kaca Sdn Bhd, or confirm the purchase was without a PO."
+    },
+    {
+      "exception_id": "EXC-0056",
+      "source_ref": "test-documents/invoices/p03_01.png",
+      "type": "missing_po_match",
+      "reason": "Invoice INV-2026-013 references PO-CS-3344, but that purchase order is not among the documents",
+      "document_number": "INV-2026-013",
+      "document_type": "invoice",
+      "vendor_name": "Central Supply MY Sdn Bhd",
+      "severity": "warning",
+      "suggested_action": "Locate the PO for invoice INV-2026-013 from Central Supply MY Sdn Bhd, or confirm the purchase was without a PO."
+    },
+    {
+      "exception_id": "EXC-0057",
+      "source_ref": "test-documents/invoices/p03_02.png",
+      "type": "missing_po_match",
+      "reason": "Invoice INV-2026-011 references PO-MT-0987, but that purchase order is not among the documents",
+      "document_number": "INV-2026-011",
+      "document_type": "invoice",
+      "vendor_name": "Maju Teknik Sdn Bhd",
+      "severity": "warning",
+      "suggested_action": "Locate the PO for invoice INV-2026-011 from Maju Teknik Sdn Bhd, or confirm the purchase was without a PO."
+    },
+    {
+      "exception_id": "EXC-0058",
+      "source_ref": "test-documents/invoices/p03_11.png",
+      "type": "missing_po_match",
+      "reason": "Invoice INV-2026-020 references PO-MT-3535, but that purchase order is not among the documents",
+      "document_number": "INV-2026-020",
+      "document_type": "invoice",
+      "vendor_name": "Mesin Teknik Malaysia Sdn Bhd",
+      "severity": "warning",
+      "suggested_action": "Locate the PO for invoice INV-2026-020 from Mesin Teknik Malaysia Sdn Bhd, or confirm the purchase was without a PO."
+    },
+    {
+      "exception_id": "EXC-0059",
+      "source_ref": "test-documents/invoices/p03_12.png",
+      "type": "quantity_mismatch",
+      "reason": "Quantity mismatch on 'Kabel USB / USB cable': invoice INV-2026-032 shows 20 but PO PO-2026-A06 ordered 50",
+      "document_number": "INV-2026-032",
+      "document_type": "invoice",
+      "vendor_name": "Tekno Supply Sdn Bhd",
+      "severity": "warning",
+      "delta": -30,
+      "details": {
+        "expected": 50,
+        "actual": 20,
+        "matched_with": "test-documents/orders/p04_03.png"
+      },
+      "suggested_action": "Invoice INV-2026-032 shows 20 units but PO PO-2026-A06 ordered 50 for 'Kabel USB / USB cable'."
+    },
+    {
+      "exception_id": "EXC-0060",
+      "source_ref": "test-documents/invoices/p03_12.png",
+      "type": "quantity_mismatch",
+      "reason": "Quantity mismatch on 'Penanda / Marker pen': invoice INV-2026-032 shows 15 but PO PO-2026-A06 ordered 40",
+      "document_number": "INV-2026-032",
+      "document_type": "invoice",
+      "vendor_name": "Tekno Supply Sdn Bhd",
+      "severity": "warning",
+      "delta": -25,
+      "details": {
+        "expected": 40,
+        "actual": 15,
+        "matched_with": "test-documents/orders/p04_03.png"
+      },
+      "suggested_action": "Invoice INV-2026-032 shows 15 units but PO PO-2026-A06 ordered 40 for 'Penanda / Marker pen'."
+    },
+    {
+      "exception_id": "EXC-0061",
+      "source_ref": "test-documents/invoices/p03_13.png",
+      "type": "quantity_mismatch",
+      "reason": "Quantity mismatch on 'Buku nota / Notebook': invoice INV-2026-033 shows 10 but PO PO-2026-A07 ordered 30",
+      "document_number": "INV-2026-033",
+      "document_type": "invoice",
+      "vendor_name": "Buku Nusa Enterprise",
+      "severity": "warning",
+      "delta": -20,
+      "details": {
+        "expected": 30,
+        "actual": 10,
+        "matched_with": "test-documents/orders/p04_04.png"
+      },
+      "suggested_action": "Invoice INV-2026-033 shows 10 units but PO PO-2026-A07 ordered 30 for 'Buku nota / Notebook'."
+    },
+    {
+      "exception_id": "EXC-0062",
+      "source_ref": "test-documents/invoices/p03_13.png",
+      "type": "quantity_mismatch",
+      "reason": "Quantity mismatch on 'Pemadam / Eraser': invoice INV-2026-033 shows 30 but PO PO-2026-A07 ordered 80",
+      "document_number": "INV-2026-033",
+      "document_type": "invoice",
+      "vendor_name": "Buku Nusa Enterprise",
+      "severity": "warning",
+      "delta": -50,
+      "details": {
+        "expected": 80,
+        "actual": 30,
+        "matched_with": "test-documents/orders/p04_04.png"
+      },
+      "suggested_action": "Invoice INV-2026-033 shows 30 units but PO PO-2026-A07 ordered 80 for 'Pemadam / Eraser'."
     },
     {
       "exception_id": "EXC-0063",
-      "source_ref": "invoice_009.png",
+      "source_ref": "test-documents/invoices/p03_14.png",
       "type": "missing_po_match",
-      "reason": "No purchase order found matching invoice INV-2026-022",
-      "document_number": "INV-2026-022",
+      "reason": "Invoice INV-2026-034 references PO-BG-1303, but that purchase order is not among the documents",
+      "document_number": "INV-2026-034",
       "document_type": "invoice",
-      "vendor_name": "Car Wipers Sdn Bhd",
+      "vendor_name": "Bersih Gadget Sdn Bhd",
       "severity": "warning",
-      "suggested_action": "Locate the PO for invoice INV-2026-022 from Car Wipers Sdn Bhd, or confirm the purchase was without a PO."
+      "suggested_action": "Locate the PO for invoice INV-2026-034 from Bersih Gadget Sdn Bhd, or confirm the purchase was without a PO."
     },
     {
       "exception_id": "EXC-0064",
-      "source_ref": "invoice_010.png",
+      "source_ref": "test-documents/invoices/p04_05.png",
       "type": "missing_po_match",
-      "reason": "No purchase order found matching invoice INV-2026-023",
-      "document_number": "INV-2026-023",
-      "document_type": "invoice",
-      "vendor_name": "Sistem Komputer MT Sdn Bhd",
-      "severity": "warning",
-      "suggested_action": "Locate the PO for invoice INV-2026-023 from Sistem Komputer MT Sdn Bhd, or confirm the purchase was without a PO."
-    },
-    {
-      "exception_id": "EXC-0065",
-      "source_ref": "invoice_011.png",
-      "type": "missing_po_match",
-      "reason": "No purchase order found matching invoice INV-2026-024",
-      "document_number": "INV-2026-024",
-      "document_type": "invoice",
-      "vendor_name": "Rumahku Harum Sdn Bhd",
-      "severity": "warning",
-      "suggested_action": "Locate the PO for invoice INV-2026-024 from Rumahku Harum Sdn Bhd, or confirm the purchase was without a PO."
-    },
-    {
-      "exception_id": "EXC-0066",
-      "source_ref": "invoice_012.png",
-      "type": "missing_po_match",
-      "reason": "No purchase order found matching invoice INV-2026-028",
-      "document_number": "INV-2026-028",
-      "document_type": "invoice",
-      "vendor_name": "Taman Hijau Landskap Sdn Bhd",
-      "severity": "warning",
-      "suggested_action": "Locate the PO for invoice INV-2026-028 from Taman Hijau Landskap Sdn Bhd, or confirm the purchase was without a PO."
-    },
-    {
-      "exception_id": "EXC-0067",
-      "source_ref": "invoice_013.png",
-      "type": "missing_po_match",
-      "reason": "No purchase order found matching invoice INV-2026-013",
-      "document_number": "INV-2026-013",
-      "document_type": "invoice",
-      "vendor_name": "Cermin Tuanku MY Sdn Bhd",
-      "severity": "warning",
-      "suggested_action": "Locate the PO for invoice INV-2026-013 from Cermin Tuanku MY Sdn Bhd, or confirm the purchase was without a PO."
-    },
-    {
-      "exception_id": "EXC-0068",
-      "source_ref": "invoice_014.png",
-      "type": "missing_po_match",
-      "reason": "No purchase order found matching invoice INV-2026-011",
-      "document_number": "INV-2026-011",
-      "document_type": "invoice",
-      "vendor_name": "Maja Snack Sdn Bhd",
-      "severity": "warning",
-      "suggested_action": "Locate the PO for invoice INV-2026-011 from Maja Snack Sdn Bhd, or confirm the purchase was without a PO."
-    },
-    {
-      "exception_id": "EXC-0069",
-      "source_ref": "invoice_015.png",
-      "type": "missing_po_match",
-      "reason": "No purchase order found matching invoice INV-2026-003",
-      "document_number": "INV-2026-003",
-      "document_type": "invoice",
-      "vendor_name": "Kasut Tentera Malaysia Sdn Bhd",
-      "severity": "warning",
-      "suggested_action": "Locate the PO for invoice INV-2026-003 from Kasut Tentera Malaysia Sdn Bhd, or confirm the purchase was without a PO."
-    },
-    {
-      "exception_id": "EXC-0070",
-      "source_ref": "invoice_016.png",
-      "type": "missing_po_match",
-      "reason": "No purchase order found matching invoice INV-2026-030",
-      "document_number": "INV-2026-030",
-      "document_type": "invoice",
-      "vendor_name": "Baka Busa Enterprise",
-      "severity": "warning",
-      "suggested_action": "Locate the PO for invoice INV-2026-030 from Baka Busa Enterprise, or confirm the purchase was without a PO."
-    },
-    {
-      "exception_id": "EXC-0071",
-      "source_ref": "invoice_017.png",
-      "type": "missing_po_match",
-      "reason": "No purchase order found matching invoice INV-2026-034",
-      "document_number": "INV-2026-034",
-      "document_type": "invoice",
-      "vendor_name": "Berris Gadget Sdn Bhd",
-      "severity": "warning",
-      "suggested_action": "Locate the PO for invoice INV-2026-034 from Berris Gadget Sdn Bhd, or confirm the purchase was without a PO."
-    },
-    {
-      "exception_id": "EXC-0072",
-      "source_ref": "invoice_018.png",
-      "type": "missing_po_match",
-      "reason": "No purchase order found matching invoice INV-2026-035",
+      "reason": "Invoice INV-2026-035 references PO-LM-1304, but that purchase order is not among the documents",
       "document_number": "INV-2026-035",
       "document_type": "invoice",
       "vendor_name": "Logam Maju Sdn Bhd",
@@ -1157,63 +890,63 @@
       "suggested_action": "Locate the PO for invoice INV-2026-035 from Logam Maju Sdn Bhd, or confirm the purchase was without a PO."
     },
     {
-      "exception_id": "EXC-0073",
-      "source_ref": "invoice_019.png",
+      "exception_id": "EXC-0065",
+      "source_ref": "test-documents/invoices/p04_07.png",
       "type": "missing_po_match",
-      "reason": "No purchase order found matching invoice INV-2026-036",
+      "reason": "Invoice INV-2026-036 references PO-LT-1305, but that purchase order is not among the documents",
       "document_number": "INV-2026-036",
       "document_type": "invoice",
-      "vendor_name": "Lapop Tuning Sdn Bhd",
+      "vendor_name": "Lampu Terang Sdn Bhd",
       "severity": "warning",
-      "suggested_action": "Locate the PO for invoice INV-2026-036 from Lapop Tuning Sdn Bhd, or confirm the purchase was without a PO."
+      "suggested_action": "Locate the PO for invoice INV-2026-036 from Lampu Terang Sdn Bhd, or confirm the purchase was without a PO."
     },
     {
-      "exception_id": "EXC-0074",
-      "source_ref": "invoice_001.png",
+      "exception_id": "EXC-0066",
+      "source_ref": "test-documents/invoices/p01_01.png",
       "type": "no_due_date",
-      "reason": "Invoice INV-2026-040 from Pulau Ketel Sdn Bhd has no due date — cannot determine if overdue.",
-      "document_number": "INV-2026-040",
+      "reason": "Invoice INV-2026-016 from Puteri Kraf Sdn Bhd has no due date — cannot determine if overdue.",
+      "document_number": "INV-2026-016",
       "document_type": "invoice",
-      "vendor_name": "Pulau Ketel Sdn Bhd",
+      "vendor_name": "Puteri Kraf Sdn Bhd",
       "severity": "warning",
-      "suggested_action": "Confirm the payment due date for invoice INV-2026-040 from Pulau Ketel Sdn Bhd."
+      "suggested_action": "Confirm the payment due date for invoice INV-2026-016 from Puteri Kraf Sdn Bhd."
     },
     {
-      "exception_id": "EXC-0075",
-      "source_ref": "invoice_002.png",
+      "exception_id": "EXC-0067",
+      "source_ref": "test-documents/invoices/p01_02.png",
       "type": "no_due_date",
-      "reason": "Invoice INV-2026-029 from Minuma Supply has no due date — cannot determine if overdue.",
+      "reason": "Invoice INV-2026-029 from Warisan Supply has no due date — cannot determine if overdue.",
       "document_number": "INV-2026-029",
       "document_type": "invoice",
-      "vendor_name": "Minuma Supply",
+      "vendor_name": "Warisan Supply",
       "severity": "warning",
-      "suggested_action": "Confirm the payment due date for invoice INV-2026-029 from Minuma Supply."
+      "suggested_action": "Confirm the payment due date for invoice INV-2026-029 from Warisan Supply."
     },
     {
-      "exception_id": "EXC-0076",
-      "source_ref": "invoice_003.png",
+      "exception_id": "EXC-0068",
+      "source_ref": "test-documents/invoices/p01_03.png",
       "type": "no_due_date",
-      "reason": "Invoice INV-2026-026 from Syarikat Makmal Sdn Bhd has no due date — cannot determine if overdue.",
-      "document_number": "INV-2026-026",
+      "reason": "Invoice INV-2026-028 from Seri Murni Pembekal Sdn Bhd has no due date — cannot determine if overdue.",
+      "document_number": "INV-2026-028",
       "document_type": "invoice",
-      "vendor_name": "Syarikat Makmal Sdn Bhd",
+      "vendor_name": "Seri Murni Pembekal Sdn Bhd",
       "severity": "warning",
-      "suggested_action": "Confirm the payment due date for invoice INV-2026-026 from Syarikat Makmal Sdn Bhd."
+      "suggested_action": "Confirm the payment due date for invoice INV-2026-028 from Seri Murni Pembekal Sdn Bhd."
     },
     {
-      "exception_id": "EXC-0077",
-      "source_ref": "invoice_004.png",
+      "exception_id": "EXC-0069",
+      "source_ref": "test-documents/invoices/p02_02.png",
       "type": "no_due_date",
-      "reason": "Invoice INV-2026-018 from Minuma Office Supplies Sdn Bhd has no due date — cannot determine if overdue.",
+      "reason": "Invoice INV-2026-018 from Delta Office Supplies Sdn Bhd has no due date — cannot determine if overdue.",
       "document_number": "INV-2026-018",
       "document_type": "invoice",
-      "vendor_name": "Minuma Office Supplies Sdn Bhd",
+      "vendor_name": "Delta Office Supplies Sdn Bhd",
       "severity": "warning",
-      "suggested_action": "Confirm the payment due date for invoice INV-2026-018 from Minuma Office Supplies Sdn Bhd."
+      "suggested_action": "Confirm the payment due date for invoice INV-2026-018 from Delta Office Supplies Sdn Bhd."
     },
     {
-      "exception_id": "EXC-0078",
-      "source_ref": "invoice_005.png",
+      "exception_id": "EXC-0070",
+      "source_ref": "test-documents/invoices/p02_03.png",
       "type": "no_due_date",
       "reason": "Invoice INV-2026-012 from Sri Jaya Trading Sdn Bhd has no due date — cannot determine if overdue.",
       "document_number": "INV-2026-012",
@@ -1223,140 +956,151 @@
       "suggested_action": "Confirm the payment due date for invoice INV-2026-012 from Sri Jaya Trading Sdn Bhd."
     },
     {
-      "exception_id": "EXC-0079",
-      "source_ref": "invoice_006.png",
+      "exception_id": "EXC-0071",
+      "source_ref": "test-documents/invoices/p02_06.png",
       "type": "no_due_date",
-      "reason": "Invoice INV-2026-014 from Tulus Logistik Sdn Bhd has no due date — cannot determine if overdue.",
+      "reason": "Invoice INV-2026-014 from Tekun Logistik Sdn Bhd has no due date — cannot determine if overdue.",
       "document_number": "INV-2026-014",
       "document_type": "invoice",
-      "vendor_name": "Tulus Logistik Sdn Bhd",
+      "vendor_name": "Tekun Logistik Sdn Bhd",
       "severity": "warning",
-      "suggested_action": "Confirm the payment due date for invoice INV-2026-014 from Tulus Logistik Sdn Bhd."
+      "suggested_action": "Confirm the payment due date for invoice INV-2026-014 from Tekun Logistik Sdn Bhd."
     },
     {
-      "exception_id": "EXC-0080",
-      "source_ref": "invoice_007.png",
+      "exception_id": "EXC-0072",
+      "source_ref": "test-documents/invoices/p02_07.png",
       "type": "no_due_date",
-      "reason": "Invoice INV-2026-025 from Kedai Tanda Maju Mulia Sdn Bhd has no due date — cannot determine if overdue.",
-      "document_number": "INV-2026-025",
+      "reason": "Invoice INV-2026-020 from Mesin Teknik Malaysia Sdn Bhd has no due date — cannot determine if overdue.",
+      "document_number": "INV-2026-020",
       "document_type": "invoice",
-      "vendor_name": "Kedai Tanda Maju Mulia Sdn Bhd",
+      "vendor_name": "Mesin Teknik Malaysia Sdn Bhd",
       "severity": "warning",
-      "suggested_action": "Confirm the payment due date for invoice INV-2026-025 from Kedai Tanda Maju Mulia Sdn Bhd."
+      "suggested_action": "Confirm the payment due date for invoice INV-2026-020 from Mesin Teknik Malaysia Sdn Bhd."
     },
     {
-      "exception_id": "EXC-0081",
-      "source_ref": "invoice_008.png",
+      "exception_id": "EXC-0073",
+      "source_ref": "test-documents/invoices/p02_08.png",
       "type": "no_due_date",
-      "reason": "Invoice INV-2026-019 from Fast Courier Sdn Bhd has no due date — cannot determine if overdue.",
-      "document_number": "INV-2026-019",
+      "reason": "Invoice INV-2026-021 from Fast Courier Sdn Bhd has no due date — cannot determine if overdue.",
+      "document_number": "INV-2026-021",
       "document_type": "invoice",
       "vendor_name": "Fast Courier Sdn Bhd",
       "severity": "warning",
-      "suggested_action": "Confirm the payment due date for invoice INV-2026-019 from Fast Courier Sdn Bhd."
+      "suggested_action": "Confirm the payment due date for invoice INV-2026-021 from Fast Courier Sdn Bhd."
     },
     {
-      "exception_id": "EXC-0082",
-      "source_ref": "invoice_009.png",
+      "exception_id": "EXC-0074",
+      "source_ref": "test-documents/invoices/p02_09.png",
       "type": "no_due_date",
-      "reason": "Invoice INV-2026-022 from Car Wipers Sdn Bhd has no due date — cannot determine if overdue.",
+      "reason": "Invoice INV-2026-022 from Cat Warna Sdn Bhd has no due date — cannot determine if overdue.",
       "document_number": "INV-2026-022",
       "document_type": "invoice",
-      "vendor_name": "Car Wipers Sdn Bhd",
+      "vendor_name": "Cat Warna Sdn Bhd",
       "severity": "warning",
-      "suggested_action": "Confirm the payment due date for invoice INV-2026-022 from Car Wipers Sdn Bhd."
+      "suggested_action": "Confirm the payment due date for invoice INV-2026-022 from Cat Warna Sdn Bhd."
     },
     {
-      "exception_id": "EXC-0083",
-      "source_ref": "invoice_010.png",
+      "exception_id": "EXC-0075",
+      "source_ref": "test-documents/invoices/p02_10.png",
       "type": "no_due_date",
-      "reason": "Invoice INV-2026-023 from Sistem Komputer MT Sdn Bhd has no due date — cannot determine if overdue.",
+      "reason": "Invoice INV-2026-023 from Sistem Komputer MY Sdn Bhd has no due date — cannot determine if overdue.",
       "document_number": "INV-2026-023",
       "document_type": "invoice",
-      "vendor_name": "Sistem Komputer MT Sdn Bhd",
+      "vendor_name": "Sistem Komputer MY Sdn Bhd",
       "severity": "warning",
-      "suggested_action": "Confirm the payment due date for invoice INV-2026-023 from Sistem Komputer MT Sdn Bhd."
+      "suggested_action": "Confirm the payment due date for invoice INV-2026-023 from Sistem Komputer MY Sdn Bhd."
     },
     {
-      "exception_id": "EXC-0084",
-      "source_ref": "invoice_011.png",
+      "exception_id": "EXC-0076",
+      "source_ref": "test-documents/invoices/p02_11.png",
       "type": "no_due_date",
-      "reason": "Invoice INV-2026-024 from Rumahku Harum Sdn Bhd has no due date — cannot determine if overdue.",
+      "reason": "Invoice INV-2026-024 from Rumah Kaca Sdn Bhd has no due date — cannot determine if overdue.",
       "document_number": "INV-2026-024",
       "document_type": "invoice",
-      "vendor_name": "Rumahku Harum Sdn Bhd",
+      "vendor_name": "Rumah Kaca Sdn Bhd",
       "severity": "warning",
-      "suggested_action": "Confirm the payment due date for invoice INV-2026-024 from Rumahku Harum Sdn Bhd."
+      "suggested_action": "Confirm the payment due date for invoice INV-2026-024 from Rumah Kaca Sdn Bhd."
     },
     {
-      "exception_id": "EXC-0085",
-      "source_ref": "invoice_012.png",
+      "exception_id": "EXC-0077",
+      "source_ref": "test-documents/invoices/p02_12.png",
       "type": "no_due_date",
-      "reason": "Invoice INV-2026-028 from Taman Hijau Landskap Sdn Bhd has no due date — cannot determine if overdue.",
-      "document_number": "INV-2026-028",
+      "reason": "Invoice INV-2026-026 from Taman Hijau Landskap Sdn Bhd has no due date — cannot determine if overdue.",
+      "document_number": "INV-2026-026",
       "document_type": "invoice",
       "vendor_name": "Taman Hijau Landskap Sdn Bhd",
       "severity": "warning",
-      "suggested_action": "Confirm the payment due date for invoice INV-2026-028 from Taman Hijau Landskap Sdn Bhd."
+      "suggested_action": "Confirm the payment due date for invoice INV-2026-026 from Taman Hijau Landskap Sdn Bhd."
     },
     {
-      "exception_id": "EXC-0086",
-      "source_ref": "invoice_013.png",
+      "exception_id": "EXC-0078",
+      "source_ref": "test-documents/invoices/p03_01.png",
       "type": "no_due_date",
-      "reason": "Invoice INV-2026-013 from Cermin Tuanku MY Sdn Bhd has no due date — cannot determine if overdue.",
+      "reason": "Invoice INV-2026-013 from Central Supply MY Sdn Bhd has no due date — cannot determine if overdue.",
       "document_number": "INV-2026-013",
       "document_type": "invoice",
-      "vendor_name": "Cermin Tuanku MY Sdn Bhd",
+      "vendor_name": "Central Supply MY Sdn Bhd",
       "severity": "warning",
-      "suggested_action": "Confirm the payment due date for invoice INV-2026-013 from Cermin Tuanku MY Sdn Bhd."
+      "suggested_action": "Confirm the payment due date for invoice INV-2026-013 from Central Supply MY Sdn Bhd."
     },
     {
-      "exception_id": "EXC-0087",
-      "source_ref": "invoice_014.png",
+      "exception_id": "EXC-0079",
+      "source_ref": "test-documents/invoices/p03_02.png",
       "type": "no_due_date",
-      "reason": "Invoice INV-2026-011 from Maja Snack Sdn Bhd has no due date — cannot determine if overdue.",
+      "reason": "Invoice INV-2026-011 from Maju Teknik Sdn Bhd has no due date — cannot determine if overdue.",
       "document_number": "INV-2026-011",
       "document_type": "invoice",
-      "vendor_name": "Maja Snack Sdn Bhd",
+      "vendor_name": "Maju Teknik Sdn Bhd",
       "severity": "warning",
-      "suggested_action": "Confirm the payment due date for invoice INV-2026-011 from Maja Snack Sdn Bhd."
+      "suggested_action": "Confirm the payment due date for invoice INV-2026-011 from Maju Teknik Sdn Bhd."
     },
     {
-      "exception_id": "EXC-0088",
-      "source_ref": "invoice_015.png",
+      "exception_id": "EXC-0080",
+      "source_ref": "test-documents/invoices/p03_11.png",
       "type": "no_due_date",
-      "reason": "Invoice INV-2026-003 from Kasut Tentera Malaysia Sdn Bhd has no due date — cannot determine if overdue.",
-      "document_number": "INV-2026-003",
+      "reason": "Invoice INV-2026-020 from Mesin Teknik Malaysia Sdn Bhd has no due date — cannot determine if overdue.",
+      "document_number": "INV-2026-020",
       "document_type": "invoice",
-      "vendor_name": "Kasut Tentera Malaysia Sdn Bhd",
+      "vendor_name": "Mesin Teknik Malaysia Sdn Bhd",
       "severity": "warning",
-      "suggested_action": "Confirm the payment due date for invoice INV-2026-003 from Kasut Tentera Malaysia Sdn Bhd."
+      "suggested_action": "Confirm the payment due date for invoice INV-2026-020 from Mesin Teknik Malaysia Sdn Bhd."
     },
     {
-      "exception_id": "EXC-0089",
-      "source_ref": "invoice_016.png",
+      "exception_id": "EXC-0081",
+      "source_ref": "test-documents/invoices/p03_12.png",
       "type": "no_due_date",
-      "reason": "Invoice INV-2026-030 from Baka Busa Enterprise has no due date — cannot determine if overdue.",
-      "document_number": "INV-2026-030",
+      "reason": "Invoice INV-2026-032 from Tekno Supply Sdn Bhd has no due date — cannot determine if overdue.",
+      "document_number": "INV-2026-032",
       "document_type": "invoice",
-      "vendor_name": "Baka Busa Enterprise",
+      "vendor_name": "Tekno Supply Sdn Bhd",
       "severity": "warning",
-      "suggested_action": "Confirm the payment due date for invoice INV-2026-030 from Baka Busa Enterprise."
+      "suggested_action": "Confirm the payment due date for invoice INV-2026-032 from Tekno Supply Sdn Bhd."
     },
     {
-      "exception_id": "EXC-0090",
-      "source_ref": "invoice_017.png",
+      "exception_id": "EXC-0082",
+      "source_ref": "test-documents/invoices/p03_13.png",
       "type": "no_due_date",
-      "reason": "Invoice INV-2026-034 from Berris Gadget Sdn Bhd has no due date — cannot determine if overdue.",
+      "reason": "Invoice INV-2026-033 from Buku Nusa Enterprise has no due date — cannot determine if overdue.",
+      "document_number": "INV-2026-033",
+      "document_type": "invoice",
+      "vendor_name": "Buku Nusa Enterprise",
+      "severity": "warning",
+      "suggested_action": "Confirm the payment due date for invoice INV-2026-033 from Buku Nusa Enterprise."
+    },
+    {
+      "exception_id": "EXC-0083",
+      "source_ref": "test-documents/invoices/p03_14.png",
+      "type": "no_due_date",
+      "reason": "Invoice INV-2026-034 from Bersih Gadget Sdn Bhd has no due date — cannot determine if overdue.",
       "document_number": "INV-2026-034",
       "document_type": "invoice",
-      "vendor_name": "Berris Gadget Sdn Bhd",
+      "vendor_name": "Bersih Gadget Sdn Bhd",
       "severity": "warning",
-      "suggested_action": "Confirm the payment due date for invoice INV-2026-034 from Berris Gadget Sdn Bhd."
+      "suggested_action": "Confirm the payment due date for invoice INV-2026-034 from Bersih Gadget Sdn Bhd."
     },
     {
-      "exception_id": "EXC-0091",
-      "source_ref": "invoice_018.png",
+      "exception_id": "EXC-0084",
+      "source_ref": "test-documents/invoices/p04_05.png",
       "type": "no_due_date",
       "reason": "Invoice INV-2026-035 from Logam Maju Sdn Bhd has no due date — cannot determine if overdue.",
       "document_number": "INV-2026-035",
@@ -1366,115 +1110,158 @@
       "suggested_action": "Confirm the payment due date for invoice INV-2026-035 from Logam Maju Sdn Bhd."
     },
     {
-      "exception_id": "EXC-0092",
-      "source_ref": "invoice_019.png",
+      "exception_id": "EXC-0085",
+      "source_ref": "test-documents/invoices/p04_07.png",
       "type": "no_due_date",
-      "reason": "Invoice INV-2026-036 from Lapop Tuning Sdn Bhd has no due date — cannot determine if overdue.",
+      "reason": "Invoice INV-2026-036 from Lampu Terang Sdn Bhd has no due date — cannot determine if overdue.",
       "document_number": "INV-2026-036",
       "document_type": "invoice",
-      "vendor_name": "Lapop Tuning Sdn Bhd",
+      "vendor_name": "Lampu Terang Sdn Bhd",
       "severity": "warning",
-      "suggested_action": "Confirm the payment due date for invoice INV-2026-036 from Lapop Tuning Sdn Bhd."
+      "suggested_action": "Confirm the payment due date for invoice INV-2026-036 from Lampu Terang Sdn Bhd."
     },
     {
-      "exception_id": "EXC-0093",
-      "source_ref": "invoice_003.png",
-      "type": "missing_po_reference_high_value",
-      "reason": "Invoice INV-2026-026 (RM 957.00) has no PO reference and exceeds RM 500 threshold",
-      "document_number": "INV-2026-026",
-      "document_type": "invoice",
-      "vendor_name": "Syarikat Makmal Sdn Bhd",
-      "severity": "warning",
-      "suggested_action": "Confirm the PO reference for invoice INV-2026-026 (RM 957.00) — no PO was referenced."
-    },
-    {
-      "exception_id": "EXC-0094",
-      "source_ref": "invoice_007.png",
-      "type": "missing_po_reference_high_value",
-      "reason": "Invoice INV-2026-025 (RM 1111.00) has no PO reference and exceeds RM 500 threshold",
-      "document_number": "INV-2026-025",
-      "document_type": "invoice",
-      "vendor_name": "Kedai Tanda Maju Mulia Sdn Bhd",
-      "severity": "warning",
-      "suggested_action": "Confirm the PO reference for invoice INV-2026-025 (RM 1111.00) — no PO was referenced."
-    },
-    {
-      "exception_id": "EXC-0095",
-      "source_ref": "invoice_009.png",
-      "type": "missing_po_reference_high_value",
-      "reason": "Invoice INV-2026-022 (RM 1534.50) has no PO reference and exceeds RM 500 threshold",
-      "document_number": "INV-2026-022",
-      "document_type": "invoice",
-      "vendor_name": "Car Wipers Sdn Bhd",
-      "severity": "warning",
-      "suggested_action": "Confirm the PO reference for invoice INV-2026-022 (RM 1534.50) — no PO was referenced."
-    },
-    {
-      "exception_id": "EXC-0096",
-      "source_ref": "invoice_011.png",
-      "type": "missing_po_reference_high_value",
-      "reason": "Invoice INV-2026-024 (RM 1293.00) has no PO reference and exceeds RM 500 threshold",
-      "document_number": "INV-2026-024",
-      "document_type": "invoice",
-      "vendor_name": "Rumahku Harum Sdn Bhd",
-      "severity": "warning",
-      "suggested_action": "Confirm the PO reference for invoice INV-2026-024 (RM 1293.00) — no PO was referenced."
-    },
-    {
-      "exception_id": "EXC-0097",
-      "source_ref": "invoice_013.png",
-      "type": "missing_po_reference_high_value",
-      "reason": "Invoice INV-2026-013 (RM 627.00) has no PO reference and exceeds RM 500 threshold",
-      "document_number": "INV-2026-013",
-      "document_type": "invoice",
-      "vendor_name": "Cermin Tuanku MY Sdn Bhd",
-      "severity": "warning",
-      "suggested_action": "Confirm the PO reference for invoice INV-2026-013 (RM 627.00) — no PO was referenced."
-    },
-    {
-      "exception_id": "EXC-0098",
-      "source_ref": "invoice_019.png",
+      "exception_id": "EXC-0086",
+      "source_ref": "test-documents/invoices/p01_01.png",
       "type": "low_confidence",
-      "reason": "Critical field 'vendor_name' has confidence 0.60 on INV-2026-036",
-      "document_number": "INV-2026-036",
+      "reason": "Critical field 'grand_total' has confidence 0.50 on INV-2026-016",
+      "document_number": "INV-2026-016",
       "document_type": "invoice",
-      "vendor_name": "Lapop Tuning Sdn Bhd",
+      "vendor_name": "Puteri Kraf Sdn Bhd",
       "severity": "warning",
       "details": {
-        "field": "vendor_name",
+        "field": "grand_total",
+        "confidence_score": 0.5
+      },
+      "suggested_action": "Verify grand_total on INV-2026-016 — extraction confidence is low (0.50)."
+    },
+    {
+      "exception_id": "EXC-0087",
+      "source_ref": "test-documents/invoices/p01_03.png",
+      "type": "low_confidence",
+      "reason": "Critical field 'line_items' has confidence 0.60 on INV-2026-028",
+      "document_number": "INV-2026-028",
+      "document_type": "invoice",
+      "vendor_name": "Seri Murni Pembekal Sdn Bhd",
+      "severity": "warning",
+      "details": {
+        "field": "line_items",
         "confidence_score": 0.6
       },
-      "suggested_action": "Verify vendor_name on INV-2026-036 — extraction confidence is low (0.60)."
+      "suggested_action": "Verify line_items on INV-2026-028 — extraction confidence is low (0.60)."
+    },
+    {
+      "exception_id": "EXC-0088",
+      "source_ref": "test-documents/invoices/p01_03.png",
+      "type": "missing_po_reference_high_value",
+      "reason": "Invoice INV-2026-028 (RM 957.00) has no PO reference and exceeds RM 500 threshold",
+      "document_number": "INV-2026-028",
+      "document_type": "invoice",
+      "vendor_name": "Seri Murni Pembekal Sdn Bhd",
+      "severity": "warning",
+      "suggested_action": "Confirm the PO reference for invoice INV-2026-028 (RM 957.00) — no PO was referenced."
+    },
+    {
+      "exception_id": "EXC-0089",
+      "source_ref": "test-documents/invoices/p02_11.png",
+      "type": "low_confidence",
+      "reason": "Critical field 'line_items' has confidence 0.65 on INV-2026-024",
+      "document_number": "INV-2026-024",
+      "document_type": "invoice",
+      "vendor_name": "Rumah Kaca Sdn Bhd",
+      "severity": "warning",
+      "details": {
+        "field": "line_items",
+        "confidence_score": 0.65
+      },
+      "suggested_action": "Verify line_items on INV-2026-024 — extraction confidence is low (0.65)."
+    },
+    {
+      "exception_id": "EXC-0090",
+      "source_ref": "test-documents/invoices/p04_07.png",
+      "type": "low_confidence",
+      "reason": "Critical field 'line_items' has confidence 0.60 on INV-2026-036",
+      "document_number": "INV-2026-036",
+      "document_type": "invoice",
+      "vendor_name": "Lampu Terang Sdn Bhd",
+      "severity": "warning",
+      "details": {
+        "field": "line_items",
+        "confidence_score": 0.6
+      },
+      "suggested_action": "Verify line_items on INV-2026-036 — extraction confidence is low (0.60)."
+    },
+    {
+      "exception_id": "EXC-0091",
+      "source_ref": "test-documents/orders/p02_04.png",
+      "type": "low_confidence",
+      "reason": "Critical field 'grand_total' has confidence 0.50 on PO-2026-A05",
+      "document_number": "PO-2026-A05",
+      "document_type": "order",
+      "vendor_name": "Peralatan Keselamatan Sdn Bhd",
+      "severity": "warning",
+      "details": {
+        "field": "grand_total",
+        "confidence_score": 0.5
+      },
+      "suggested_action": "Verify grand_total on PO-2026-A05 — extraction confidence is low (0.50)."
+    },
+    {
+      "exception_id": "EXC-0092",
+      "source_ref": "test-documents/orders/p03_10.png",
+      "type": "low_confidence",
+      "reason": "Critical field 'grand_total' has confidence 0.50 on PO-2026-A04",
+      "document_number": "PO-2026-A04",
+      "document_type": "order",
+      "vendor_name": "Taman Hijau Landskap Sdn Bhd",
+      "severity": "warning",
+      "details": {
+        "field": "grand_total",
+        "confidence_score": 0.5
+      },
+      "suggested_action": "Verify grand_total on PO-2026-A04 — extraction confidence is low (0.50)."
     }
   ],
   "summary": {
-    "total_exceptions": 98,
-    "critical_count": 34,
-    "warning_count": 64,
+    "total_exceptions": 92,
+    "critical_count": 8,
+    "warning_count": 84,
     "info_count": 0,
     "by_type": [
       {
+        "type": "conflicting_printed_values",
+        "count": 5
+      },
+      {
         "type": "arithmetic_mismatch",
-        "count": 53
+        "count": 2
       },
       {
         "type": "tax_rate_anomaly",
+        "count": 36
+      },
+      {
+        "type": "duplicate_similar_confidence",
         "count": 1
       },
       {
         "type": "missing_po_match",
-        "count": 19
+        "count": 17
+      },
+      {
+        "type": "quantity_mismatch",
+        "count": 4
       },
       {
         "type": "no_due_date",
-        "count": 19
-      },
-      {
-        "type": "missing_po_reference_high_value",
-        "count": 5
+        "count": 20
       },
       {
         "type": "low_confidence",
+        "count": 6
+      },
+      {
+        "type": "missing_po_reference_high_value",
         "count": 1
       }
     ]

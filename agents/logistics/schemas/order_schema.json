@@ -60,6 +60,14 @@
       "type": ["number", "null"],
       "description": "Grand total as printed. Recorded, NOT computed or validated by Logistics."
     },
+    "tax_rate": {
+      "type": ["number", "null"],
+      "description": "Document-level SST rate as printed (e.g. 'SST 10%' -> 10). Recorded, not validated."
+    },
+    "notes": {
+      "type": ["string", "null"],
+      "description": "What is on the page when it is contradictory or unreadable (e.g. two different totals printed). Logistics describes; it never picks."
+    },
     "currency": {
       "type": "string",
       "enum": ["MYR", "RM"],

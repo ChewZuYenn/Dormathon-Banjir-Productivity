@@ -1,857 +1,696 @@
 [
   {
     "document_type": "invoice",
-    "vendor_name": "Pulau Ketel Sdn Bhd",
-    "vendor_sst_id": "W10-2001-220004",
-    "invoice_number": "INV-2026-040",
-    "invoice_date": "2026-10-02",
-    "po_reference": "PO-PA-26-0002",
+    "vendor_name": "Puteri Kraf Sdn Bhd",
+    "invoice_number": "INV-2026-016",
+    "invoice_date": "2026-10-07",
+    "due_date": null,
+    "po_reference": "PO-PK-9900",
     "line_items": [
       {
-        "description": "Big canvas / Canvas bag",
+        "description": "Beg canvas / Canvas bag",
         "quantity": 30,
         "unit_price": 10.0,
-        "tax_amount": 0.0,
+        "tax_amount": null,
         "tax_rate": null
       },
       {
         "description": "Stiker label / Label sticker",
-        "quantity": 5,
+        "quantity": 20,
         "unit_price": 5.0,
-        "tax_amount": 0.0,
+        "tax_amount": null,
         "tax_rate": null
       }
     ],
     "subtotal": 400.0,
     "total_tax": 40.0,
-    "grand_total": 45.7,
+    "tax_rate": 10,
+    "grand_total": 425.0,
     "currency": "MYR",
-    "source_ref": "invoice_001.png",
+    "source_ref": "test-documents/invoices/p01_01.png",
     "confidence": {
       "vendor_name": 0.95,
       "invoice_number": 0.95,
-      "invoice_date": 0.9,
-      "po_reference": 0.9,
-      "line_items": 0.9,
-      "grand_total": 0.95,
-      "total_tax": 0.9
+      "invoice_date": 0.95,
+      "po_reference": 0.95,
+      "line_items": 0.92,
+      "grand_total": 0.5,
+      "total_tax": 0.95
     },
     "status": "flagged",
     "flags": [
-      "wrong_total",
-      "invalid_sst_rate"
-    ]
+      "conflicting_values"
+    ],
+    "notes": "Two totals printed: 'TOTAL AMOUNT: RM 425.00' and a large 'RM45.70' below it. grand_total records the labelled TOTAL AMOUNT."
   },
   {
     "document_type": "invoice",
-    "vendor_name": "Minuma Supply",
-    "vendor_sst_id": "J11-1332-220009-0",
+    "vendor_name": "Warisan Supply",
     "invoice_number": "INV-2026-029",
-    "invoice_date": "2026-10-05",
-    "po_reference": "PO-MG-1010",
+    "invoice_date": "2026-10-20",
+    "due_date": null,
+    "po_reference": "PO-WS-1010",
     "line_items": [
       {
-        "description": "Kertas A4 / A4 paper",
-        "quantity": 10,
-        "unit_price": 22.0,
-        "tax_amount": 13.2,
-        "tax_rate": 6
+        "description": "Rantai besi / Iron chain",
+        "quantity": 15,
+        "unit_price": 32.0,
+        "tax_amount": null,
+        "tax_rate": null
       },
       {
-        "description": "Pen hitam / Black pen",
-        "quantity": 20,
-        "unit_price": 4.5,
-        "tax_amount": 5.4,
-        "tax_rate": 6
-      },
-      {
-        "description": "Metal clamp",
+        "description": "Pengapit logam / Metal clamp",
         "quantity": 25,
-        "unit_price": 2.0,
-        "tax_amount": 3.0,
-        "tax_rate": 6
+        "unit_price": 5.0,
+        "tax_amount": null,
+        "tax_rate": null
       }
     ],
-    "subtotal": 405.0,
-    "total_tax": 21.6,
+    "subtotal": 605.0,
+    "total_tax": 60.5,
+    "tax_rate": 10,
     "grand_total": 665.5,
     "currency": "MYR",
-    "source_ref": "invoice_002.png",
+    "source_ref": "test-documents/invoices/p01_02.png",
     "confidence": {
-      "vendor_name": 0.95,
-      "invoice_number": 0.95,
-      "invoice_date": 0.9,
-      "po_reference": 0.9,
+      "vendor_name": 0.75,
+      "invoice_number": 0.8,
+      "invoice_date": 0.75,
+      "po_reference": 0.7,
       "line_items": 0.92,
       "grand_total": 0.95,
-      "total_tax": 0.92
+      "total_tax": 0.95
     },
-    "status": "clean",
-    "flags": []
+    "status": "flagged",
+    "flags": [
+      "handwritten"
+    ],
+    "notes": "Invoice number, vendor, address, date and PO ref are handwritten. Tel unreadable, SSM blank."
   },
   {
     "document_type": "invoice",
-    "vendor_name": "Syarikat Makmal Sdn Bhd",
-    "vendor_sst_id": "W10-0890-220011-0",
-    "invoice_number": "INV-2026-026",
-    "invoice_date": "2026-10-07",
+    "vendor_name": "Seri Murni Pembekal Sdn Bhd",
+    "invoice_number": "INV-2026-028",
+    "invoice_date": "2026-10-19",
+    "due_date": null,
     "po_reference": null,
     "line_items": [
       {
-        "description": "Tudung kismis / Raisin bread",
-        "quantity": 10,
-        "unit_price": 7.5,
-        "tax_amount": 6.0,
-        "tax_rate": 8
+        "description": "Tuala kain / Fabric towel",
+        "quantity": 50,
+        "unit_price": 12.0,
+        "tax_amount": null,
+        "tax_rate": null
       },
       {
         "description": "Sabun pencuci / Washing soap",
-        "quantity": 10,
+        "quantity": 30,
         "unit_price": 9.0,
-        "tax_amount": 0.0,
-        "tax_rate": 0
+        "tax_amount": null,
+        "tax_rate": null
       }
     ],
-    "subtotal": 675.0,
-    "total_tax": 7.0,
+    "subtotal": 870.0,
+    "total_tax": 87.0,
+    "tax_rate": 10,
     "grand_total": 957.0,
     "currency": "MYR",
-    "source_ref": "invoice_003.png",
+    "source_ref": "test-documents/invoices/p01_03.png",
     "confidence": {
       "vendor_name": 0.95,
       "invoice_number": 0.95,
-      "invoice_date": 0.9,
-      "po_reference": 0.0,
-      "line_items": 0.9,
-      "grand_total": 0.95,
-      "total_tax": 0.85
-    },
-    "status": "flagged",
-    "flags": [
-      "no_po_reference",
-      "escalate_missing_po"
-    ]
-  },
-  {
-    "document_type": "invoice",
-    "vendor_name": "Minuma Office Supplies Sdn Bhd",
-    "vendor_sst_id": "J11-1332-220009-0",
-    "invoice_number": "INV-2026-018",
-    "invoice_date": "2026-09-12",
-    "po_reference": "PO-SJ-1010",
-    "line_items": [
-      {
-        "description": "Binder clip",
-        "quantity": 30,
-        "unit_price": 3.3,
-        "tax_amount": 5.94,
-        "tax_rate": 6
-      },
-      {
-        "description": "Stapler heavy duty",
-        "quantity": 1,
-        "unit_price": 1.0,
-        "tax_amount": 0.06,
-        "tax_rate": 6
-      }
-    ],
-    "subtotal": 522.0,
-    "total_tax": 3.0,
-    "grand_total": 585.2,
-    "currency": "MYR",
-    "source_ref": "invoice_004.png",
-    "confidence": {
-      "vendor_name": 0.95,
-      "invoice_number": 0.95,
-      "invoice_date": 0.9,
-      "po_reference": 0.9,
-      "line_items": 0.9,
-      "grand_total": 0.95,
-      "total_tax": 0.9
-    },
-    "status": "clean",
-    "flags": []
-  },
-  {
-    "document_type": "invoice",
-    "vendor_name": "Sri Jaya Trading Sdn Bhd",
-    "vendor_sst_id": "W10-2001-220005-0",
-    "invoice_number": "INV-2026-012",
-    "invoice_date": "2026-09-14",
-    "po_reference": "PO-SJ-1122",
-    "line_items": [
-      {
-        "description": "Gunting / Scissors",
-        "quantity": 1,
-        "unit_price": 0.8,
-        "tax_amount": 0.05,
-        "tax_rate": 6
-      },
-      {
-        "description": "Pen ballpoint / Ballpoint pen",
-        "quantity": 10,
-        "unit_price": 0.5,
-        "tax_amount": 0.3,
-        "tax_rate": 6
-      }
-    ],
-    "subtotal": 52.0,
-    "total_tax": 1.0,
-    "grand_total": 80.0,
-    "currency": "MYR",
-    "source_ref": "invoice_005.png",
-    "confidence": {
-      "vendor_name": 0.95,
-      "invoice_number": 0.95,
-      "invoice_date": 0.9,
-      "po_reference": 0.9,
-      "line_items": 0.9,
-      "grand_total": 0.95,
-      "total_tax": 0.9
-    },
-    "status": "clean",
-    "flags": []
-  },
-  {
-    "document_type": "invoice",
-    "vendor_name": "Tulus Logistik Sdn Bhd",
-    "vendor_sst_id": "W10-2001-220006-0",
-    "invoice_number": "INV-2026-014",
-    "invoice_date": "2026-09-12",
-    "po_reference": "PO-TL-1009",
-    "line_items": [
-      {
-        "description": "Kotak kadbod / Cardboard box",
-        "quantity": 10,
-        "unit_price": 1.8,
-        "tax_amount": 1.08,
-        "tax_rate": 6
-      },
-      {
-        "description": "Stretch wrap film",
-        "quantity": 10,
-        "unit_price": 3.1,
-        "tax_amount": 1.86,
-        "tax_rate": 6
-      }
-    ],
-    "subtotal": 400.0,
-    "total_tax": 3.0,
-    "grand_total": 445.5,
-    "currency": "MYR",
-    "source_ref": "invoice_006.png",
-    "confidence": {
-      "vendor_name": 0.95,
-      "invoice_number": 0.95,
-      "invoice_date": 0.9,
-      "po_reference": 0.9,
-      "line_items": 0.9,
-      "grand_total": 0.95,
-      "total_tax": 0.9
-    },
-    "status": "clean",
-    "flags": []
-  },
-  {
-    "document_type": "invoice",
-    "vendor_name": "Kedai Tanda Maju Mulia Sdn Bhd",
-    "vendor_sst_id": "C10-7732-220010-0",
-    "invoice_number": "INV-2026-025",
-    "invoice_date": "2026-09-15",
-    "po_reference": null,
-    "line_items": [
-      {
-        "description": "Whiteboard",
-        "quantity": 10,
-        "unit_price": 4.0,
-        "tax_amount": 2.4,
-        "tax_rate": 6
-      },
-      {
-        "description": "Buku log / Log book",
-        "quantity": 5,
-        "unit_price": 2.0,
-        "tax_amount": 0.6,
-        "tax_rate": 6
-      },
-      {
-        "description": "Borang permohonan / Form",
-        "quantity": 10,
-        "unit_price": 0.5,
-        "tax_amount": 0.3,
-        "tax_rate": 6
-      }
-    ],
-    "subtotal": 1080.0,
-    "total_tax": 1.0,
-    "grand_total": 1111.0,
-    "currency": "MYR",
-    "source_ref": "invoice_007.png",
-    "confidence": {
-      "vendor_name": 0.92,
-      "invoice_number": 0.95,
-      "invoice_date": 0.9,
-      "po_reference": 0.0,
-      "line_items": 0.88,
-      "grand_total": 0.95,
-      "total_tax": 0.85
-    },
-    "status": "flagged",
-    "flags": [
-      "no_po_reference",
-      "escalate_missing_po"
-    ]
-  },
-  {
-    "document_type": "invoice",
-    "vendor_name": "Fast Courier Sdn Bhd",
-    "invoice_number": "INV-2026-019",
-    "invoice_date": "2026-09-20",
-    "po_reference": "PO-FC-4040",
-    "line_items": [
-      {
-        "description": "Penghantaran dokumen / Document delivery",
-        "quantity": 10,
-        "unit_price": 10.0,
-        "tax_amount": 6.0,
-        "tax_rate": 6
-      },
-      {
-        "description": "Penghantaran pakej / Package delivery",
-        "quantity": 5,
-        "unit_price": 8.0,
-        "tax_amount": 2.4,
-        "tax_rate": 6
-      }
-    ],
-    "subtotal": 720.0,
-    "total_tax": 18.0,
-    "grand_total": 808.5,
-    "currency": "MYR",
-    "source_ref": "invoice_008.png",
-    "confidence": {
-      "vendor_name": 0.95,
-      "invoice_number": 0.95,
-      "invoice_date": 0.9,
-      "po_reference": 0.9,
-      "line_items": 0.9,
-      "grand_total": 0.95,
-      "total_tax": 0.9
-    },
-    "status": "clean",
-    "flags": []
-  },
-  {
-    "document_type": "invoice",
-    "vendor_name": "Car Wipers Sdn Bhd",
-    "vendor_sst_id": "C10-7732-220012-0",
-    "invoice_number": "INV-2026-022",
-    "invoice_date": "2026-10-03",
-    "po_reference": null,
-    "line_items": [
-      {
-        "description": "Car wipers / Wiper blades",
-        "quantity": 10,
-        "unit_price": 75.0,
-        "tax_amount": 45.0,
-        "tax_rate": 6
-      },
-      {
-        "description": "Busa calit / Foam sponge",
-        "quantity": 20,
-        "unit_price": 9.0,
-        "tax_amount": 10.8,
-        "tax_rate": 6
-      }
-    ],
-    "subtotal": 1395.0,
-    "total_tax": 15.0,
-    "grand_total": 1534.5,
-    "currency": "MYR",
-    "source_ref": "invoice_009.png",
-    "confidence": {
-      "vendor_name": 0.95,
-      "invoice_number": 0.95,
-      "invoice_date": 0.9,
-      "po_reference": 0.0,
-      "line_items": 0.9,
-      "grand_total": 0.95,
-      "total_tax": 0.9
-    },
-    "status": "flagged",
-    "flags": [
-      "no_po_reference",
-      "escalate_missing_po"
-    ]
-  },
-  {
-    "document_type": "invoice",
-    "vendor_name": "Sistem Komputer MT Sdn Bhd",
-    "vendor_sst_id": "P10-2001-220015-0",
-    "invoice_number": "INV-2026-023",
-    "invoice_date": "2026-09-14",
-    "po_reference": "PO-SK-0303",
-    "line_items": [
-      {
-        "description": "Kabel LAN / LAN cable",
-        "quantity": 1,
-        "unit_price": 15.0,
-        "tax_amount": 0.9,
-        "tax_rate": 6
-      },
-      {
-        "description": "Pintu USB / USB hub",
-        "quantity": 2,
-        "unit_price": 360.0,
-        "tax_amount": 43.2,
-        "tax_rate": 6
-      }
-    ],
-    "subtotal": 840.0,
-    "total_tax": 10.0,
-    "grand_total": 924.0,
-    "currency": "MYR",
-    "source_ref": "invoice_010.png",
-    "confidence": {
-      "vendor_name": 0.95,
-      "invoice_number": 0.95,
-      "invoice_date": 0.9,
-      "po_reference": 0.9,
-      "line_items": 0.9,
-      "grand_total": 0.95,
-      "total_tax": 0.9
-    },
-    "status": "clean",
-    "flags": []
-  },
-  {
-    "document_type": "invoice",
-    "vendor_name": "Rumahku Harum Sdn Bhd",
-    "vendor_sst_id": "A10-2001-220016-0",
-    "invoice_number": "INV-2026-024",
-    "invoice_date": "2026-09-14",
-    "po_reference": null,
-    "line_items": [
-      {
-        "description": "Carca begkas / Luggage bag",
-        "quantity": 3,
-        "unit_price": 6.0,
-        "tax_amount": 1.08,
-        "tax_rate": 6
-      },
-      {
-        "description": "Bantal tikar / Pillow",
-        "quantity": 5,
-        "unit_price": 2.0,
-        "tax_amount": 0.6,
-        "tax_rate": 6
-      },
-      {
-        "description": "Penyapu / Broom",
-        "quantity": 5,
-        "unit_price": 2.0,
-        "tax_amount": 0.6,
-        "tax_rate": 6
-      }
-    ],
-    "subtotal": 1178.0,
-    "total_tax": 7.0,
-    "grand_total": 1293.0,
-    "currency": "MYR",
-    "source_ref": "invoice_011.png",
-    "confidence": {
-      "vendor_name": 0.95,
-      "invoice_number": 0.95,
-      "invoice_date": 0.9,
-      "po_reference": 0.0,
-      "line_items": 0.88,
-      "grand_total": 0.95,
-      "total_tax": 0.9
-    },
-    "status": "flagged",
-    "flags": [
-      "no_po_reference",
-      "escalate_missing_po"
-    ]
-  },
-  {
-    "document_type": "invoice",
-    "vendor_name": "Taman Hijau Landskap Sdn Bhd",
-    "vendor_sst_id": "B10-6543-220017-0",
-    "invoice_number": "INV-2026-028",
-    "invoice_date": "2026-09-17",
-    "po_reference": "PO-TH-7878",
-    "line_items": [
-      {
-        "description": "Baja organik / Organic fertilizer",
-        "quantity": 10,
-        "unit_price": 10.0,
-        "tax_amount": 6.0,
-        "tax_rate": 6
-      },
-      {
-        "description": "Pokok herba / Herb plant",
-        "quantity": 10,
-        "unit_price": 5.0,
-        "tax_amount": 3.0,
-        "tax_rate": 6
-      },
-      {
-        "description": "Benih taman / Garden seeds",
-        "quantity": 10,
-        "unit_price": 10.0,
-        "tax_amount": 6.0,
-        "tax_rate": 6
-      }
-    ],
-    "subtotal": 1116.0,
-    "total_tax": 3.0,
-    "grand_total": 1209.0,
-    "currency": "MYR",
-    "source_ref": "invoice_012.png",
-    "confidence": {
-      "vendor_name": 0.95,
-      "invoice_number": 0.95,
-      "invoice_date": 0.9,
-      "po_reference": 0.9,
-      "line_items": 0.9,
-      "grand_total": 0.95,
-      "total_tax": 0.9
-    },
-    "status": "clean",
-    "flags": []
-  },
-  {
-    "document_type": "invoice",
-    "vendor_name": "Cermin Tuanku MY Sdn Bhd",
-    "vendor_sst_id": "C10-7732-220018-0",
-    "invoice_number": "INV-2026-013",
-    "invoice_date": "2026-09-19",
-    "po_reference": null,
-    "line_items": [
-      {
-        "description": "Cermin besar / Large mirror",
-        "quantity": 1,
-        "unit_price": 10.0,
-        "tax_amount": 0.6,
-        "tax_rate": 6
-      },
-      {
-        "description": "Pengilat cermin / Mirror polish",
-        "quantity": 1,
-        "unit_price": 0.2,
-        "tax_amount": 0.01,
-        "tax_rate": 6
-      },
-      {
-        "description": "Perekat cermin / Mirror adhesive",
-        "quantity": 1,
-        "unit_price": 0.5,
-        "tax_amount": 0.03,
-        "tax_rate": 6
-      }
-    ],
-    "subtotal": 570.0,
-    "total_tax": 57.0,
-    "grand_total": 627.0,
-    "currency": "MYR",
-    "source_ref": "invoice_013.png",
-    "confidence": {
-      "vendor_name": 0.92,
-      "invoice_number": 0.95,
-      "invoice_date": 0.88,
-      "po_reference": 0.0,
-      "line_items": 0.85,
-      "grand_total": 0.92,
-      "total_tax": 0.85
-    },
-    "status": "flagged",
-    "flags": [
-      "no_po_reference",
-      "escalate_missing_po"
-    ]
-  },
-  {
-    "document_type": "invoice",
-    "vendor_name": "Maja Snack Sdn Bhd",
-    "vendor_sst_id": "C10-1234-220019-0",
-    "invoice_number": "INV-2026-011",
-    "invoice_date": "2026-09-22",
-    "po_reference": "PO-MS-9999",
-    "line_items": [
-      {
-        "description": "Maggi kari / Maggi curry",
-        "quantity": 10,
-        "unit_price": 1.0,
-        "tax_amount": 0.6,
-        "tax_rate": 6
-      },
-      {
-        "description": "Teh tarik / Milk tea",
-        "quantity": 10,
-        "unit_price": 1.0,
-        "tax_amount": 0.6,
-        "tax_rate": 6
-      }
-    ],
-    "subtotal": 192.0,
-    "total_tax": 11.5,
-    "grand_total": 203.5,
-    "currency": "MYR",
-    "source_ref": "invoice_014.png",
-    "confidence": {
-      "vendor_name": 0.95,
-      "invoice_number": 0.95,
-      "invoice_date": 0.9,
-      "po_reference": 0.9,
-      "line_items": 0.9,
-      "grand_total": 0.95,
-      "total_tax": 0.9
-    },
-    "status": "clean",
-    "flags": []
-  },
-  {
-    "document_type": "invoice",
-    "vendor_name": "Kasut Tentera Malaysia Sdn Bhd",
-    "vendor_sst_id": "C10-7732-220020-0",
-    "invoice_number": "INV-2026-003",
-    "invoice_date": "2026-09-08",
-    "po_reference": null,
-    "line_items": [
-      {
-        "description": "Minyak griser / Grease oil",
-        "quantity": 3,
-        "unit_price": 5.0,
-        "tax_amount": 0.9,
-        "tax_rate": 6
-      },
-      {
-        "description": "Alat ujian / Test equipment",
-        "quantity": 3,
-        "unit_price": 2.0,
-        "tax_amount": 0.36,
-        "tax_rate": 6
-      }
-    ],
-    "subtotal": 108.0,
-    "total_tax": 3.0,
-    "grand_total": 111.0,
-    "currency": "MYR",
-    "source_ref": "invoice_015.png",
-    "confidence": {
-      "vendor_name": 0.95,
-      "invoice_number": 0.95,
-      "invoice_date": 0.9,
-      "po_reference": 0.0,
-      "line_items": 0.9,
-      "grand_total": 0.95,
-      "total_tax": 0.9
-    },
-    "status": "flagged",
-    "flags": [
-      "no_po_reference"
-    ]
-  },
-  {
-    "document_type": "invoice",
-    "vendor_name": "Baka Busa Enterprise",
-    "vendor_sst_id": "P10-2001-220021-0",
-    "invoice_number": "INV-2026-030",
-    "invoice_date": "2026-10-06",
-    "po_reference": "PO-BB-1302",
-    "line_items": [
-      {
-        "description": "Buku nota / Notebook",
-        "quantity": 10,
-        "unit_price": 4.0,
-        "tax_amount": 2.4,
-        "tax_rate": 6
-      },
-      {
-        "description": "Penanda / Marker pen",
-        "quantity": 10,
-        "unit_price": 3.5,
-        "tax_amount": 2.1,
-        "tax_rate": 6
-      }
-    ],
-    "subtotal": 100.0,
-    "total_tax": 4.5,
-    "grand_total": 104.5,
-    "currency": "MYR",
-    "source_ref": "invoice_016.png",
-    "confidence": {
-      "vendor_name": 0.95,
-      "invoice_number": 0.95,
-      "invoice_date": 0.9,
-      "po_reference": 0.9,
-      "line_items": 0.9,
-      "grand_total": 0.95,
-      "total_tax": 0.9
-    },
-    "status": "clean",
-    "flags": []
-  },
-  {
-    "document_type": "invoice",
-    "vendor_name": "Berris Gadget Sdn Bhd",
-    "vendor_sst_id": "C10-7732-220022-0",
-    "invoice_number": "INV-2026-034",
-    "invoice_date": "2026-10-06",
-    "po_reference": "PO-BG-1234",
-    "line_items": [
-      {
-        "description": "Cecair pembersih / Cleaning liquid",
-        "quantity": 4,
-        "unit_price": 12.0,
-        "tax_amount": 2.88,
-        "tax_rate": 6
-      },
-      {
-        "description": "Kain lap / Cleaning cloth",
-        "quantity": 1,
-        "unit_price": 0.0,
-        "tax_amount": 0.0,
-        "tax_rate": 6
-      }
-    ],
-    "subtotal": 120.0,
-    "total_tax": 12.0,
-    "grand_total": 132.0,
-    "currency": "MYR",
-    "source_ref": "invoice_017.png",
-    "confidence": {
-      "vendor_name": 0.95,
-      "invoice_number": 0.95,
-      "invoice_date": 0.9,
-      "po_reference": 0.9,
-      "line_items": 0.9,
-      "grand_total": 0.95,
-      "total_tax": 0.9
-    },
-    "status": "clean",
-    "flags": []
-  },
-  {
-    "document_type": "invoice",
-    "vendor_name": "Logam Maju Sdn Bhd",
-    "vendor_sst_id": "C10-7732-220023-0",
-    "invoice_number": "INV-2026-035",
-    "invoice_date": "2026-10-07",
-    "po_reference": "PO-LM-1304",
-    "line_items": [
-      {
-        "description": "Skru / Screw pack",
-        "quantity": 10,
-        "unit_price": 4.0,
-        "tax_amount": 2.4,
-        "tax_rate": 6
-      },
-      {
-        "description": "Nat / Nut pack",
-        "quantity": 10,
-        "unit_price": 0.0,
-        "tax_amount": 0.0,
-        "tax_rate": 6
-      }
-    ],
-    "subtotal": 250.0,
-    "total_tax": 20.0,
-    "grand_total": 270.0,
-    "currency": "MYR",
-    "source_ref": "invoice_018.png",
-    "confidence": {
-      "vendor_name": 0.95,
-      "invoice_number": 0.95,
-      "invoice_date": 0.9,
-      "po_reference": 0.9,
-      "line_items": 0.9,
-      "grand_total": 0.95,
-      "total_tax": 0.9
-    },
-    "status": "clean",
-    "flags": []
-  },
-  {
-    "document_type": "invoice",
-    "vendor_name": "Lapop Tuning Sdn Bhd",
-    "vendor_sst_id": "C10-7732-220024-0",
-    "invoice_number": "INV-2026-036",
-    "invoice_date": "2026-10-05",
-    "po_reference": "PO-LT-1305",
-    "line_items": [
-      {
-        "description": "Minyak SDK / SDK oil",
-        "quantity": 12,
-        "unit_price": 11.0,
-        "tax_amount": 7.92,
-        "tax_rate": 6
-      },
-      {
-        "description": "Minyak RBD / RBD oil",
-        "quantity": 8,
-        "unit_price": 0.0,
-        "tax_amount": 0.0,
-        "tax_rate": 6
-      }
-    ],
-    "subtotal": 195.0,
-    "total_tax": 11.0,
-    "grand_total": 206.0,
-    "currency": "MYR",
-    "source_ref": "invoice_019.png",
-    "confidence": {
-      "vendor_name": 0.6,
-      "invoice_number": 0.75,
-      "invoice_date": 0.65,
-      "po_reference": 0.7,
+      "invoice_date": 0.95,
+      "po_reference": 0.95,
       "line_items": 0.6,
-      "grand_total": 0.8,
-      "total_tax": 0.7
+      "grand_total": 0.95,
+      "total_tax": 0.95
     },
     "status": "flagged",
     "flags": [
-      "blurry_image"
-    ]
+      "no_po_reference",
+      "unreadable_field",
+      "escalate_missing_po"
+    ],
+    "notes": "PO Ref printed as '[TIADA / NOT PROVIDED]'. Unit price of 'Tuala kain' printed as '12.0ai' (last character unreadable); recorded 12.00, amount column shows 600.00."
   },
   {
     "document_type": "receipt",
     "vendor_name": "Kedai Runcit Aman",
-    "receipt_number": "REC-006",
+    "receipt_number": "REC-009",
     "receipt_date": "2026-10-02",
-    "payment_method": "cash",
-    "amount": 51.7,
+    "payment_method": null,
+    "line_items": [
+      {
+        "description": "Air mineral / Mineral water (24 botol)",
+        "amount": 32.0
+      },
+      {
+        "description": "Tisu / Tissue box",
+        "amount": 15.0
+      }
+    ],
+    "subtotal": 47.0,
     "tax_amount": 4.7,
+    "tax_rate": 10,
+    "amount": 51.7,
     "invoice_reference": null,
     "currency": "MYR",
-    "source_ref": "receipt_001.png",
+    "source_ref": "test-documents/receipts/p02_01.png",
     "confidence": {
-      "vendor_name": 0.9,
-      "receipt_date": 0.9,
-      "amount": 0.9,
-      "payment_method": 0.8
+      "vendor_name": 0.95,
+      "receipt_date": 0.95,
+      "amount": 0.95
     },
     "status": "clean",
     "flags": []
   },
   {
+    "document_type": "invoice",
+    "vendor_name": "Delta Office Supplies Sdn Bhd",
+    "invoice_number": "INV-2026-018",
+    "invoice_date": "2026-10-09",
+    "due_date": null,
+    "po_reference": "PO-DO-1313",
+    "line_items": [
+      {
+        "description": "Binder file / Fail folder",
+        "quantity": 40,
+        "unit_price": 8.5,
+        "tax_amount": null,
+        "tax_rate": null
+      },
+      {
+        "description": "Marker pen / Pen marker",
+        "quantity": 60,
+        "unit_price": 3.2,
+        "tax_amount": null,
+        "tax_rate": null
+      }
+    ],
+    "subtotal": 532.0,
+    "total_tax": 53.2,
+    "tax_rate": 10,
+    "grand_total": 585.2,
+    "currency": "MYR",
+    "source_ref": "test-documents/invoices/p02_02.png",
+    "confidence": {
+      "vendor_name": 0.95,
+      "invoice_number": 0.95,
+      "invoice_date": 0.95,
+      "po_reference": 0.95,
+      "line_items": 0.92,
+      "grand_total": 0.95,
+      "total_tax": 0.95
+    },
+    "status": "clean",
+    "flags": [],
+    "notes": "A second, blank 'PO Ref:' line is printed below PO-DO-1313."
+  },
+  {
+    "document_type": "invoice",
+    "vendor_name": "Sri Jaya Trading Sdn Bhd",
+    "invoice_number": "INV-2026-012",
+    "invoice_date": "2026-10-03",
+    "due_date": null,
+    "po_reference": "PO-SJ-1122",
+    "line_items": [
+      {
+        "description": "Kertas A4 / A4 paper",
+        "quantity": 20,
+        "unit_price": 12.0,
+        "tax_amount": null,
+        "tax_rate": null
+      },
+      {
+        "description": "Pen ballpoint / Pen",
+        "quantity": 100,
+        "unit_price": 0.8,
+        "tax_amount": null,
+        "tax_rate": null
+      }
+    ],
+    "subtotal": 320.0,
+    "total_tax": 32.0,
+    "tax_rate": 10,
+    "grand_total": 352.0,
+    "currency": "MYR",
+    "source_ref": "test-documents/invoices/p02_03.png",
+    "confidence": {
+      "vendor_name": 0.85,
+      "invoice_number": 0.95,
+      "invoice_date": 0.95,
+      "po_reference": 0.95,
+      "line_items": 0.92,
+      "grand_total": 0.95,
+      "total_tax": 0.95
+    },
+    "status": "flagged",
+    "flags": [
+      "blurry_image"
+    ],
+    "notes": "Tel and SSM are blurred. 'Kertas A4 / A4 paper' is double-printed on one line."
+  },
+  {
+    "document_type": "order",
+    "po_number": "PO-2026-A05",
+    "po_date": "2026-10-16",
+    "vendor_name": "Peralatan Keselamatan Sdn Bhd",
+    "buyer_name": "Bahagian Keselamatan",
+    "delivery_date": "2026-11-08",
+    "line_items": [
+      {
+        "description": "Topi keselamatan / Safety helmet",
+        "quantity": 20,
+        "unit_price": 45.0,
+        "tax_amount": null,
+        "tax_rate": null
+      },
+      {
+        "description": "Kasut keselamatan / Safety shoe",
+        "quantity": 15,
+        "unit_price": 80.0,
+        "tax_amount": null,
+        "tax_rate": null
+      }
+    ],
+    "subtotal": 2100.0,
+    "total_tax": 21.0,
+    "tax_rate": 10,
+    "grand_total": 2310.0,
+    "currency": "MYR",
+    "source_ref": "test-documents/orders/p02_04.png",
+    "confidence": {
+      "po_number": 0.95,
+      "po_date": 0.95,
+      "vendor_name": 0.95,
+      "line_items": 0.92,
+      "grand_total": 0.5
+    },
+    "status": "flagged",
+    "flags": [
+      "conflicting_values"
+    ],
+    "notes": "Two totals printed: 'Grand Total: RM2310.00' and a large 'RM2100.00' below it. grand_total records the labelled Grand Total."
+  },
+  {
     "document_type": "receipt",
-    "vendor_name": "Kedai Runcit",
-    "vendor_sst_id": "J11-1332-220013-0",
+    "vendor_name": "Kafe Mesra",
     "receipt_number": "REC-012",
-    "receipt_date": "2026-10-04",
-    "payment_method": "cash",
-    "amount": 110.8,
+    "receipt_date": "2026-10-05",
+    "payment_method": null,
+    "line_items": [
+      {
+        "description": "Makan tengahari / Lunch set",
+        "amount": 96.0
+      },
+      {
+        "description": "Air teh / Teh tarik",
+        "amount": 12.0
+      }
+    ],
+    "subtotal": 108.0,
     "tax_amount": 10.8,
+    "tax_rate": 10,
+    "amount": 118.8,
     "invoice_reference": null,
     "currency": "MYR",
-    "source_ref": "receipt_002.png",
+    "source_ref": "test-documents/receipts/p02_05.png",
     "confidence": {
-      "vendor_name": 0.9,
-      "receipt_date": 0.9,
-      "amount": 0.9,
-      "payment_method": 0.8
+      "vendor_name": 0.95,
+      "receipt_date": 0.95,
+      "amount": 0.95
+    },
+    "status": "clean",
+    "flags": []
+  },
+  {
+    "document_type": "invoice",
+    "vendor_name": "Tekun Logistik Sdn Bhd",
+    "invoice_number": "INV-2026-014",
+    "invoice_date": "2026-10-05",
+    "due_date": null,
+    "po_reference": "PO-TL-5566",
+    "line_items": [
+      {
+        "description": "Kotak kadbod / Cardboard box",
+        "quantity": 100,
+        "unit_price": 1.8,
+        "tax_amount": null,
+        "tax_rate": null
+      },
+      {
+        "description": "Tape packing / Packing tape",
+        "quantity": 50,
+        "unit_price": 4.5,
+        "tax_amount": null,
+        "tax_rate": null
+      }
+    ],
+    "subtotal": 405.0,
+    "total_tax": 40.5,
+    "tax_rate": 10,
+    "grand_total": 445.5,
+    "currency": "MYR",
+    "source_ref": "test-documents/invoices/p02_06.png",
+    "confidence": {
+      "vendor_name": 0.95,
+      "invoice_number": 0.95,
+      "invoice_date": 0.95,
+      "po_reference": 0.95,
+      "line_items": 0.92,
+      "grand_total": 0.95,
+      "total_tax": 0.95
+    },
+    "status": "clean",
+    "flags": []
+  },
+  {
+    "document_type": "invoice",
+    "vendor_name": "Mesin Teknik Malaysia Sdn Bhd",
+    "invoice_number": "INV-2026-020",
+    "invoice_date": "2026-10-11",
+    "due_date": null,
+    "po_reference": "PO-MT-3535",
+    "line_items": [
+      {
+        "description": "Minyak pelincir / Lubricant oil",
+        "quantity": 40,
+        "unit_price": 22.0,
+        "tax_amount": null,
+        "tax_rate": null
+      },
+      {
+        "description": "Berus logam / Metal brush",
+        "quantity": 20,
+        "unit_price": 6.5,
+        "tax_amount": null,
+        "tax_rate": null
+      }
+    ],
+    "subtotal": 1010.0,
+    "total_tax": 101.0,
+    "tax_rate": 10,
+    "grand_total": 1111.0,
+    "currency": "MYR",
+    "source_ref": "test-documents/invoices/p02_07.png",
+    "confidence": {
+      "vendor_name": 0.95,
+      "invoice_number": 0.95,
+      "invoice_date": 0.95,
+      "po_reference": 0.95,
+      "line_items": 0.92,
+      "grand_total": 0.95,
+      "total_tax": 0.95
+    },
+    "status": "clean",
+    "flags": []
+  },
+  {
+    "document_type": "invoice",
+    "vendor_name": "Fast Courier Sdn Bhd",
+    "invoice_number": "INV-2026-021",
+    "invoice_date": "2026-10-12",
+    "due_date": null,
+    "po_reference": "PO-FC-4646",
+    "line_items": [
+      {
+        "description": "Perkhidmatan penghantaran / Delivery service",
+        "quantity": 35,
+        "unit_price": 18.0,
+        "tax_amount": null,
+        "tax_rate": null
+      },
+      {
+        "description": "Bungkus khas / Special packaging",
+        "quantity": 35,
+        "unit_price": 3.0,
+        "tax_amount": null,
+        "tax_rate": null
+      }
+    ],
+    "subtotal": 735.0,
+    "total_tax": 73.5,
+    "tax_rate": 10,
+    "grand_total": 808.5,
+    "currency": "MYR",
+    "source_ref": "test-documents/invoices/p02_08.png",
+    "confidence": {
+      "vendor_name": 0.95,
+      "invoice_number": 0.95,
+      "invoice_date": 0.95,
+      "po_reference": 0.95,
+      "line_items": 0.92,
+      "grand_total": 0.95,
+      "total_tax": 0.95
+    },
+    "status": "clean",
+    "flags": []
+  },
+  {
+    "document_type": "invoice",
+    "vendor_name": "Cat Warna Sdn Bhd",
+    "invoice_number": "INV-2026-022",
+    "invoice_date": "2026-10-13",
+    "due_date": null,
+    "po_reference": "PO-CW-5757",
+    "line_items": [
+      {
+        "description": "Cat dinding / Wall paint",
+        "quantity": 15,
+        "unit_price": 78.0,
+        "tax_amount": null,
+        "tax_rate": null
+      },
+      {
+        "description": "Berus cat / Paint brush",
+        "quantity": 25,
+        "unit_price": 9.0,
+        "tax_amount": null,
+        "tax_rate": null
+      }
+    ],
+    "subtotal": 1395.0,
+    "total_tax": 139.5,
+    "tax_rate": 10,
+    "grand_total": 1534.5,
+    "currency": "MYR",
+    "source_ref": "test-documents/invoices/p02_09.png",
+    "confidence": {
+      "vendor_name": 0.95,
+      "invoice_number": 0.95,
+      "invoice_date": 0.95,
+      "po_reference": 0.95,
+      "line_items": 0.92,
+      "grand_total": 0.95,
+      "total_tax": 0.95
+    },
+    "status": "clean",
+    "flags": []
+  },
+  {
+    "document_type": "invoice",
+    "vendor_name": "Sistem Komputer MY Sdn Bhd",
+    "invoice_number": "INV-2026-023",
+    "invoice_date": "2026-10-14",
+    "due_date": null,
+    "po_reference": "PO-SK-6868",
+    "line_items": [
+      {
+        "description": "Kabel LAN / LAN cable",
+        "quantity": 30,
+        "unit_price": 16.0,
+        "tax_amount": null,
+        "tax_rate": null
+      },
+      {
+        "description": "Port USB / USB hub",
+        "quantity": 15,
+        "unit_price": 24.0,
+        "tax_amount": null,
+        "tax_rate": null
+      }
+    ],
+    "subtotal": 840.0,
+    "total_tax": 84.0,
+    "tax_rate": 10,
+    "grand_total": 924.0,
+    "currency": "MYR",
+    "source_ref": "test-documents/invoices/p02_10.png",
+    "confidence": {
+      "vendor_name": 0.95,
+      "invoice_number": 0.95,
+      "invoice_date": 0.95,
+      "po_reference": 0.95,
+      "line_items": 0.92,
+      "grand_total": 0.95,
+      "total_tax": 0.95
+    },
+    "status": "clean",
+    "flags": []
+  },
+  {
+    "document_type": "invoice",
+    "vendor_name": "Rumah Kaca Sdn Bhd",
+    "invoice_number": "INV-2026-024",
+    "invoice_date": "2026-10-15",
+    "due_date": null,
+    "po_reference": "PO-RK-7979",
+    "line_items": [
+      {
+        "description": "Cermin tingkap / Window glass",
+        "quantity": 8,
+        "unit_price": 120.0,
+        "tax_amount": null,
+        "tax_rate": null
+      },
+      {
+        "description": "Pelekat cermin / Glass sealant",
+        "quantity": 12,
+        "unit_price": 18.0,
+        "tax_amount": null,
+        "tax_rate": null
+      }
+    ],
+    "subtotal": 1176.0,
+    "total_tax": 117.6,
+    "tax_rate": 10,
+    "grand_total": 1293.6,
+    "currency": "MYR",
+    "source_ref": "test-documents/invoices/p02_11.png",
+    "confidence": {
+      "vendor_name": 0.95,
+      "invoice_number": 0.95,
+      "invoice_date": 0.95,
+      "po_reference": 0.95,
+      "line_items": 0.65,
+      "grand_total": 0.95,
+      "total_tax": 0.95
+    },
+    "status": "flagged",
+    "flags": [
+      "unreadable_field"
+    ],
+    "notes": "Unit prices printed as '120ping' and '18.tiub' (unit text run into the price); recorded 120.00 and 18.00."
+  },
+  {
+    "document_type": "invoice",
+    "vendor_name": "Taman Hijau Landskap Sdn Bhd",
+    "invoice_number": "INV-2026-026",
+    "invoice_date": "2026-10-17",
+    "due_date": null,
+    "po_reference": "PO-TH-9191",
+    "line_items": [
+      {
+        "description": "Baja tumbuhan / Plant fertilizer",
+        "quantity": 30,
+        "unit_price": 28.0,
+        "tax_amount": null,
+        "tax_rate": null
+      },
+      {
+        "description": "Gunting dahan / Branch cutter",
+        "quantity": 10,
+        "unit_price": 35.0,
+        "tax_amount": null,
+        "tax_rate": null
+      }
+    ],
+    "subtotal": 1190.0,
+    "total_tax": 119.0,
+    "tax_rate": 10,
+    "grand_total": 1309.0,
+    "currency": "MYR",
+    "source_ref": "test-documents/invoices/p02_12.png",
+    "confidence": {
+      "vendor_name": 0.95,
+      "invoice_number": 0.95,
+      "invoice_date": 0.95,
+      "po_reference": 0.95,
+      "line_items": 0.92,
+      "grand_total": 0.95,
+      "total_tax": 0.95
+    },
+    "status": "clean",
+    "flags": []
+  },
+  {
+    "document_type": "invoice",
+    "vendor_name": "Central Supply MY Sdn Bhd",
+    "invoice_number": "INV-2026-013",
+    "invoice_date": "2026-10-04",
+    "due_date": null,
+    "po_reference": "PO-CS-3344",
+    "line_items": [
+      {
+        "description": "Sarung tangan getah / Rubber glove 30 box",
+        "quantity": 30,
+        "unit_price": 15.0,
+        "tax_amount": null,
+        "tax_rate": null
+      },
+      {
+        "description": "Pembersih lantai / Floor cleaner",
+        "quantity": 15,
+        "unit_price": 8.0,
+        "tax_amount": null,
+        "tax_rate": null
+      }
+    ],
+    "subtotal": 570.0,
+    "total_tax": 57.0,
+    "tax_rate": 10,
+    "grand_total": 627.0,
+    "currency": "MYR",
+    "source_ref": "test-documents/invoices/p03_01.png",
+    "confidence": {
+      "vendor_name": 0.95,
+      "invoice_number": 0.95,
+      "invoice_date": 0.95,
+      "po_reference": 0.95,
+      "line_items": 0.92,
+      "grand_total": 0.95,
+      "total_tax": 0.95
+    },
+    "status": "clean",
+    "flags": []
+  },
+  {
+    "document_type": "invoice",
+    "vendor_name": "Maju Teknik Sdn Bhd",
+    "invoice_number": "INV-2026-011",
+    "invoice_date": "2026-10-02",
+    "due_date": null,
+    "po_reference": "PO-MT-0987",
+    "line_items": [
+      {
+        "description": "Bekas plastik / Plastic container",
+        "quantity": 50,
+        "unit_price": 2.5,
+        "tax_amount": null,
+        "tax_rate": null
+      },
+      {
+        "description": "Skru besi / Iron screw",
+        "quantity": 200,
+        "unit_price": 0.3,
+        "tax_amount": null,
+        "tax_rate": null
+      }
+    ],
+    "subtotal": 185.0,
+    "total_tax": 18.5,
+    "tax_rate": 10,
+    "grand_total": 203.5,
+    "currency": "MYR",
+    "source_ref": "test-documents/invoices/p03_02.png",
+    "confidence": {
+      "vendor_name": 0.95,
+      "invoice_number": 0.95,
+      "invoice_date": 0.95,
+      "po_reference": 0.95,
+      "line_items": 0.92,
+      "grand_total": 0.95,
+      "total_tax": 0.95
     },
     "status": "clean",
     "flags": []
@@ -859,100 +698,434 @@
   {
     "document_type": "receipt",
     "vendor_name": "Print Express",
-    "vendor_sst_id": "C10-7732-220025-0",
-    "receipt_number": "REC-017",
-    "receipt_date": "2026-10-08",
-    "payment_method": "duitnow",
-    "amount": 270.0,
-    "tax_amount": 20.0,
+    "receipt_number": "REC-011",
+    "receipt_date": "2026-10-04",
+    "payment_method": null,
+    "line_items": [
+      {
+        "description": "Cetakan brosur / Brochure print 500 pcs",
+        "amount": 220.0
+      },
+      {
+        "description": "Laminating / Laminasi",
+        "amount": 30.0
+      }
+    ],
+    "subtotal": 250.0,
+    "tax_amount": 25.0,
+    "tax_rate": 10,
+    "amount": 275.0,
     "invoice_reference": null,
     "currency": "MYR",
-    "source_ref": "receipt_003.png",
+    "source_ref": "test-documents/receipts/p03_03.png",
     "confidence": {
-      "vendor_name": 0.88,
-      "receipt_date": 0.88,
-      "amount": 0.9,
-      "payment_method": 0.8
+      "vendor_name": 0.95,
+      "receipt_date": 0.95,
+      "amount": 0.95
     },
     "status": "clean",
     "flags": []
   },
   {
     "document_type": "receipt",
-    "vendor_name": "Kabel Kakit & Hujan",
+    "vendor_name": "Kedai Kabel & Wayar",
     "receipt_number": "REC-013",
-    "receipt_date": "2026-10-04",
-    "payment_method": "cash",
-    "amount": 553.8,
-    "tax_amount": 50.3,
+    "receipt_date": "2026-10-06",
+    "payment_method": null,
+    "line_items": [
+      {
+        "description": "Wayar elektrik / Electrical wire 10m",
+        "amount": 42.0
+      },
+      {
+        "description": "Penutup soket / Socket cover",
+        "amount": 16.0
+      }
+    ],
+    "subtotal": 58.0,
+    "tax_amount": 5.8,
+    "tax_rate": 10,
+    "amount": 63.8,
     "invoice_reference": null,
     "currency": "MYR",
-    "source_ref": "receipt_004.png",
+    "source_ref": "test-documents/receipts/p03_04.png",
     "confidence": {
-      "vendor_name": 0.88,
-      "receipt_date": 0.88,
-      "amount": 0.9,
-      "payment_method": 0.8
+      "vendor_name": 0.95,
+      "receipt_date": 0.95,
+      "amount": 0.95
     },
     "status": "clean",
     "flags": []
   },
   {
     "document_type": "receipt",
-    "vendor_name": "Kedai Hodong & Perabot",
-    "receipt_number": "REC-014",
-    "receipt_date": "2026-10-04",
-    "payment_method": "cash",
-    "amount": 47.3,
-    "tax_amount": 4.3,
-    "invoice_reference": null,
-    "currency": "MYR",
-    "source_ref": "receipt_005.png",
-    "confidence": {
-      "vendor_name": 0.88,
-      "receipt_date": 0.88,
-      "amount": 0.9,
-      "payment_method": 0.8
-    },
-    "status": "clean",
-    "flags": []
-  },
-  {
-    "document_type": "receipt",
-    "vendor_name": "Kedai Topup & Aki",
+    "vendor_name": "Kedai Hadiah & Pembalut",
     "receipt_number": "REC-015",
-    "receipt_date": "2026-10-04",
-    "payment_method": "card",
-    "amount": 106.7,
-    "tax_amount": 9.7,
+    "receipt_date": "2026-10-08",
+    "payment_method": null,
+    "line_items": [
+      {
+        "description": "Kertas pembalut / Wrapping paper",
+        "amount": 25.0
+      },
+      {
+        "description": "Riben hiasan / Decor ribbon",
+        "amount": 18.0
+      }
+    ],
+    "subtotal": 43.0,
+    "tax_amount": 4.3,
+    "tax_rate": 10,
+    "amount": 47.3,
     "invoice_reference": null,
     "currency": "MYR",
-    "source_ref": "receipt_006.png",
+    "source_ref": "test-documents/receipts/p03_05.png",
     "confidence": {
-      "vendor_name": 0.88,
-      "receipt_date": 0.88,
-      "amount": 0.9,
-      "payment_method": 0.75
+      "vendor_name": 0.95,
+      "receipt_date": 0.95,
+      "amount": 0.95
     },
     "status": "clean",
     "flags": []
   },
   {
     "document_type": "receipt",
-    "vendor_name": "Kafe Buku & Majalah",
+    "vendor_name": "Kedai Tayar & Pam",
     "receipt_number": "REC-016",
-    "receipt_date": "2026-10-04",
-    "payment_method": "cash",
-    "amount": 101.5,
-    "tax_amount": 16.5,
+    "receipt_date": "2026-10-09",
+    "payment_method": null,
+    "line_items": [
+      {
+        "description": "Pam tayar / Tyre pump",
+        "amount": 75.0
+      },
+      {
+        "description": "Pembaikan injap / Valve repair",
+        "amount": 22.0
+      }
+    ],
+    "subtotal": 97.0,
+    "tax_amount": 9.7,
+    "tax_rate": 10,
+    "amount": 106.7,
     "invoice_reference": null,
     "currency": "MYR",
-    "source_ref": "receipt_007.png",
+    "source_ref": "test-documents/receipts/p03_06.png",
     "confidence": {
-      "vendor_name": 0.88,
-      "receipt_date": 0.88,
-      "amount": 0.9,
-      "payment_method": 0.8
+      "vendor_name": 0.95,
+      "receipt_date": 0.95,
+      "amount": 0.95
+    },
+    "status": "clean",
+    "flags": []
+  },
+  {
+    "document_type": "receipt",
+    "vendor_name": "Kedai Buku & Alat Tulis",
+    "receipt_number": "REC-017",
+    "receipt_date": "2026-10-10",
+    "payment_method": null,
+    "line_items": [
+      {
+        "description": "Buku nota / Notebook",
+        "amount": 36.0
+      },
+      {
+        "description": "Pemadam / Eraser pack",
+        "amount": 12.0
+      }
+    ],
+    "subtotal": 48.0,
+    "tax_amount": 4.8,
+    "tax_rate": 10,
+    "amount": 52.8,
+    "invoice_reference": null,
+    "currency": "MYR",
+    "source_ref": "test-documents/receipts/p03_07.png",
+    "confidence": {
+      "vendor_name": 0.95,
+      "receipt_date": 0.95,
+      "amount": 0.95
+    },
+    "status": "clean",
+    "flags": []
+  },
+  {
+    "document_type": "receipt",
+    "vendor_name": "Kedai Minyak & Gas",
+    "receipt_number": "REC-018",
+    "receipt_date": "2026-10-11",
+    "payment_method": null,
+    "line_items": [
+      {
+        "description": "Minyak enjin / Engine oil 4L",
+        "amount": 120.0
+      },
+      {
+        "description": "Penapis minyak / Oil filter",
+        "amount": 45.0
+      }
+    ],
+    "subtotal": 165.0,
+    "tax_amount": 16.5,
+    "tax_rate": 10,
+    "amount": 181.5,
+    "invoice_reference": null,
+    "currency": "MYR",
+    "source_ref": "test-documents/receipts/p03_08.png",
+    "confidence": {
+      "vendor_name": 0.95,
+      "receipt_date": 0.95,
+      "amount": 0.95
+    },
+    "status": "clean",
+    "flags": []
+  },
+  {
+    "document_type": "order",
+    "po_number": "PO-2026-A03",
+    "po_date": "2026-10-06",
+    "vendor_name": "Lumi Elektrik Sdn Bhd",
+    "buyer_name": "Bahagian Kejuruteraan",
+    "delivery_date": "2026-10-25",
+    "line_items": [
+      {
+        "description": "Mentol LED / LED bulb",
+        "quantity": 80,
+        "unit_price": 6.2,
+        "tax_amount": null,
+        "tax_rate": null
+      },
+      {
+        "description": "Suis lampu / Light switch",
+        "quantity": 40,
+        "unit_price": 9.0,
+        "tax_amount": null,
+        "tax_rate": null
+      }
+    ],
+    "subtotal": 856.0,
+    "total_tax": 85.6,
+    "tax_rate": 10,
+    "grand_total": 941.6,
+    "currency": "MYR",
+    "source_ref": "test-documents/orders/p03_09.png",
+    "confidence": {
+      "po_number": 0.95,
+      "po_date": 0.95,
+      "vendor_name": 0.95,
+      "line_items": 0.92,
+      "grand_total": 0.95
+    },
+    "status": "clean",
+    "flags": []
+  },
+  {
+    "document_type": "order",
+    "po_number": "PO-2026-A04",
+    "po_date": "2026-10-12",
+    "vendor_name": "Taman Hijau Landskap Sdn Bhd",
+    "buyer_name": "Bahagian Landskap",
+    "delivery_date": "2026-11-02",
+    "line_items": [
+      {
+        "description": "Baja tumbuhan / Plant fertilizer",
+        "quantity": 30,
+        "unit_price": 28.0,
+        "tax_amount": null,
+        "tax_rate": null
+      },
+      {
+        "description": "Cunting dahan / Branch cutter",
+        "quantity": 10,
+        "unit_price": 35.0,
+        "tax_amount": null,
+        "tax_rate": null
+      }
+    ],
+    "subtotal": 1190.0,
+    "total_tax": 119.0,
+    "tax_rate": 10,
+    "grand_total": 1309.0,
+    "currency": "MYR",
+    "source_ref": "test-documents/orders/p03_10.png",
+    "confidence": {
+      "po_number": 0.95,
+      "po_date": 0.95,
+      "vendor_name": 0.95,
+      "line_items": 0.92,
+      "grand_total": 0.5
+    },
+    "status": "flagged",
+    "flags": [
+      "conflicting_values"
+    ],
+    "notes": "Two totals printed: 'Grand Total: RM1309.00' and a large 'RM1390.00' below it. grand_total records the labelled Grand Total."
+  },
+  {
+    "document_type": "invoice",
+    "vendor_name": "Mesin Teknik Malaysia Sdn Bhd",
+    "invoice_number": "INV-2026-020",
+    "invoice_date": "2026-10-11",
+    "due_date": null,
+    "po_reference": "PO-MT-3535",
+    "line_items": [
+      {
+        "description": "Minyak pelincir / Lubricant oil",
+        "quantity": 40,
+        "unit_price": 22.0,
+        "tax_amount": null,
+        "tax_rate": null
+      },
+      {
+        "description": "Berus logam / Metal brush",
+        "quantity": 20,
+        "unit_price": 6.5,
+        "tax_amount": null,
+        "tax_rate": null
+      }
+    ],
+    "subtotal": 1010.0,
+    "total_tax": 101.0,
+    "tax_rate": 10,
+    "grand_total": 1111.0,
+    "currency": "MYR",
+    "source_ref": "test-documents/invoices/p03_11.png",
+    "confidence": {
+      "vendor_name": 0.95,
+      "invoice_number": 0.95,
+      "invoice_date": 0.95,
+      "po_reference": 0.95,
+      "line_items": 0.92,
+      "grand_total": 0.95,
+      "total_tax": 0.95
+    },
+    "status": "clean",
+    "flags": []
+  },
+  {
+    "document_type": "invoice",
+    "vendor_name": "Tekno Supply Sdn Bhd",
+    "invoice_number": "INV-2026-032",
+    "invoice_date": "2026-10-23",
+    "due_date": null,
+    "po_reference": "PO-TS-1301",
+    "line_items": [
+      {
+        "description": "Kabel USB / USB cable",
+        "quantity": 20,
+        "unit_price": 3.0,
+        "tax_amount": null,
+        "tax_rate": null
+      },
+      {
+        "description": "Penanda / Marker pen",
+        "quantity": 15,
+        "unit_price": 2.0,
+        "tax_amount": null,
+        "tax_rate": null
+      }
+    ],
+    "subtotal": 90.0,
+    "total_tax": 9.0,
+    "tax_rate": 10,
+    "grand_total": 99.0,
+    "currency": "MYR",
+    "source_ref": "test-documents/invoices/p03_12.png",
+    "confidence": {
+      "vendor_name": 0.95,
+      "invoice_number": 0.95,
+      "invoice_date": 0.95,
+      "po_reference": 0.95,
+      "line_items": 0.92,
+      "grand_total": 0.95,
+      "total_tax": 0.95
+    },
+    "status": "clean",
+    "flags": [],
+    "notes": "'Subtotal:' label has no value beside it; 90.00 is printed above it in the amount column."
+  },
+  {
+    "document_type": "invoice",
+    "vendor_name": "Buku Nusa Enterprise",
+    "invoice_number": "INV-2026-033",
+    "invoice_date": "2026-10-23",
+    "due_date": null,
+    "po_reference": "PO-BN-1302",
+    "line_items": [
+      {
+        "description": "Buku nota / Notebook",
+        "quantity": 10,
+        "unit_price": 8.0,
+        "tax_amount": null,
+        "tax_rate": null
+      },
+      {
+        "description": "Pemadam / Eraser",
+        "quantity": 30,
+        "unit_price": 0.5,
+        "tax_amount": null,
+        "tax_rate": null
+      }
+    ],
+    "subtotal": 95.0,
+    "total_tax": 9.5,
+    "tax_rate": 10,
+    "grand_total": 104.5,
+    "currency": "MYR",
+    "source_ref": "test-documents/invoices/p03_13.png",
+    "confidence": {
+      "vendor_name": 0.95,
+      "invoice_number": 0.95,
+      "invoice_date": 0.95,
+      "po_reference": 0.95,
+      "line_items": 0.92,
+      "grand_total": 0.95,
+      "total_tax": 0.5
+    },
+    "status": "flagged",
+    "flags": [
+      "conflicting_values"
+    ],
+    "notes": "SST printed twice: 'SST 10%: 9.50' and 9.00 in the amount column. total_tax records the labelled 9.50."
+  },
+  {
+    "document_type": "invoice",
+    "vendor_name": "Bersih Gadget Sdn Bhd",
+    "invoice_number": "INV-2026-034",
+    "invoice_date": "2026-10-24",
+    "due_date": null,
+    "po_reference": "PO-BG-1303",
+    "line_items": [
+      {
+        "description": "Cecair pembersih / Cleaning liquid",
+        "quantity": 6,
+        "unit_price": 12.0,
+        "tax_amount": null,
+        "tax_rate": null
+      },
+      {
+        "description": "Kain lap / Cloth wipe",
+        "quantity": 12,
+        "unit_price": 4.0,
+        "tax_amount": null,
+        "tax_rate": null
+      }
+    ],
+    "subtotal": 120.0,
+    "total_tax": 12.0,
+    "tax_rate": 10,
+    "grand_total": 132.0,
+    "currency": "MYR",
+    "source_ref": "test-documents/invoices/p03_14.png",
+    "confidence": {
+      "vendor_name": 0.95,
+      "invoice_number": 0.95,
+      "invoice_date": 0.95,
+      "po_reference": 0.95,
+      "line_items": 0.92,
+      "grand_total": 0.95,
+      "total_tax": 0.95
     },
     "status": "clean",
     "flags": []
@@ -962,17 +1135,28 @@
     "vendor_name": "Kedai Makan Mesra",
     "receipt_number": "REC-031",
     "receipt_date": "2026-10-24",
-    "payment_method": "cash",
-    "amount": 22.0,
+    "payment_method": null,
+    "line_items": [
+      {
+        "description": "Air Oren / Orange juice",
+        "amount": 8.0
+      },
+      {
+        "description": "Roti canai / Flatbread",
+        "amount": 12.0
+      }
+    ],
+    "subtotal": 20.0,
     "tax_amount": 2.0,
+    "tax_rate": 10,
+    "amount": 22.0,
     "invoice_reference": null,
     "currency": "MYR",
-    "source_ref": "receipt_008.png",
+    "source_ref": "test-documents/receipts/p04_01.png",
     "confidence": {
-      "vendor_name": 0.9,
-      "receipt_date": 0.9,
-      "amount": 0.9,
-      "payment_method": 0.8
+      "vendor_name": 0.95,
+      "receipt_date": 0.95,
+      "amount": 0.95
     },
     "status": "clean",
     "flags": []
@@ -982,17 +1166,150 @@
     "vendor_name": "Kedai Alat Tulis Cepat",
     "receipt_number": "REC-032",
     "receipt_date": "2026-10-24",
-    "payment_method": "duitnow",
-    "amount": 55.0,
+    "payment_method": null,
+    "line_items": [
+      {
+        "description": "Gunting / Scissors",
+        "amount": 14.0
+      },
+      {
+        "description": "Kertas A4 / A4 Paper",
+        "amount": 36.0
+      }
+    ],
+    "subtotal": 50.0,
     "tax_amount": 5.0,
+    "tax_rate": 10,
+    "amount": 55.0,
     "invoice_reference": null,
     "currency": "MYR",
-    "source_ref": "receipt_009.png",
+    "source_ref": "test-documents/receipts/p04_02.png",
     "confidence": {
-      "vendor_name": 0.9,
-      "receipt_date": 0.9,
-      "amount": 0.9,
-      "payment_method": 0.8
+      "vendor_name": 0.95,
+      "receipt_date": 0.95,
+      "amount": 0.95
+    },
+    "status": "clean",
+    "flags": []
+  },
+  {
+    "document_type": "order",
+    "po_number": "PO-2026-A06",
+    "po_date": "2026-10-25",
+    "vendor_name": "Tekno Supply Sdn Bhd",
+    "buyer_name": "Bahagian Pentadbiran",
+    "delivery_date": "2026-11-25",
+    "line_items": [
+      {
+        "description": "Kabel USB / USB cable",
+        "quantity": 50,
+        "unit_price": 3.0,
+        "tax_amount": null,
+        "tax_rate": null
+      },
+      {
+        "description": "Penanda / Marker pen",
+        "quantity": 40,
+        "unit_price": 2.0,
+        "tax_amount": null,
+        "tax_rate": null
+      }
+    ],
+    "subtotal": 230.0,
+    "total_tax": 23.0,
+    "tax_rate": 10,
+    "grand_total": 253.0,
+    "currency": "MYR",
+    "source_ref": "test-documents/orders/p04_03.png",
+    "confidence": {
+      "po_number": 0.95,
+      "po_date": 0.95,
+      "vendor_name": 0.95,
+      "line_items": 0.92,
+      "grand_total": 0.95
+    },
+    "status": "flagged",
+    "flags": [
+      "conflicting_values"
+    ],
+    "notes": "An unlabelled '49.00' is printed under the subtotal."
+  },
+  {
+    "document_type": "order",
+    "po_number": "PO-2026-A07",
+    "po_date": "2026-10-25",
+    "vendor_name": "Buku Nusa Enterprise",
+    "buyer_name": "Bahapian Operasi",
+    "delivery_date": "2026-11-28",
+    "line_items": [
+      {
+        "description": "Buku nota / Notebook",
+        "quantity": 30,
+        "unit_price": 8.0,
+        "tax_amount": null,
+        "tax_rate": null
+      },
+      {
+        "description": "Pemadam / Eraser",
+        "quantity": 80,
+        "unit_price": 0.5,
+        "tax_amount": null,
+        "tax_rate": null
+      }
+    ],
+    "subtotal": 280.0,
+    "total_tax": 28.0,
+    "tax_rate": 10,
+    "grand_total": 308.0,
+    "currency": "MYR",
+    "source_ref": "test-documents/orders/p04_04.png",
+    "confidence": {
+      "po_number": 0.95,
+      "po_date": 0.95,
+      "vendor_name": 0.95,
+      "line_items": 0.92,
+      "grand_total": 0.95
+    },
+    "status": "clean",
+    "flags": []
+  },
+  {
+    "document_type": "invoice",
+    "vendor_name": "Logam Maju Sdn Bhd",
+    "invoice_number": "INV-2026-035",
+    "invoice_date": "2026-10-25",
+    "due_date": null,
+    "po_reference": "PO-LM-1304",
+    "line_items": [
+      {
+        "description": "Skru / Screw pack",
+        "quantity": 25,
+        "unit_price": 6.0,
+        "tax_amount": null,
+        "tax_rate": null
+      },
+      {
+        "description": "Nat / Nut pack",
+        "quantity": 20,
+        "unit_price": 5.0,
+        "tax_amount": null,
+        "tax_rate": null
+      }
+    ],
+    "subtotal": 250.0,
+    "total_tax": 25.0,
+    "tax_rate": 10,
+    "grand_total": 275.0,
+    "currency": "MYR",
+    "source_ref": "test-documents/invoices/p04_05.png",
+    "confidence": {
+      "vendor_name": 0.95,
+      "invoice_number": 0.95,
+      "invoice_date": 0.95,
+      "po_reference": 0.95,
+      "line_items": 0.92,
+      "grand_total": 0.95,
+      "total_tax": 0.95
     },
     "status": "clean",
     "flags": []
@@ -1002,209 +1319,81 @@
     "vendor_name": "Kedai Hardware Murah",
     "receipt_number": "REC-033",
     "receipt_date": "2026-10-26",
-    "payment_method": "cash",
-    "amount": 44.0,
+    "payment_method": null,
+    "line_items": [
+      {
+        "description": "Paku / Nail box",
+        "amount": 24.0
+      },
+      {
+        "description": "Tali plastik / Plastic rope",
+        "amount": 16.0
+      }
+    ],
+    "subtotal": 40.0,
     "tax_amount": 4.0,
+    "tax_rate": 10,
+    "amount": 44.0,
     "invoice_reference": null,
     "currency": "MYR",
-    "source_ref": "receipt_010.png",
+    "source_ref": "test-documents/receipts/p04_06.png",
     "confidence": {
-      "vendor_name": 0.9,
-      "receipt_date": 0.9,
-      "amount": 0.9,
-      "payment_method": 0.8
+      "vendor_name": 0.95,
+      "receipt_date": 0.95,
+      "amount": 0.95
     },
     "status": "clean",
     "flags": []
   },
   {
-    "document_type": "order",
-    "po_number": "PB-2026-003",
-    "po_date": "2026-08-25",
-    "vendor_name": "Tukang Kebun, Sdn. Bhd",
-    "buyer_name": "Bahagian Pentadbiran Sdn Bhd",
-    "delivery_date": "2026-08-26",
+    "document_type": "invoice",
+    "vendor_name": "Lampu Terang Sdn Bhd",
+    "invoice_number": "INV-2026-036",
+    "invoice_date": "2026-10-26",
+    "due_date": null,
+    "po_reference": "PO-LT-1305",
     "line_items": [
       {
-        "description": "Top landscaping / Landscaping work",
-        "quantity": 1,
-        "unit_price": 6900.0,
-        "tax_amount": 0.0,
-        "tax_rate": 0
-      }
-    ],
-    "subtotal": 6900.0,
-    "total_tax": 450.0,
-    "grand_total": 7350.0,
-    "currency": "MYR",
-    "source_ref": "po_001.png",
-    "confidence": {
-      "po_number": 0.95,
-      "po_date": 0.9,
-      "vendor_name": 0.9,
-      "line_items": 0.88,
-      "grand_total": 0.95
-    },
-    "status": "clean",
-    "flags": []
-  },
-  {
-    "document_type": "order",
-    "po_number": "PB-2026-006",
-    "po_date": "2026-10-29",
-    "vendor_name": "Kekalkan Operasional",
-    "buyer_name": "Bahagian Pentadbiran",
-    "delivery_date": "2026-10-30",
-    "line_items": [
-      {
-        "description": "WiFi router",
-        "quantity": 5,
-        "unit_price": 30.0,
-        "tax_amount": 9.0,
-        "tax_rate": 6
+        "description": "Mentol LED / LED bulb",
+        "quantity": 12,
+        "unit_price": 15.0,
+        "tax_amount": null,
+        "tax_rate": null
       },
       {
-        "description": "Kabel Cat6",
-        "quantity": 20,
-        "unit_price": 6.0,
-        "tax_amount": 7.2,
-        "tax_rate": 6
-      },
-      {
-        "description": "Light switch",
-        "quantity": 10,
-        "unit_price": 0.5,
-        "tax_amount": 0.3,
-        "tax_rate": 6
-      }
-    ],
-    "subtotal": 270.0,
-    "total_tax": 60.0,
-    "grand_total": 330.0,
-    "currency": "MYR",
-    "source_ref": "po_002.png",
-    "confidence": {
-      "po_number": 0.95,
-      "po_date": 0.9,
-      "vendor_name": 0.88,
-      "line_items": 0.9,
-      "grand_total": 0.95
-    },
-    "status": "clean",
-    "flags": []
-  },
-  {
-    "document_type": "order",
-    "po_number": "PB-2026-001",
-    "po_date": "2026-10-15",
-    "vendor_name": "Permata Niaga Sdn Bhd",
-    "buyer_name": "Bahagian Kewangan",
-    "delivery_date": "2026-10-17",
-    "line_items": [
-      {
-        "description": "Wireless presenter",
-        "quantity": 1,
-        "unit_price": 240.0,
-        "tax_amount": 14.4,
-        "tax_rate": 6
-      },
-      {
-        "description": "Smoke detector",
-        "quantity": 1,
+        "description": "Mentol LED / LED bulb",
+        "quantity": null,
         "unit_price": 0.0,
-        "tax_amount": 0.0,
-        "tax_rate": 6
+        "tax_amount": null,
+        "tax_rate": null
+      },
+      {
+        "description": "Suis lampu / Light switch",
+        "quantity": 8,
+        "unit_price": 10.0,
+        "tax_amount": null,
+        "tax_rate": null
       }
     ],
-    "subtotal": 240.0,
+    "subtotal": 260.0,
     "total_tax": 26.0,
-    "grand_total": 390.0,
+    "tax_rate": 10,
+    "grand_total": 286.0,
     "currency": "MYR",
-    "source_ref": "po_003.png",
+    "source_ref": "test-documents/invoices/p04_07.png",
     "confidence": {
-      "po_number": 0.95,
-      "po_date": 0.9,
-      "vendor_name": 0.9,
-      "line_items": 0.9,
-      "grand_total": 0.95
+      "vendor_name": 0.8,
+      "invoice_number": 0.8,
+      "invoice_date": 0.8,
+      "po_reference": 0.75,
+      "line_items": 0.6,
+      "grand_total": 0.95,
+      "total_tax": 0.95
     },
-    "status": "clean",
-    "flags": []
-  },
-  {
-    "document_type": "order",
-    "po_number": "PO-2026-406",
-    "po_date": "2026-10-29",
-    "vendor_name": "Tekno Supply Sdn Bhd",
-    "buyer_name": "Bahagian Pentadbiran",
-    "delivery_date": "2026-11-25",
-    "line_items": [
-      {
-        "description": "Kabel USB / USB cable",
-        "quantity": 50,
-        "unit_price": 3.0,
-        "tax_amount": 9.0,
-        "tax_rate": 6
-      },
-      {
-        "description": "Penyapu / Marker pen",
-        "quantity": 50,
-        "unit_price": 0.8,
-        "tax_amount": 2.4,
-        "tax_rate": 6
-      }
+    "status": "flagged",
+    "flags": [
+      "blurry_image"
     ],
-    "subtotal": 230.0,
-    "total_tax": 23.0,
-    "grand_total": 253.0,
-    "currency": "MYR",
-    "source_ref": "po_004.png",
-    "confidence": {
-      "po_number": 0.95,
-      "po_date": 0.9,
-      "vendor_name": 0.88,
-      "line_items": 0.88,
-      "grand_total": 0.95
-    },
-    "status": "clean",
-    "flags": []
-  },
-  {
-    "document_type": "order",
-    "po_number": "PO-2026-407",
-    "po_date": "2026-10-29",
-    "vendor_name": "Buku Niaga Enterprise",
-    "buyer_name": "Bahagian Operasi",
-    "delivery_date": "2026-11-25",
-    "line_items": [
-      {
-        "description": "Buku nota / Notebook",
-        "quantity": 30,
-        "unit_price": 8.0,
-        "tax_amount": 14.4,
-        "tax_rate": 6
-      },
-      {
-        "description": "Petunda / Eraser",
-        "quantity": 50,
-        "unit_price": 0.0,
-        "tax_amount": 0.0,
-        "tax_rate": 6
-      }
-    ],
-    "subtotal": 240.0,
-    "total_tax": 28.0,
-    "grand_total": 268.0,
-    "currency": "MYR",
-    "source_ref": "po_005.png",
-    "confidence": {
-      "po_number": 0.95,
-      "po_date": 0.9,
-      "vendor_name": 0.88,
-      "line_items": 0.88,
-      "grand_total": 0.95
-    },
-    "status": "clean",
-    "flags": []
+    "notes": "Low-resolution scan. 'Mentol LED / LED bulb' is printed twice; the second line has no quantity, unit price '.00' and amount 0.00."
   }
 ]

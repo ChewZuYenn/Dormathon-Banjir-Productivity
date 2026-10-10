@@ -35,6 +35,36 @@
       "type": ["number", "null"],
       "description": "SST portion if broken out on receipt"
     },
+    "subtotal": {
+      "type": ["number", "null"],
+      "description": "Subtotal before tax if printed"
+    },
+    "tax_rate": {
+      "type": ["number", "null"],
+      "description": "SST rate as printed (e.g. 'SST 10%' -> 10). Recorded, not validated."
+    },
+    "line_items": {
+      "type": "array",
+      "description": "Items as printed. Receipts print one price per line, so each item has an amount, not qty x unit price.",
+      "items": {
+        "type": "object",
+        "required": ["description", "amount"],
+        "properties": {
+          "description": { "type": "string" },
+          "amount": { "type": "number", "minimum": 0 }
+        }
+      }
+    },
+    "direction": {
+      "type": "string",
+      "enum": ["in", "out"],
+      "default": "out",
+      "description": "'in' only if the receipt was issued BY the business (a sale). Purchase receipts are 'out'."
+    },
+    "notes": {
+      "type": ["string", "null"],
+      "description": "What is on the page when it is contradictory or unreadable. Logistics describes; it never picks."
+    },
     "invoice_reference": {
       "type": ["string", "null"],
       "description": "Linked invoice number if present"

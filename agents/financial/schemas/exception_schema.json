@@ -42,7 +42,8 @@
               "invalid_sst_rate",
               "unknown_document_type",
               "uncategorised",
-              "no_due_date"
+              "no_due_date",
+              "conflicting_printed_values"
             ],
             "description": "Exception type — matches the types defined in rules/rules.md"
           },
