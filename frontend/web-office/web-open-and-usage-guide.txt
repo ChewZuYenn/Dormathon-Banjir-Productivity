@@ -6,7 +6,7 @@ Godot那版是固定镜头桌面演示，没有鼠标控制。这份则是浏览
 
 如何打开
 当前预览地址：http://127.0.0.1:8788
-若预览服务已停止，双击“打开3D网页.command”，保持终端窗口开启，再在浏览器打开上述地址。
+若预览服务已停止，双击“open-3d-web.command”，保持终端窗口开启，再在浏览器打开上述地址。
 按 Ctrl+C 停止本地服务。如果端口已占用，先打开该地址确认是否已有网页，不要重复启动。
 不能直接双击index.html：本地GLB和ES模块需要通过HTTP加载。
 不要只拷贝index.html；需保留整个web-office目录，包含assets、vendor、styles.css、app.js。
@@ -35,7 +35,7 @@ styles.css：暖色界面与窄屏布局。
 app.js：GLB加载、真实镜头交互及明确标注的模拟状态。
 assets/office.glb：同一办公室模型，原模型未改。
 vendor：Three.js 0.180.0及OrbitControls、GLTFLoader，本地依赖含MIT许可证。
-浏览器验收结果.json：实际自动化浏览器交互检查。
+browser-acceptance-results.json：实际自动化浏览器交互检查。
 
 模型和效果
 沿用Godot项目内的GLB（858Mesh）。WebGL灯光与Blender/Cycles不会逐像素一致，不改变原blend/Godot文件。

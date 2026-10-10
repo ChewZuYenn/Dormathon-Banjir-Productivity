@@ -47,7 +47,7 @@
       loading.classList.remove("hidden");
       loading.classList.add("error");
       loading.querySelector("strong").textContent = "请通过本地网页地址打开";
-      document.querySelector("#loading-detail").textContent = "双击“打开3D网页.command”，再访问 http://127.0.0.1:8788。请保留完整的 web-office 文件夹，并使用支持 WebGL 的现代浏览器。";
+      document.querySelector("#loading-detail").textContent = "双击“open-3d-web.command”，再访问 http://127.0.0.1:8788。请保留完整的 web-office 文件夹，并使用支持 WebGL 的现代浏览器。";
       document.querySelector("#render-status").textContent = "网页脚本未加载";
     }
     if (location.protocol === "file:") moduleLoadFailed();

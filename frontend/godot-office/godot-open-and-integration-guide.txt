@@ -6,7 +6,7 @@
 1. 打开 Godot 项目管理器，点击“导入”，选择该目录内 project.godot。
 2. 等待 assets/office.glb 首次导入，点击“编辑”。
 3. F5 运行项目；打开 scenes/main.tscn 后也可按 F6 运行当前场景。
-4. F8 停止运行。也可以双击“打开办公室.command”打开项目编辑器。
+4. F8 停止运行。也可以双击“open-office.command”打开项目编辑器。
 本轮没有导出 macOS 独立游戏应用；这是 Godot 源项目，需 Godot 4.x。
 
 二、先检查场景，再检查 Agent
@@ -21,7 +21,7 @@ Godot 实时渲染不会与 Cycles 一模一样，Blender 程序化布纹没有�
 你提供的 .webloc 是 GitHub 链接快捷方式，不是 Python 程序本身。
 源仓库：https://github.com/ChewZuYenn/Dormathon-Banjir-Productivity
 固定版本：fdb1d58c8bd386a79c947c62f397dedc818a59f7
-已审查并复制三个 agents 目录到 bridge/vendor/agents；没有修改远程仓库，也没有执行它的安装脚本。
+桥接直接使用本仓库根目录的 agents/（worker.py 中 VENDOR）；没有修改远程仓库，也没有执行它的安装脚本。
 本机已准备隔离 Python 3.13.12 环境，安装 pydantic 2.14.0；没有全局安装依赖。
 
 操作：
@@ -102,7 +102,7 @@ Python真实模块测试：
 "/Users/xuanyuwu/Downloads/Godot.app/Contents/MacOS/Godot" --headless --path "/Users/xuanyuwu/WorkBuddy AI/2026-10-10-15-19-51/outputs/godot-office" --script res://tests/test_integration.gd
 
 十、文件包与授权
-godot-office项目文件夹完整打包于办公室-Godot-Agent接入版.zip，解压后导入project.godot。
+godot-office项目文件夹完整打包于office-3d/office-godot-agent-integration.zip，解压后导入project.godot。
 包内包含固定版本Agent代码和作者原README等说明；原仓库未发现LICENSE，未判断其公开再分发许可。本包仅交给你做本地演示，发布或商业使用前需核实作者授权。
 不包含Godot应用或Python虚拟环境；启动command当前针对你的机器路径。
 换机器时使用Godot项目管理器导入；按官方Python方式准备隔离环境安装bridge/requirements.txt（pydantic），用该环境python运行bridge/server.py。

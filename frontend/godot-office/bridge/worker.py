@@ -6,7 +6,8 @@ import sys
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parent
-VENDOR = BASE / "vendor/agents"
+# Use the repo's live agents/ (bridge -> godot-office -> frontend -> repo root)
+VENDOR = BASE.parents[2] / "agents"
 
 
 def emit(agent, status, step):

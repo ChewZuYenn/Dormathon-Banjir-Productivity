@@ -1,0 +1,6 @@
+# Godot import cache
+.godot/
+
+# Bridge job output (keep the committed sample run)
+bridge/runs/*
+!bridge/runs/sample/
