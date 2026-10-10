@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build output
+dist/
+build/
+
+# Test document images (if sensitive — uncomment if needed)
+# test-documents/bad/
+
+# Frontend HTML (handled separately by frontend teammate)
+*.html
+
+# Env
+.env
+.env.local
