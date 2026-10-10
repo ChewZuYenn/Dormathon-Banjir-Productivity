@@ -232,3 +232,38 @@ document.querySelector("#task-form").addEventListener("submit", async event => {
     document.querySelector("#start-button").disabled = false;
   }
 });
+
+// === Interactive checklist checkboxes — persist to localStorage ===
+(function() {
+  const CHECK_KEY = "banjir-checklist-state";
+  const totalChecks = document.querySelectorAll('.check-item input[type="checkbox"][data-check]').length;
+
+  // Load saved state
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(CHECK_KEY) || "{}"); } catch(e) {}
+
+  document.querySelectorAll('.check-item input[type="checkbox"][data-check]').forEach(cb => {
+    const id = cb.getAttribute("data-check");
+    if (saved[id]) {
+      cb.checked = true;
+      cb.closest(".check-item").classList.add("checked");
+    }
+    cb.addEventListener("change", () => {
+      if (cb.checked) cb.closest(".check-item").classList.add("checked");
+      else cb.closest(".check-item").classList.remove("checked");
+      saved[id] = cb.checked;
+      try { localStorage.setItem(CHECK_KEY, JSON.stringify(saved)); } catch(e) {}
+      updateProgress();
+    });
+  });
+
+  function updateProgress() {
+    const checked = document.querySelectorAll('.check-item input[type="checkbox"]:checked').length;
+    const pct = totalChecks > 0 ? Math.round(checked / totalChecks * 100) : 0;
+    const fill = document.getElementById("check-progress-fill");
+    const text = document.getElementById("check-progress-text");
+    if (fill) fill.style.width = pct + "%";
+    if (text) text.textContent = checked + " / " + totalChecks + " fixed (" + pct + "%)";
+  }
+  updateProgress();
+})();
