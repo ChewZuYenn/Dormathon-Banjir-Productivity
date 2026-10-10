@@ -1,0 +1,67 @@
+小小办公室 · Blender 基础模型（阶段 01）
+
+本次文件
+1. office-blockout.blend：可编辑的原生 Blender 场景。
+2. office-blockout-preview.png：该场景真实渲染出的布局预览。
+3. build_office.py：重建基础场景的脚本。
+4. Blender打开与修改说明.txt：本说明。
+
+一、打开
+在 Blender 中选择 File > Open（文件 > 打开），选中 office-blockout.blend。
+不需要安装插件，不依赖外部贴图。
+使用 Blender 5.4.0 Alpha 制作；建议用此版本或后续兼容版本打开。
+
+二、看镜头和渲染
+小键盘 0：切换到已设置的斜前方布局镜头。
+没有小键盘：顶部菜单 View > Cameras > Active Camera。
+鼠标中键拖动：旋转观察模型；滚轮：缩放。
+F12：重新渲染；Fn + F12 可用于部分 Mac 键盘。
+当前使用 Cycles CPU，64 samples、去噪，1600×900（16:9）。
+实际渲染时间取决于机器。
+
+三、移动整套工位
+在右上角 Outliner 中找到并选择以下 Empty 根对象：
+Boss_ROOT / move entire workstation：老板整套工位。
+Assistant_ROOT / move entire workstation：助理整套工位。
+按 G 移动，随后按 X 或 Y 限定方向；R 旋转，S 缩放。
+桌子、电脑、椅子、坐姿占位都跟随该根对象移动。
+仅移动一个组件时，请在相应集合中选择具体组件。
+按 N 打开右侧 Item 面板，可以直接输入 Location / Rotation / Scale。
+移动或缩放占位人物时，建议选择对应 POSE_ROOT，不要只选一条腿。
+
+四、编辑家具和房间
+各组件都是独立原生 Mesh，可选中后按 Tab 进入 Edit Mode。
+已保留 Bevel 圆角修改器，修改器面板可调整圆角宽度。
+房间左墙窗洞由独立墙块构成；窗框和窗台单独建模。
+Scene 使用米制单位。
+模型集合：
+01_Room：地面、墙板、地毯。
+02_Boss_Workstation：老板桌、电脑、文件和椅子。
+03_Assistant_Workstation：助理桌、电脑、文件和椅子。
+04_Bookcase：书架、空白书籍和收纳盒。
+05_Window：窗框、窗台、占位窗帘和淡色窗口插片。
+06_Plants_Props：简单植物和空白装饰画。
+07_Pose_Placeholders：坐姿占位，不是最终卡通人物。
+08_Cameras：主布局镜头，以及较低角度的第二镜头。
+09_Preview_Lights：仅供第一阶段预览的柔和灯光。
+10_Studio_Ground：棚拍背景地面；不需要时可关闭该集合。
+
+五、通过脚本改布局
+先另存你的 .blend，脚本重新运行会清空当前场景，丢弃未保存修改。
+Blender > Scripting > Text Editor > Open，打开 build_office.py。
+修改脚本最上方：ROOM_WIDTH、ROOM_DEPTH、BOSS_DESK_POSITION、
+ASSISTANT_DESK_POSITION、BOSS_DESK_SIZE、ASSISTANT_DESK_SIZE、
+CAMERA_POSITION、CAMERA_TARGET、RENDER_SIZE 等。
+通过 Text Editor 的 Run Script 按钮运行。
+终端也可执行：
+"/Applications/Blender.app/Contents/MacOS/Blender" --background --python "/完整路径/build_office.py"
+脚本在自身所在文件夹输出 .blend 和预览 PNG，会覆盖同名输出。
+
+六、本轮验收重点
+看整体房间比例、两张桌子的间距与大小、椅子及坐姿关系、
+电脑的位置、书架与窗户的位置，以及斜前方镜头是否清楚展示布局。
+已提供接近参考图的鼠尾草绿、暖木色和柔光作为预览基础。
+当前木地板是简单几何拼块，材料是基础色，不是最终纹理；
+窗口是淡色插片，不是最终透射玻璃；人物只有占位几何，无五官、发型、服饰和绑定。
+确认布局后再进行精细材质、灯光与简化卡通人物。
+本次未修改或接入前端网页，也没有任何 API 或真实账务功能。

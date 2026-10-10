@@ -1,0 +1,25 @@
+{
+  "source": "office-reference-layout.blend",
+  "output": "office-character-detail.blend",
+  "source_sha256": "5c837bde964c3e252bb7a1f08ae429334ddbe424d9d411775c051309da21e121",
+  "protected_objects": 645,
+  "protected_materials": 31,
+  "protected_before_sha256": "33c838f6f1ca68cdaa9aef9f830f1b765ec9e5eb1442bf23a73845b2215da99a",
+  "protected_after_sha256": "33c838f6f1ca68cdaa9aef9f830f1b765ec9e5eb1442bf23a73845b2215da99a",
+  "protected_changes": [],
+  "character_objects": 233,
+  "total_objects": 878,
+  "root_positions_unchanged": true,
+  "camera": "CAM_01 / reference-style oblique front",
+  "resolution": [
+    1600,
+    1200
+  ],
+  "notes": "Only two characters replaced. Render output filepath is the only output setting change. New shadows/reflections from characters are expected.",
+  "reopened_blend_validated": true,
+  "protected_after_reopen_sha256": "33c838f6f1ca68cdaa9aef9f830f1b765ec9e5eb1442bf23a73845b2215da99a",
+  "camera_frame_outside": [],
+  "workstation_parent_motion_test": "passed",
+  "unpacked_file_image_dependencies": 0,
+  "check_scope": "Object transforms/geometry/material assignments/modifiers, original material node defaults and links, cameras/lights, collections, world and render settings. This is a structural regression check, not a byte-identical whole-blend proof."
+}
