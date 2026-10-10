@@ -8,7 +8,7 @@ Three AI agents on WorkBuddy that take a single prompt and close a micro-busines
 >
 > **Status:** End-to-end pipeline working. CLI (`run_pipeline.py`) and web app (`app.py` + 3D office) both functional. 36 test documents → 63 ledger rows, 57 exceptions (8 critical) → 20 tasks + 2 patterns across the document set (20 invoices with no payment terms, 17 with no matching PO on file), 2 draft chase emails. Secretary plan and report written by Gemini Flash Lite; Gmail integration for email attachments.
 >
-> **Numbers:** a **payables close**: all 36 documents are purchases, so RM 0 in / RM 13,171.40 out (incl. SST) / net −RM 13,171.40. 18 exception types defined across 10 validation steps.
+> **Numbers:** a **payables close**: all 36 documents are purchases, so RM 0 in / RM 13,171.40 out (incl. SST) / net −RM 13,171.40. **RM 1,315.00 at risk**: duplicate INV-2026-020 (RM 1,111.00) plus totals that don't add up on PO-2026-A05 (RM 189.00) and INV-2026-016 (RM 15.00). 18 exception types defined across 10 validation steps.
 >
 > **Built by:** 4 contributors in ~6 hours (Oct 10, 2026). Python 3.13, Flask, Three.js, Godot 4, Blender.
 
@@ -109,7 +109,7 @@ Then open **http://127.0.0.1:5000** (redirects to `/web-office/`). `app.py` serv
   each agent's progress (the cards light up one at a time: Secretary plan → Logistics → Financial → Secretary report), then fills:
   - **Plan** (above the cards): the Secretary's phases, each turning Working → Done as its agent finishes, plus which parts ran on
     Gemini vs. rules (`sources` in the result).
-  - **AI Summary** (left): exceptions grouped by type, critical first, plus the Secretary's top 3 actions.
+  - **AI Summary** (left): RM at risk (duplicate invoice totals + gaps on totals that don't add up; `money_at_risk` in `agents/orchestrator.py`), then exceptions grouped by type, critical first, plus the Secretary's top 3 actions.
   - **Checklist** (right): one fix item per task; a problem that hits 5+ documents (no due date, PO not on file) is one line
     (`SYSTEMIC_TYPES` in `agents/orchestrator.py`). The Exceptions tab still lists every exception. Ticks are saved in the browser.
   - **Results** (below the cards): Report · Exceptions · Tasks · Chase emails · Ledger. "view" opens the source document image (`/api/documents/test-documents/...`).

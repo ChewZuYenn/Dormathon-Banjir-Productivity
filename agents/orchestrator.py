@@ -296,6 +296,53 @@ def split_systemic(exceptions: list[dict]) -> tuple[list[dict], list[dict]]:
     return [e for e in exceptions if e.get("type") not in systemic], observations
 
 
+SHORT_LABELS = {
+    "conflicting_printed_values": "conflicting figures printed",
+    "tax_rate_anomaly": "SST doesn't match the printed rate",
+    "missing_po_reference_high_value": "over RM 500 with no PO reference",
+    "missing_po_match": "no matching PO on file",
+    "no_due_date": "no due date",
+    "handwritten_low_ocr": "handwritten, hard to read",
+}
+
+
+def short_problem(exc: dict) -> str:
+    """A scannable task-title phrase for a Financial exception, e.g. 'total off by RM 15.00'."""
+    t, delta = exc.get("type", ""), exc.get("delta")
+    det = exc.get("details") if isinstance(exc.get("details"), dict) else {}
+    if t == "arithmetic_mismatch" and isinstance(delta, (int, float)):
+        return f"total off by RM {abs(delta):,.2f}"
+    if t in ("quantity_mismatch", "price_mismatch") and "actual" in det:
+        what = "quantity" if t == "quantity_mismatch" else "unit price"
+        return f"{what} {det['actual']} vs {det['expected']} on the PO"
+    if t == "low_confidence" and isinstance(det.get("confidence_score"), (int, float)):
+        return f"{str(det.get('field') or 'a field').replace('_', ' ')} read with low confidence ({det['confidence_score']:.2f})"
+    return SHORT_LABELS.get(t, t.replace("_", " ") or "needs review")
+
+
+def money_at_risk(exceptions: list[dict], records: list[dict]) -> dict:
+    """RM that could be paid wrongly: a duplicate invoice's full total, plus the gap on
+    every printed total that doesn't add up. Conflicting printed figures are left out:
+    which figure is right is unknown, so there is no defensible amount."""
+    totals = {}
+    for r in records:
+        num = r.get("invoice_number") or r.get("receipt_number") or r.get("po_number")
+        total = r.get("grand_total") if r.get("grand_total") is not None else r.get("amount")
+        if num and isinstance(total, (int, float)):
+            totals[num] = total
+    items = []
+    for e in exceptions:
+        if e.get("type") == "duplicate_similar_confidence":
+            amount, why = totals.get(e.get("document_number")), "duplicate invoice, could be paid twice"
+        elif e.get("type") == "arithmetic_mismatch" and isinstance(e.get("delta"), (int, float)):
+            amount, why = abs(e["delta"]), "printed total doesn't add up"
+        else:
+            continue
+        if amount:
+            items.append({"document_number": e.get("document_number"), "amount": round(amount, 2), "reason": why})
+    return {"total": round(sum(i["amount"] for i in items), 2), "items": items}
+
+
 def report_from_ledger(report: dict, ledger: dict, exceptions: list, tasks: list, emails: list) -> dict:
     """Overwrite every figure in the report with the Financial ledger's numbers.
 
@@ -806,8 +853,11 @@ class PipelineOrchestrator:
                 exc_type = fin_exc.get("type", "")
                 doc_num = fin_exc.get("document_number", "")
                 vendor = fin_exc.get("vendor_name", "Unknown Vendor")
-                details = safe_str(fin_exc.get("details", fin_exc.get("reason", "")))
-                reason = fin_exc.get("reason", exc_type)
+                # Task title = "<doc>: <short problem>"; the full reason and Financial's
+                # suggested action go in the task's detail / action_required
+                reason = short_problem(fin_exc)
+                details = " ".join(s.strip() for s in (fin_exc.get("reason"), fin_exc.get("suggested_action"))
+                                   if isinstance(s, str) and s.strip()) or safe_str(fin_exc.get("details"))
 
                 rec = doc_lookup.get(doc_num, {})
                 amount = rec.get("grand_total", fin_exc.get("delta", 0.0))
@@ -857,7 +907,7 @@ class PipelineOrchestrator:
                         event_type=EventType.FLAGGED,
                         invoice_number=doc_num, vendor_name=vendor, amount=amount,
                         invoice_date=invoice_date, details=details,
-                        flag_reason="Low OCR confidence",
+                        flag_reason=reason,
                         confidence=confidence,
                     ))
                 else:
@@ -1037,6 +1087,7 @@ class PipelineOrchestrator:
             final_report["top_3_actions"] = [str(a) for a in llm["top_3_actions"][:3]]
         final_report = report_from_ledger(final_report, ledger, exc_list, tasks, chase_emails)
         final_report["observations"] = [o["text"] for o in observations]
+        final_report["at_risk"] = money_at_risk(exc_list, logistics_records)
         timings["step4_secretary"] = round(time.time() - t, 2)
         sources["secretary"] = "llm" if llm else "python_fallback"
         sources["tasks"] = "python_task_generator"
@@ -1235,6 +1286,10 @@ def _format_result_text(result: dict) -> str:
         lines.append(f"    Cash Out:  RM {final_report.get('cash_out', 0):,.2f}")
         lines.append(f"    Net Cash:  RM {final_report.get('net_cash', 0):,.2f}")
 
+        risk = final_report.get("at_risk") or {}
+        if risk.get("total"):
+            lines.append(f"    At risk:   RM {risk['total']:,.2f} (" + ", ".join(
+                f"{i['document_number']} RM {i['amount']:,.2f}" for i in risk["items"]) + ")")
         for note in final_report.get("observations", []):
             lines.append(f"    Note: {note}")
 

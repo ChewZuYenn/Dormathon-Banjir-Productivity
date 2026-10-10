@@ -326,7 +326,15 @@ function renderSummary(data, exceptions) {
     return el("li", null, el("strong", null, list.length + " × " + typeLabel(list[0].type)),
       " — " + (list[0].reason || "") + (docs.length > 1 ? " (" + docs.slice(0, 4).join(", ") + (docs.length > 4 ? ", …" : "") + ")" : ""));
   }));
-  const actions = (data.secretary.final_report && data.secretary.final_report.top_3_actions) || [];
+  const report = data.secretary.final_report || {};
+  const risk = report.at_risk || { total: 0, items: [] };
+  const headline = document.querySelector("#ai-headline");
+  headline.replaceChildren(
+    el("strong", null, rm(risk.total) + " at risk"),
+    el("p", null, risk.items.map(i => i.document_number + " " + rm(i.amount) + " (" + i.reason + ")").join(" · ") || "No duplicate or mis-added totals found."),
+    report.cash_in ? null : el("p", null, "Payables close: all " + data.logistics.count + " documents are purchases, so cash in is RM 0.00."));
+  headline.hidden = false;
+  const actions = report.top_3_actions || [];
   document.querySelector("#change-list").replaceChildren(...actions.map(a => el("li", null, a)));
   document.querySelector("#ai-generated").textContent =
     "Built by the agents · " + new Date().toLocaleTimeString() + " · secretary: " + (data.sources.secretary || "?");
@@ -388,7 +396,8 @@ function renderResults(data, exceptions) {
       report.cash_in ? null : el("p", { class: "muted" }, "All " + data.logistics.count +
         " documents are purchases (invoices, receipts, purchase orders); there are no sales documents, so cash in is RM 0.00."),
       el("div", { class: "stat-grid" }, [
-        ["Cash in", rm(report.cash_in)], ["Cash out (incl. SST)", rm(report.cash_out)], ["Net cash", rm(report.net_cash)],
+        [report.cash_in ? "Cash in" : "Cash in (no sales documents)", rm(report.cash_in)],
+        ["At risk", rm((report.at_risk || {}).total)], ["Cash out (incl. SST)", rm(report.cash_out)], ["Net cash", rm(report.net_cash)],
         ["SST", rm(report.total_tax)], ["Reconciled invoices", Math.round((report.reconciliation_rate || 0) * 100) + "%"],
         ["Exceptions", report.total_exceptions], ["Tasks", report.tasks_generated], ["Chase emails", report.chase_emails_drafted],
       ].map(([k, v]) => el("div", { class: "stat" }, el("span", null, k), el("strong", null, v)))),

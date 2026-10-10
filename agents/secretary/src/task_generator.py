@@ -193,7 +193,7 @@ class TaskGenerator:
         reason = event.escalation_reason or event.details
         return Task(
             task_id=f"TASK-{self._task_counter:04d}",
-            title=f"ESCALATION: {reason} ({event.vendor_name})",
+            title=f"{event.invoice_number}: {reason}",
             description=(
                 f"Invoice {event.invoice_number} from {event.vendor_name} "
                 f"for RM {event.amount:.2f} has been flagged for escalation. "
@@ -206,7 +206,7 @@ class TaskGenerator:
             vendor_name=event.vendor_name,
             amount=event.amount,
             action_required=(
-                "Management review required. Approve the payment, "
+                f"{event.details}\nThen approve the payment, "
                 "reject it, or request additional documentation from the vendor."
             ),
             status=TaskStatus.PENDING,
@@ -237,7 +237,7 @@ class TaskGenerator:
         flag_reason = event.flag_reason or event.details
         return Task(
             task_id=f"TASK-{self._task_counter:04d}",
-            title=f"Review flagged document: {event.invoice_number}",
+            title=f"{event.invoice_number}: {flag_reason}",
             description=(
                 f"Document {event.invoice_number} from {event.vendor_name} "
                 f"has been flagged. {confidence_note}"
@@ -250,9 +250,8 @@ class TaskGenerator:
             vendor_name=event.vendor_name,
             amount=event.amount,
             action_required=(
-                "Review the source document. If readable, re-process with "
-                "manual data entry. If unreadable, request a new copy "
-                "from the vendor."
+                f"{event.details}\nCheck the source document; if it is "
+                "unreadable, request a new copy from the vendor."
             ),
             status=TaskStatus.PENDING,
         )

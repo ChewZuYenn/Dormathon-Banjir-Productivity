@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from agents.orchestrator import build_chase_emails, chase_targets, normalize_extracted, report_from_ledger, split_systemic, verify_extraction
+from agents.orchestrator import build_chase_emails, chase_targets, money_at_risk, normalize_extracted, report_from_ledger, short_problem, split_systemic, verify_extraction
 
 
 def test_verify_extraction_reports_field_mismatches():
@@ -78,3 +78,20 @@ def test_systemic_exceptions_collapse_to_one_observation():
     actionable, obs = split_systemic(many + few + dup)
     assert [e["type"] for e in actionable] == ["missing_po_match"] * 2 + ["duplicate_similar_confidence"]  # below threshold: kept
     assert [(o["type"], o["count"]) for o in obs] == [("no_due_date", 6)] and obs[0]["text"].startswith("6 invoices")
+
+
+def test_task_title_phrases_are_short():
+    assert short_problem({"type": "arithmetic_mismatch", "delta": -15.0}) == "total off by RM 15.00"
+    assert short_problem({"type": "quantity_mismatch", "details": {"actual": 5, "expected": 4}}) == "quantity 5 vs 4 on the PO"
+    assert short_problem({"type": "conflicting_printed_values", "reason": "x" * 200}) == "conflicting figures printed"
+
+
+def test_money_at_risk_sums_duplicates_and_bad_totals_only():
+    records = [{"invoice_number": "INV-1", "grand_total": 1111.0}, {"po_number": "PO-1", "grand_total": 2310.0}]
+    exceptions = [
+        {"type": "duplicate_similar_confidence", "document_number": "INV-1"},
+        {"type": "arithmetic_mismatch", "document_number": "PO-1", "delta": 189.0},
+        {"type": "conflicting_printed_values", "document_number": "PO-1"},  # no defensible amount: excluded
+    ]
+    risk = money_at_risk(exceptions, records)
+    assert risk["total"] == 1300.0 and [i["document_number"] for i in risk["items"]] == ["INV-1", "PO-1"]
