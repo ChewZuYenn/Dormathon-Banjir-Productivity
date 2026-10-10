@@ -63,7 +63,7 @@
           <div class="ai-icon-badge todo">&#9745;</div>
           <div>
             <h2>Checklist</h2>
-            <p>One item per exception &middot; ticks saved in your browser</p>
+            <p>One item per problem; patterns across many documents are one line &middot; ticks saved in your browser</p>
           </div>
         </div>
 
@@ -79,6 +79,11 @@
     </div>
 
     <div class="status-heading"><span id="current-step" aria-live="polite">Loading the office model…</span><label class="live-toggle" title="Off: use the hand-checked extraction (fast). On: Gemini reads all 36 scans and is checked against it (~30 s, uses API quota)."><input type="checkbox" id="live-read"> Read the 36 scans live with Gemini</label></div>
+    <section class="plan" id="plan" hidden aria-label="The Secretary's plan">
+      <div class="plan-head"><h2>Plan</h2><span id="plan-source"></span></div>
+      <ol id="plan-phases"></ol>
+      <p class="muted" id="plan-sources"></p>
+    </section>
     <section class="agent-cards" aria-label="Status of the three agents">
       <article class="agent-card" data-agent="Secretary" data-status="idle"><div class="agent-heading"><div class="agent-icon">S</div><div><h2>Secretary</h2><p>Planning &amp; task coordination</p></div><span class="status-badge">Idle</span></div><p class="agent-detail">Waiting for your task</p><div class="activity-track"><span></span></div></article>
       <article class="agent-card" data-agent="Logistics" data-status="idle"><div class="agent-heading"><div class="agent-icon">L</div><div><h2>Logistics</h2><p>Document extraction &amp; checks</p></div><span class="status-badge">Idle</span></div><p class="agent-detail">Waiting for your task</p><div class="activity-track"><span></span></div></article>

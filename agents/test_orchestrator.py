@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from agents.orchestrator import build_chase_emails, chase_targets, normalize_extracted, report_from_ledger, verify_extraction
+from agents.orchestrator import build_chase_emails, chase_targets, normalize_extracted, report_from_ledger, split_systemic, verify_extraction
 
 
 def test_verify_extraction_reports_field_mismatches():
@@ -66,3 +66,12 @@ def test_normalize_flags_instead_of_guessing():
     assert rec["grand_total"] is None and rec["invoice_date"] is None
     assert "unparseable_field" in rec["flags"] and rec["status"] == "flagged"
     assert "grand_total" in rec["notes"] and "invoice_date" in rec["notes"]
+
+
+def test_systemic_exceptions_collapse_to_one_observation():
+    many = [{"type": "no_due_date", "document_number": f"INV-{i}", "source_ref": f"{i}.png"} for i in range(6)]
+    few = [{"type": "missing_po_match", "document_number": f"INV-{i}", "source_ref": f"{i}.png"} for i in range(2)]
+    dup = [{"type": "duplicate_similar_confidence", "document_number": "INV-0", "source_ref": "0.png"}]
+    actionable, obs = split_systemic(many + few + dup)
+    assert [e["type"] for e in actionable] == ["missing_po_match"] * 2 + ["duplicate_similar_confidence"]  # below threshold: kept
+    assert [(o["type"], o["count"]) for o in obs] == [("no_due_date", 6)] and obs[0]["text"].startswith("6 invoices")

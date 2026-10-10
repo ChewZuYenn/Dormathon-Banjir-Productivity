@@ -259,6 +259,31 @@ def build_chase_emails(targets: list[dict], llm_emails: list) -> list[dict]:
     return emails
 
 
+# Exception types that, when they hit many documents, describe the document set
+# rather than one document: one observation each instead of a task per document.
+# Financial still raises every one (Exceptions tab); only tasks/checklist collapse.
+SYSTEMIC_TYPES = {
+    "no_due_date": "{n} invoices carry no payment terms (no due date), so overdue status can't be checked",
+    "missing_po_match": "{n} invoices have no matching purchase order among the documents on file",
+}
+SYSTEMIC_MIN_DOCS = 5
+
+
+def split_systemic(exceptions: list[dict]) -> tuple[list[dict], list[dict]]:
+    """Return (actionable exceptions, one observation per systemic type)."""
+    docs: dict[str, set] = {}
+    for exc in exceptions:
+        if exc.get("type") in SYSTEMIC_TYPES:
+            docs.setdefault(exc["type"], set()).add(exc.get("source_ref") or exc.get("document_number"))
+    systemic = {t for t, refs in docs.items() if len(refs) >= SYSTEMIC_MIN_DOCS}
+    observations = [
+        {"type": t, "count": len(docs[t]), "text": SYSTEMIC_TYPES[t].format(n=len(docs[t])),
+         "documents": sorted({e.get("document_number") for e in exceptions if e.get("type") == t} - {None})}
+        for t in SYSTEMIC_TYPES if t in systemic
+    ]
+    return [e for e in exceptions if e.get("type") not in systemic], observations
+
+
 def report_from_ledger(report: dict, ledger: dict, exceptions: list, tasks: list, emails: list) -> dict:
     """Overwrite every figure in the report with the Financial ledger's numbers.
 
@@ -887,6 +912,14 @@ class PipelineOrchestrator:
             if on_event:
                 on_event({"kind": "status", "agent": agent, "status": status, "step": step})
 
+        def set_phase(agent: str, status: str) -> None:
+            """Mark the plan phase(s) owned by `agent` and stream the updated plan."""
+            for phase in plan_data.get("phases", []):
+                if str(phase.get("agent", "")).lower() == agent.lower():
+                    phase["status"] = status
+            if on_event:  # copy: the stream serialises on another thread
+                on_event({"kind": "plan", "plan": json.loads(json.dumps(plan_data, default=str))})
+
         emit("Secretary", "working", "Writing the plan")
 
         # Step 1: Secretary LLM — Generate Plan
@@ -907,11 +940,16 @@ class PipelineOrchestrator:
         print("  STEP 2/4: LOGISTICS (EXTRACT)")
         print("=" * 60)
         emit("Secretary", "done", f"Plan ready ({len(plan_data.get('phases', []))} phases)")
+        set_phase("Logistics", "in_progress")
         emit("Logistics", "working",
              f"Reading {len(document_images)} scans with Gemini" if document_images else "Loading extracted documents")
         t = time.time()
         logistics_records = self.logistics_extract_llm(document_images)
-        sources["logistics"] = "llm" if document_images and self._llm_available() else "python_fallback"
+        # Live reading is opt-in; without it Logistics loads the hand-checked records by design
+        if not document_images:
+            sources["logistics"] = "hand_checked"
+        else:
+            sources["logistics"] = "llm" if self._llm_available() else "python_fallback"
         # Live reads are checked against the hand-checked extraction of the same scans
         verification = (verify_extraction(logistics_records, self._logistics_python())
                         if sources["logistics"] == "llm" else None)
@@ -937,6 +975,8 @@ class PipelineOrchestrator:
         error = sum(1 for r in logistics_records if r.get("status") == "error")
         print(f"  Status: {clean} clean, {flagged} flagged, {error} error")
         emit("Logistics", "done", f"{len(logistics_records)} records ({clean} clean, {flagged} flagged, {error} error)")
+        set_phase("Logistics", "done")
+        set_phase("Financial", "in_progress")
         emit("Financial", "working", "Building the ledger and checking every document")
 
         # Step 3: Financial Python — Validate
@@ -952,6 +992,8 @@ class PipelineOrchestrator:
         print(f"  Total out: RM {ledger.get('summary', {}).get('total_out', 0):,.2f}")
         print(f"  Exceptions: {len(exc_list)}")
         emit("Financial", "done", f"{len(ledger.get('rows', []))} ledger rows, {len(exc_list)} exceptions")
+        set_phase("Financial", "done")
+        set_phase("Secretary", "in_progress")
         emit("Secretary", "working", "Turning exceptions into tasks, emails and the report")
 
         # Step 4: Secretary — one task per exception (Python), chase emails +
@@ -960,7 +1002,8 @@ class PipelineOrchestrator:
         print("  STEP 4/4: SECRETARY (TASKS + REPORT)")
         print("=" * 60)
         t = time.time()
-        secretary_result = self._secretary_report_python(goal, exc_list, logistics_records)
+        actionable, observations = split_systemic(exc_list)
+        secretary_result = self._secretary_report_python(goal, actionable, logistics_records)
         tasks = secretary_result.get("tasks", [])
         targets = chase_targets(exc_list)
         llm = self.secretary_report_llm(goal, exc_list, targets)
@@ -969,6 +1012,7 @@ class PipelineOrchestrator:
         if llm and isinstance(llm.get("top_3_actions"), list) and llm["top_3_actions"]:
             final_report["top_3_actions"] = [str(a) for a in llm["top_3_actions"][:3]]
         final_report = report_from_ledger(final_report, ledger, exc_list, tasks, chase_emails)
+        final_report["observations"] = [o["text"] for o in observations]
         timings["step4_secretary"] = round(time.time() - t, 2)
         sources["secretary"] = "llm" if llm else "python_fallback"
         sources["tasks"] = "python_task_generator"
@@ -980,6 +1024,7 @@ class PipelineOrchestrator:
             print(f"  Cash out: RM {final_report.get('cash_out', 0):,.2f}")
             print(f"  Net cash: RM {final_report.get('net_cash', 0):,.2f}")
 
+        set_phase("Secretary", "done")
         emit("Secretary", "done", f"{len(tasks)} tasks, {len(chase_emails)} draft emails")
         timings["total"] = round(time.time() - t_start, 2)
 
@@ -1012,6 +1057,7 @@ class PipelineOrchestrator:
                 "chase_emails": chase_emails,
                 "final_report": final_report,
                 "chase_targets": targets,
+                "observations": observations,
                 "exceptions_processed": secretary_result.get("exceptions_processed", len(exc_list)),
                 "warnings": secretary_result.get("warnings", []),
             },
@@ -1158,10 +1204,15 @@ def _format_result_text(result: dict) -> str:
     final_report = secretary.get("final_report", {})
     if final_report:
         lines.append("")
-        lines.append("  CASH FLOW SUMMARY")
+        # Every document in the test set is a purchase, so there is no cash in to report
+        lines.append("  CASH FLOW SUMMARY" if final_report.get("cash_in") else
+                     "  PAYABLES CLOSE (every document is a purchase; no sales documents, so cash in is RM 0)")
         lines.append(f"    Cash In:   RM {final_report.get('cash_in', 0):,.2f}")
         lines.append(f"    Cash Out:  RM {final_report.get('cash_out', 0):,.2f}")
         lines.append(f"    Net Cash:  RM {final_report.get('net_cash', 0):,.2f}")
+
+        for note in final_report.get("observations", []):
+            lines.append(f"    Note: {note}")
 
         top3 = final_report.get("top_3_actions", [])
         if top3:

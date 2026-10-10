@@ -208,6 +208,7 @@ document.querySelector("#task-form").addEventListener("submit", async event => {
   const step = document.querySelector("#current-step");
   const live = document.querySelector("#live-read").checked;
   agents.forEach(name => setState(name, "idle", "Queued"));
+  document.querySelector("#plan").hidden = true;
   step.textContent = "“" + task + "” — running the three agents" + (live ? " (reading the scans live with Gemini)…" : "…");
   try {
     // Streamed NDJSON: one status line per agent step, then the result
@@ -229,7 +230,8 @@ document.querySelector("#task-form").addEventListener("submit", async event => {
         if (msg.kind === "status") {
           setState(msg.agent, msg.status, msg.step);
           step.textContent = msg.agent + " · " + msg.step;
-        } else if (msg.kind === "result") data = msg.data;
+        } else if (msg.kind === "plan") renderPlan(msg.plan);
+        else if (msg.kind === "result") data = msg.data;
         else if (msg.kind === "error") throw new Error(msg.error);
       }
       if (done) break;
@@ -285,9 +287,33 @@ const docLink = ref => typeof ref === "string" && ref.startsWith("test-documents
 
 function renderRun(data) {
   const exceptions = (data.financial.exceptions && data.financial.exceptions.exceptions) || [];
+  // Patterns that hit many documents (no due date, PO not on file) are one checklist line each, not one per document
+  const observations = data.secretary.observations || [];
+  const systemic = new Set(observations.map(o => o.type));
+  const checklist = exceptions.filter(e => !systemic.has(e.type)).concat(observations.map(o =>
+    ({ type: o.type, severity: "info", reason: o.documents.join(", "), suggested_action: o.text, source_ref: "observation" })));
+  renderPlan(data.plan, data.sources);
   renderSummary(data, exceptions);
-  renderChecklist(exceptions);
+  renderChecklist(checklist);
   renderResults(data, exceptions);
+}
+
+const SOURCE_LABELS = { llm: "Gemini", hand_checked: "hand-checked records", python_engine: "deterministic engine",
+  python_fallback: "rule-based fallback (no LLM)", static_fallback: "fixed fallback plan", python_task_generator: "rules" };
+const PHASE_STATUS = { pending: ["Pending", "pending"], in_progress: ["Working", "warning"], done: ["Done", "info"] };
+const sourceLabel = s => SOURCE_LABELS[s] || s || "?";
+function renderPlan(plan, sources) {
+  const phases = (plan && plan.phases) || [];
+  if (!phases.length) return;
+  document.querySelector("#plan-source").textContent = "written by the Secretary · " + sourceLabel(plan.source);
+  document.querySelector("#plan-phases").replaceChildren(...phases.map(p => {
+    const [label, cls] = PHASE_STATUS[p.status] || [p.status, "pending"];
+    return el("li", null, el("span", { class: "sev sev-" + cls }, label), " ", el("strong", null, p.agent), " — " + (p.action || ""));
+  }));
+  if (sources) document.querySelector("#plan-sources").textContent = "Plan: " + sourceLabel(sources.plan) +
+    " · Extraction: " + sourceLabel(sources.logistics) + " · Ledger & checks: " + sourceLabel(sources.financial) +
+    " · Tasks: " + sourceLabel(sources.tasks) + " · Emails & top actions: " + sourceLabel(sources.secretary);
+  document.querySelector("#plan").hidden = false;
 }
 
 function renderSummary(data, exceptions) {
@@ -358,6 +384,9 @@ function renderResults(data, exceptions) {
   const ledger = data.financial.ledger || {};
   const views = {
     report: () => el("div", null,
+      report.cash_in ? null : el("h4", null, "Payables close"),
+      report.cash_in ? null : el("p", { class: "muted" }, "All " + data.logistics.count +
+        " documents are purchases (invoices, receipts, purchase orders); there are no sales documents, so cash in is RM 0.00."),
       el("div", { class: "stat-grid" }, [
         ["Cash in", rm(report.cash_in)], ["Cash out (incl. SST)", rm(report.cash_out)], ["Net cash", rm(report.net_cash)],
         ["SST", rm(report.total_tax)], ["Reconciled invoices", Math.round((report.reconciliation_rate || 0) * 100) + "%"],
@@ -366,6 +395,8 @@ function renderResults(data, exceptions) {
       el("p", { class: "muted" }, "Every figure comes from the Financial ledger (" + (ledger.rows || []).length + " rows), not from the language model."),
       data.logistics.verification ? el("p", { class: "muted" }, "Live extraction check: Gemini read " + data.logistics.verification.documents_compared + " scans; " + data.logistics.verification.fields_matched + " of " + data.logistics.verification.fields_checked + " key fields match the hand-checked records" + (data.logistics.verification.mismatches.length ? " (mismatches: " + data.logistics.verification.mismatches.map(m => m.source_ref.split("/").pop() + " " + m.field).join(", ") + ")." : ".")) : null,
       el("h4", null, "Top actions"), el("ol", null, (report.top_3_actions || []).map(a => el("li", null, a))),
+      (report.observations || []).length ? el("h4", null, "Patterns across the documents") : null,
+      el("ul", null, (report.observations || []).map(o => el("li", null, o))),
       el("h4", null, "By category (excl. SST)"),
       table(["Category", "Rows", "Total"], (report.categories || []).map(c => [c.category, c.count, rm(c.total)]))),
     exceptions: () => table(["Severity", "Problem", "Document", "Vendor", "Reason", "Source"],

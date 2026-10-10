@@ -86,3 +86,4 @@
 
 /* The agents don't need the 3D model: keep Run usable while it loads or if WebGL fails */
 .chatbar{z-index:4}
+.plan{margin:0 0 14px;border:1px solid #e5e7db;border-radius:16px;background:#fefdf8;padding:14px 19px}.plan-head{display:flex;align-items:baseline;gap:10px}.plan-head h2{font-size:14px;margin:0;font-weight:650}#plan-source{font-size:11px;color:#858a7c}#plan-phases{margin:10px 0 6px;padding-left:20px;font-size:12.5px;line-height:1.9;color:#344239}#plan-phases .sev{min-width:62px;text-align:center}#plan-sources{font-size:11px;margin:4px 0 0}.sev-pending{background:#f0f2e9;color:#8c9780}
