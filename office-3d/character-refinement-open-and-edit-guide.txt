@@ -22,7 +22,7 @@
 四、确认其他东西没有更改
 原稿 office-reference-layout.blend 保留，未覆盖，也未重跑房间生成脚本。
 645 个非人物对象、31 个原有材质、10 个集合、相机、灯光、世界环境、房间地板、星星挂绳、桌椅、电脑、书架、窗户和桌上物件均做了保存前后及重新打开比对。
-检查结果在 人物细化-场景一致性检查.json；protected_changes 应为空数组。
+检查结果在 character-refinement-scene-consistency-check.json；protected_changes 应为空数组。
 渲染输出路径更换为新版预览文件；画幅、采样、色彩管理、主相机和照明参数保持原值。
 人物体积和材质改变后产生的新投影、遮挡和反射属于正常渲染变化，不代表调整了家具或灯光。
 
@@ -48,9 +48,9 @@ office-character-detail.blend：新版可编辑办公室。
 office-character-detail-preview.png：原镜头、原灯光全景。
 boss-character-closeup.png：老板检查近景。
 assistant-character-closeup.png：助理检查近景。
-人物细化-场景一致性检查.json：程序比对报告。
+character-refinement-scene-consistency-check.json：程序比对报告。
 refine_office_characters.py：仅替换人物的重建脚本。
-办公室-人物细化版.zip：完整打包，含上述文件及认可布局基准。
+office-character-refinement.zip：完整打包，含上述文件及认可布局基准。
 人物近景使用临时镜头，仅用于预览；没有写回最终 .blend，最终场景仍为原办公室镜头。
 
 七、仅在需要重建人物时运行脚本

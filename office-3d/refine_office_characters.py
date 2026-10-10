@@ -556,7 +556,7 @@ def refine():
               "protected_changes": changes, "character_objects": len(excluded), "total_objects": len(scene.objects),
               "root_positions_unchanged": True, "camera": scene.camera.name, "resolution": [scene.render.resolution_x, scene.render.resolution_y],
               "notes": "Only two characters replaced. Render output filepath is the only output setting change. New shadows/reflections from characters are expected."}
-    (OUTPUT_DIR / "人物细化-场景一致性检查.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    (OUTPUT_DIR / "character-refinement-scene-consistency-check.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print("CHARACTERS_SAVED_VALIDATED", json.dumps(report, ensure_ascii=False), flush=True)
     if "--no-render" not in sys.argv:
         bpy.ops.render.render(write_still=True)

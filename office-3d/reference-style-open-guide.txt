@@ -10,7 +10,7 @@
 - office-reference-layout.blend：可编辑的修订布局场景。
 - office-reference-layout-preview.png：实际 Blender 渲染预览，1600×1200（4:3）。
 - build_office_reference.py：重新生成本版的脚本。
-- 参考风格版打开说明.txt：本说明。
+- reference-style-open-guide.txt：本说明。
 上一版 office-blockout.blend 和 build_office.py 保留，未覆盖。
 
 打开
