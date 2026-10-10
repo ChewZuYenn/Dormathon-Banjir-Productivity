@@ -2,6 +2,16 @@
 
 Three AI agents on WorkBuddy that take a single prompt and close a micro-business's month end to end.
 
+> **AI Summary** (auto-generated, 2026-10-10)
+>
+> **What it does:** A user types "Close out September." Three AI agents work in sequence — Secretary plans, Logistics extracts ~36 documents (invoices, receipts, orders), Financial validates arithmetic/SST/duplicates and builds a reconciled ledger, then Secretary turns exceptions into tasks, chase emails, and a final report.
+>
+> **Status:** End-to-end pipeline working. CLI (`run_pipeline.py`) and web app (`app.py` + 3D office) both functional. 36 test documents → 63 ledger rows, 92 exceptions (8 critical, 84 warning), 92 tasks, final cash-flow report. Optional LLM (Gemini Flash Lite) and Gmail integration for email attachments.
+>
+> **Numbers:** RM 0 in / RM 18,370.40 out / net −RM 18,370.40. 0% reconciliation rate (no receipts link to invoices). 18 exception types defined across 10 validation steps.
+>
+> **Built by:** 4 contributors in ~6 hours (Oct 10, 2026). Python 3.13, Flask, Three.js, Godot 4, Blender.
+
 ## The Demo
 
 **Prompt:** "Close out September."
@@ -22,23 +32,53 @@ Logistics owns documents, Financial owns numbers. Logistics hands over structure
 
 | Role | Owner | Status |
 |------|-------|--------|
-| Logistics Coordinator | @Colt Tan | In progress |
-| Financial Agent | TBD | In progress |
-| Secretary Agent | TBD | Stub phase |
-| Frontend | TBD | P0 components |
-| Test Documents | TBD | Generating 40 docs |
+| Logistics Agent | @Colt Tan | Done — 36 docs, 6 modules, schemas + tests |
+| Financial Agent | @Chew Zu Yenn | Done — engine, 18 exception types, schema-validated |
+| Secretary Agent | @hyang00122022 (TAO) | Done — planner, tasks, emails, report, Gmail crawler |
+| 3D Frontend | @Xuanyu | Done — Blender model, Three.js web, Godot + bridge |
+| Backend / Integration | @Colt Tan | Done — orchestrator, Flask API, `run_pipeline.py` |
 
-## Timeline (Oct 10–12, 2026)
+## TODO
 
-| Gate | Target |
-|------|--------|
-| 15:00 Sat | Workspace set up, first 15 test documents ready |
-| 18:00 Sat | 1 document in → 1 ledger row out |
-| 23:00 Sat | All 40 documents run, validation working |
-| 01:00 Sun | Record backup demo video |
-| 04:00 Sun | Hard stop on new features |
-| 06:00 Sun | Slides done, rehearse to 3 min |
-| 08:00 Sun | Submitted |
+### Done
+- [x] Logistics agent: 36 documents extracted, structured records, schemas
+- [x] Financial agent: `engine.py`, 10 validation steps, 18 exception types, ledger + exception schemas
+- [x] Secretary agent: plan, tasks, chase emails, final report, Gmail crawler
+- [x] Full pipeline CLI (`run_pipeline.py`) — Logistics → Financial → Secretary
+- [x] Flask API server (`app.py`) — `POST /api/run` with LLM fallback
+- [x] 3D office web frontend (Three.js + WebGL)
+- [x] 3D office Godot frontend + Python bridge
+- [x] Blender 3D models and renders
+- [x] Data contract audit: 0 schema errors across all 5 schemas + 36 records
+- [x] Test documents: 44 files (invoices, receipts, orders, bad docs)
+
+### Before 04:00 Sun (feature freeze)
+- [ ] **Fix chase emails** — Python fallback returns 0 emails; demo promises 2 drafted chase emails
+- [ ] **Web UI: results panel** — currently shows counts only; need ledger/exception/task views (placeholders in `frontend/components/`)
+- [ ] **Commit missing SKILL.md** — Financial and Logistics WorkBuddy skills not committed (causes 2 test failures)
+- [ ] **Per-agent progress on web** — `/api/run` is synchronous; port the bridge's job + polling pattern to `app.py`
+- [ ] **Slides** — `slides/` is empty; need pitch deck (PDF, 3-min rehearsal)
+
+### After freeze / polish
+- [ ] **Demo video** — record backup demo video (01:00 Sun gate)
+- [ ] **Clean tracked `__pycache__`** — 9 `.pyc` files tracked despite `.gitignore`
+- [ ] **Fix `.gitignore`** — root ignores `*.html` (blocks new HTML files; existing `index.html` is tracked)
+- [ ] **Hard-coded `TODAY`** in `engine.py` (2026-10-10); period is a label only, records not filtered by month
+- [ ] **Gmail on real inbox** — tested with simulated attachments only; PDFs sent to Gemini unverified
+- [ ] **Approval endpoints** — `/api/tasks/<id>/approve`, `/api/emails/<id>/approve|reject` are placeholders
+- [ ] **LLM probe delay** — ~12s per run, partly from probing `localhost:11434` that isn't there
+
+## Timeline (Oct 10-12, 2026)
+
+| Gate | Target | Status |
+|------|--------|--------|
+| 15:00 Sat | Workspace set up, first 15 test documents ready | Done (36 docs) |
+| 18:00 Sat | 1 document in -> 1 ledger row out | Done |
+| 23:00 Sat | All 40 documents run, validation working | Done (36 docs, end-to-end via `/api/run`) |
+| 01:00 Sun | Record backup demo video | Open |
+| 04:00 Sun | Hard stop on new features | Open |
+| 06:00 Sun | Slides done, rehearse to 3 min | Open (`slides/` empty) |
+| 08:00 Sun | Submitted | Open |
 
 ## Running It
 
@@ -69,12 +109,6 @@ Then open **http://127.0.0.1:5000** (redirects to `/web-office/`). `app.py` serv
   the cards show record / exception / task counts when it finishes. The full result is in the browser console as `lastRun`.
 - `/api/run` returns only when the whole pipeline is done, so all three cards show "working" together.
 - Each run rewrites `agents/logistics/output.json`, `ledger.json` and `exceptions.json`.
-
-### Live deployment (Vercel)
-
-**https://dormathon-banjir-productivity.vercel.app** — same `app.py` (web page + `/api/run`), Gemini via Vercel environment variables `LLM_API_URL`, `LLM_API_KEY`, `LLM_MODEL`, `LLM_VISION_MODEL`. `.vercelignore` keeps `.env`, Gmail credentials, Blender/Godot assets and tests out of the upload. Gmail is not available there (no persistent Google login on serverless).
-
-Redeploy: `npx vercel deploy --prod` (Vercel project `coltonthatgoods-projects/dormathon-banjir-productivity`; not connected to GitHub, so pushes don't auto-deploy).
 
 ### Gmail (optional)
 
