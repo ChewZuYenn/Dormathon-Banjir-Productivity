@@ -83,3 +83,6 @@
 .email pre{white-space:pre-wrap;font-family:inherit;font-size:13px;line-height:1.55;margin:0}
 .live-toggle{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#506a50;cursor:pointer}
 .live-toggle input{accent-color:#405e4c}
+
+/* The agents don't need the 3D model: keep Run usable while it loads or if WebGL fails */
+.chatbar{z-index:4}
