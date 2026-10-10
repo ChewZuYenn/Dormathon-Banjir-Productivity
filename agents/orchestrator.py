@@ -63,6 +63,14 @@ sys.path.insert(0, str(SECRETARY_DIR))
 # LLM Configuration
 # ---------------------------------------------------------------------------
 
+# Load KEY=value lines from repo-root .env (gitignored); real env vars take precedence
+_ENV_FILE = PROJECT_ROOT / ".env"
+if _ENV_FILE.exists():
+    for _line in _ENV_FILE.read_text(encoding="utf-8").splitlines():
+        _key, _sep, _value = _line.strip().partition("=")
+        if _sep and _key and not _key.startswith("#"):
+            os.environ.setdefault(_key.strip(), _value.strip())
+
 LLM_API_URL = os.environ.get("LLM_API_URL", "http://localhost:11434/v1")
 LLM_API_KEY = os.environ.get("LLM_API_KEY", "")
 LLM_MODEL = os.environ.get("LLM_MODEL", "gpt-4o-mini")

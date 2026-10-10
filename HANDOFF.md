@@ -37,7 +37,7 @@ python frontend/godot-office/bridge/server.py --port 8765
 # then import frontend/godot-office/project.godot in Godot 4.x and press F5
 ```
 
-Optional LLM (OpenAI-compatible) via env vars: `LLM_API_URL` (default `http://localhost:11434/v1`), `LLM_API_KEY`, `LLM_MODEL`, `LLM_VISION_MODEL`. Without one, every step falls back to Python (`sources` in the response says which ran).
+Optional LLM (OpenAI-compatible) via env vars or a gitignored repo-root `.env` (loaded by `agents/orchestrator.py`): `LLM_API_URL` (no trailing slash; default `http://localhost:11434/v1`), `LLM_API_KEY`, `LLM_MODEL`, `LLM_VISION_MODEL`. Current setup uses Gemini `gemini-3.1-flash-lite` (`LLM_API_URL=https://generativelanguage.googleapis.com/v1beta/openai`) — ask Colt for the key. Without an LLM, every step falls back to Python (`sources` in the response says which ran). With Gemini, plan + Secretary run on the LLM (~6.5 s); chase emails are still 0.
 
 ---
 
