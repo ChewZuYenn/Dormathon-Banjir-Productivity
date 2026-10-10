@@ -157,22 +157,25 @@ def normalize_extracted(rec: dict) -> dict:
     return rec
 
 
-_CHECK_FIELDS = {  # per document type: number, date, printed total
-    "invoice": ("invoice_number", "invoice_date", "grand_total"),
-    "receipt": ("receipt_number", "receipt_date", "amount"),
-    "order": ("po_number", "po_date", "grand_total"),
-    "po": ("po_number", "po_date", "grand_total"),
+_CHECK_FIELDS = {  # per document type: number, dates, references, every printed amount
+    "invoice": ("invoice_number", "invoice_date", "due_date", "po_reference", "subtotal", "total_tax", "grand_total"),
+    "receipt": ("receipt_number", "receipt_date", "invoice_reference", "subtotal", "tax_amount", "amount"),
+    "order": ("po_number", "po_date", "subtotal", "total_tax", "grand_total"),
+    "po": ("po_number", "po_date", "subtotal", "total_tax", "grand_total"),
 }
+_CONFLICT_FLAG = "conflicting_values"  # Financial raises conflicting_printed_values from this flag
 
 
 def verify_extraction(records: list[dict], reference: list[dict]) -> dict:
     """Self-check live extraction against the hand-checked records (same source_ref).
 
-    Compares document type, vendor, number, date and printed total. Returns field
-    accuracy plus every mismatch, so a wrong read is visible instead of silent.
+    Compares document type, vendor, number, dates, references, every printed amount,
+    and whether both flagged conflicting printed figures. Returns field accuracy, a
+    per-field breakdown and every mismatch, so a wrong read is visible instead of silent.
     """
     ref_by_src = {r.get("source_ref"): r for r in reference}
     checked = matched = compared = 0
+    by_field: dict[str, list[int]] = {}
     mismatches = []
     for rec in records:
         ref = ref_by_src.get(rec.get("source_ref"))
@@ -180,10 +183,15 @@ def verify_extraction(records: list[dict], reference: list[dict]) -> dict:
             continue
         compared += 1
         doc_type = ref.get("document_type", "invoice")
-        fields = ("document_type", "vendor_name") + _CHECK_FIELDS.get(doc_type, _CHECK_FIELDS["invoice"])
+        fields = ("document_type", "vendor_name") + _CHECK_FIELDS.get(doc_type, _CHECK_FIELDS["invoice"]) + (_CONFLICT_FLAG,)
         for field in fields:
-            want, got = ref.get(field), rec.get(field)
-            if isinstance(want, (int, float)) and isinstance(got, (int, float)):
+            if field == _CONFLICT_FLAG:
+                want, got = _CONFLICT_FLAG in (ref.get("flags") or []), _CONFLICT_FLAG in (rec.get("flags") or [])
+            else:
+                want, got = ref.get(field), rec.get(field)
+            if isinstance(want, bool) or isinstance(got, bool):
+                ok = want == got
+            elif isinstance(want, (int, float)) and isinstance(got, (int, float)):
                 ok = abs(want - got) <= 0.01
             else:
                 ok = str(want or "").strip().lower() == str(got or "").strip().lower()
@@ -191,6 +199,9 @@ def verify_extraction(records: list[dict], reference: list[dict]) -> dict:
                 ok = ok or {str(want), str(got)} == {"order", "po"}
             checked += 1
             matched += ok
+            tally = by_field.setdefault(field, [0, 0])
+            tally[0] += ok
+            tally[1] += 1
             if not ok:
                 mismatches.append({"source_ref": rec.get("source_ref"), "field": field, "expected": want, "extracted": got})
     return {
@@ -198,6 +209,7 @@ def verify_extraction(records: list[dict], reference: list[dict]) -> dict:
         "fields_checked": checked,
         "fields_matched": matched,
         "accuracy": round(matched / checked, 3) if checked else None,
+        "by_field": {f: {"matched": m, "checked": c} for f, (m, c) in by_field.items()},
         "mismatches": mismatches,
     }
 
@@ -546,6 +558,17 @@ class PipelineOrchestrator:
                 "2. Assign a confidence score (0.0-1.0) to each critical field, in a 'confidence' object.\n"
                 "3. If a field is unparseable, set it to null and add a flag.\n"
                 "4. If the document is bad (blurry, handwritten), do not guess. Flag it.\n"
+                "4a. If the document prints two DIFFERENT figures for the same thing (two totals, two SST "
+                "amounts, a stray unlabelled number next to a total), add the flag 'conflicting_values' and put "
+                "both figures in a 'notes' string, e.g. "
+                "\"Two totals printed: 'TOTAL AMOUNT: RM 425.00' and 'RM45.70' below it.\" "
+                "The same value printed twice (e.g. 'TOTAL: RM 352.00' and 'RM 352.00' below it) is NOT a "
+                "conflict: no flag. Record the LABELLED figure, i.e. the number next to its label "
+                "('SST 10%: 9.50' -> total_tax 9.50), not a number from the amount column.\n"
+                "4b. Confidence measures how sure the VALUE is, not how sharp the print is: a field with two "
+                "printed values, garbled characters (e.g. '120ping', '12.0ai'), or a value you had to infer "
+                "gets confidence 0.5-0.65. Use the same flags as the source: conflicting_values, "
+                "unreadable_field, handwritten, blurry_image, no_po_reference, possible_duplicate.\n"
                 "5. Record the SST rate and amount as printed; do not correct them.\n"
                 "6. Numbers are JSON numbers (tax_rate 10, not '10%'; 1200.0, not 'RM 1,200'). Dates are YYYY-MM-DD.\n"
                 "7. Return a single JSON object, no explanation.\n\n"
@@ -556,7 +579,8 @@ class PipelineOrchestrator:
                 "line_items [{description, amount}], subtotal, tax_amount, tax_rate, amount, invoice_reference\n"
                 "- order (purchase order): vendor_name, po_number, po_date, buyer_name, delivery_date, "
                 "line_items [{description, quantity, unit_price}], subtotal, total_tax, tax_rate, grand_total\n"
-                "Always include: document_type, currency, confidence, status (clean|flagged|error), flags."
+                "Always include: document_type, currency, confidence, status (clean|flagged|error), flags, "
+                "and notes (empty string if nothing unusual)."
             )
             messages = [
                 {"role": "system", "content": system_prompt},

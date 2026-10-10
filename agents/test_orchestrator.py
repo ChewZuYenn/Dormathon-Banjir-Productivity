@@ -9,18 +9,21 @@ from agents.orchestrator import build_chase_emails, chase_targets, normalize_ext
 def test_verify_extraction_reports_field_mismatches():
     reference = [
         {"source_ref": "a.png", "document_type": "invoice", "vendor_name": "Kedai A", "invoice_number": "INV-1",
-         "invoice_date": "2026-09-01", "grand_total": 100.0},
+         "invoice_date": "2026-09-01", "grand_total": 100.0, "po_reference": "PO-0987", "flags": ["conflicting_values"]},
         {"source_ref": "b.png", "document_type": "order", "vendor_name": "B", "po_number": "PO-1", "po_date": None, "grand_total": 5.0},
     ]
     live = [
         {"source_ref": "a.png", "document_type": "invoice", "vendor_name": "kedai a ", "invoice_number": "INV-1",
-         "invoice_date": "2026-09-01", "grand_total": 109.0},
+         "invoice_date": "2026-09-01", "grand_total": 109.0, "po_reference": "PO-0967", "flags": ["total_mismatch"]},
         {"source_ref": "b.png", "document_type": "po", "vendor_name": "B", "po_number": "PO-1", "po_date": None, "grand_total": 5.0},
         {"source_ref": "unknown.png", "document_type": "invoice"},
     ]
     v = verify_extraction(live, reference)
-    assert v["documents_compared"] == 2 and v["fields_checked"] == 10 and v["fields_matched"] == 9
-    assert v["mismatches"] == [{"source_ref": "a.png", "field": "grand_total", "expected": 100.0, "extracted": 109.0}]
+    # invoice: type, vendor, 7 fields, conflict flag = 10; order: type, vendor, 5 fields, conflict flag = 8
+    assert v["documents_compared"] == 2 and v["fields_checked"] == 18 and v["fields_matched"] == 15
+    assert [(m["field"], m["expected"], m["extracted"]) for m in v["mismatches"]] == [
+        ("po_reference", "PO-0987", "PO-0967"), ("grand_total", 100.0, 109.0), ("conflicting_values", True, False)]
+    assert v["by_field"]["grand_total"] == {"matched": 1, "checked": 2}
 
 
 def test_chase_emails_one_per_vendor_document_with_template_fallback():

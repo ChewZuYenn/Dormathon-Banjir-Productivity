@@ -50,6 +50,7 @@ You never guess to make a bad document look good. Instead:
 - Handwritten → extract with lower confidence, flag `handwritten`
 - Missing PO reference → set `po_reference` to null, flag `no_po_reference` (only flag if the amount > RM 500)
 - Wrong total → record the printed total as-is, flag `total_mismatch` (Financial will catch the arithmetic error)
+- Two different figures printed for the same thing (two totals, two SST amounts) → record the labelled one, flag `conflicting_values`, describe both in `notes`, and give that field confidence below 0.7
 - Duplicate → process both, flag `possible_duplicate` on the second one (Financial will confirm)
 - Completely unparseable → status `error`, flag `unparseable`, output empty record with source_ref only
 

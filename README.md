@@ -125,7 +125,8 @@ Then open **http://127.0.0.1:5000** (redirects to `/web-office/`). `app.py` serv
   Tax amounts that don't match the printed rate are still flagged. Remove it before running on real documents.
 - **"Read the 36 scans live with Gemini"** (toggle above the cards, off by default): Logistics reads every scan with Gemini
   (4 in parallel, ~25 s, ~38 API calls) instead of loading the hand-checked `agents/logistics/output.json`, then checks itself
-  against it (document type, vendor, number, date, total). First live run: 36/36 scans, 180/180 fields matched. Off by default
+  against it (type, vendor, number, dates, references, every printed amount, conflicting-figure flag). Latest live run:
+  337/339 fields matched, same 57 exceptions and 2 chase emails as the hand-checked run. Off by default
   to save free-tier quota; turn it on to show real extraction.
 - `POST /api/run` (same body, one JSON response) still works for scripts. Neither endpoint modifies repo files (Financial works in a temp dir).
 - `python run_pipeline.py` runs the same orchestrator from the command line (same tasks, emails and figures as the site).
