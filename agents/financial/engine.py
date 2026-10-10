@@ -212,8 +212,30 @@ class FinancialEngine:
             grand = rec.get("grand_total")
             subtotal = rec.get("subtotal")
             total_tax = rec.get("total_tax")
+            doc_num = rec.get("invoice_number") or rec.get("po_number", "?")
+
+            # 4a: Check line items sum vs subtotal
+            line_items = rec.get("line_items", [])
+            if subtotal is not None and line_items:
+                computed_subtotal = sum(li.get("quantity", 0) * li.get("unit_price", 0) for li in line_items)
+                tol = get_tolerance(subtotal)
+                delta_sub = abs(subtotal - computed_subtotal)
+                if delta_sub > tol:
+                    self._add_exception(
+                        type="arithmetic_mismatch",
+                        reason=f"Subtotal RM {subtotal:.2f} on {doc_num} does not match sum of line items RM {computed_subtotal:.2f} (delta: RM {delta_sub:.2f}, exceeds tolerance of RM {tol:.2f})",
+                        source_ref=rec.get("source_ref", ""),
+                        document_number=doc_num,
+                        document_type=rec.get("document_type"),
+                        vendor_name=rec.get("vendor_name"),
+                        severity="critical",
+                        delta=round(delta_sub, 2),
+                        details={"expected": computed_subtotal, "actual": subtotal, "tolerance": tol, "check": "subtotal_vs_line_items"},
+                        suggested_action=f"Verify the subtotal on {doc_num} — it does not match the sum of line item amounts."
+                    )
+
+            # 4b: Check grand_total vs subtotal + total_tax
             if grand is None:
-                doc_num = rec.get("invoice_number") or rec.get("po_number", "?")
                 self._add_exception(
                     type="unparseable_total",
                     reason=f"Grand total is missing or unparseable on {doc_num}",
@@ -226,12 +248,11 @@ class FinancialEngine:
                 )
                 continue
             if subtotal is None or total_tax is None:
-                continue  # Can't check
+                continue  # Can't check grand total
             expected = subtotal + total_tax
             tolerance = get_tolerance(grand)
             delta = abs(grand - expected)
             if delta > tolerance:
-                doc_num = rec.get("invoice_number") or rec.get("po_number", "?")
                 self._add_exception(
                     type="arithmetic_mismatch",
                     reason=f"Grand total RM {grand:.2f} does not match subtotal + tax = RM {expected:.2f} (delta: RM {delta:.2f}, exceeds tolerance of RM {tolerance:.2f})",
@@ -244,6 +265,24 @@ class FinancialEngine:
                     details={"expected": expected, "actual": grand, "tolerance": tolerance},
                     suggested_action=f"Verify the total on {doc_num} — the printed grand total does not match the sum of subtotal and tax."
                 )
+
+            # 4c: Check total_tax vs sum of line item tax_amounts
+            if total_tax is not None and line_items:
+                computed_tax = sum(li.get("tax_amount", 0) or 0 for li in line_items)
+                delta_tax = abs(total_tax - computed_tax)
+                if delta_tax > 1.00:  # RM 1 tolerance on tax
+                    self._add_exception(
+                        type="arithmetic_mismatch",
+                        reason=f"Total tax RM {total_tax:.2f} on {doc_num} does not match sum of line item taxes RM {computed_tax:.2f} (delta: RM {delta_tax:.2f})",
+                        source_ref=rec.get("source_ref", ""),
+                        document_number=doc_num,
+                        document_type=rec.get("document_type"),
+                        vendor_name=rec.get("vendor_name"),
+                        severity="warning",
+                        delta=round(delta_tax, 2),
+                        details={"expected": computed_tax, "actual": total_tax, "tolerance": 1.0, "check": "total_tax_vs_line_items"},
+                        suggested_action=f"Verify the tax total on {doc_num} — it does not match the sum of line item tax amounts."
+                    )
 
     # ── Step 5: SST Rate Validation ──
     def step5_sst(self):
@@ -424,9 +463,22 @@ class FinancialEngine:
                         row["reconciled"] = True
                         row["reconciled_with"] = matched_receipt.get("source_ref")
             else:
-                due = safe_date(inv.get("due_date"))
-                if due and due < TODAY:
-                    num = inv.get("invoice_number", "?")
+                num = inv.get("invoice_number", "?")
+                due_str = inv.get("due_date")
+                due = safe_date(due_str)
+                if due is None:
+                    # No due date at all
+                    self._add_exception(
+                        type="no_due_date",
+                        reason=f"Invoice {num} from {inv.get('vendor_name','?')} has no due date — cannot determine if overdue.",
+                        source_ref=inv.get("source_ref", ""),
+                        document_number=num,
+                        document_type="invoice",
+                        vendor_name=inv.get("vendor_name"),
+                        severity="warning",
+                        suggested_action=f"Confirm the payment due date for invoice {num} from {inv.get('vendor_name','?')}."
+                    )
+                elif due < TODAY:
                     grand = inv.get("grand_total", 0)
                     self._add_exception(
                         type="overdue",
@@ -613,7 +665,13 @@ def main():
 
     input_path = sys.argv[1]
     with open(input_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
+        raw = json.load(f)
+
+    # Accept both formats: plain array [...] or {period, records: [...]}
+    if isinstance(raw, list):
+        data = {"period": PERIOD, "records": raw}
+    else:
+        data = raw
 
     engine = FinancialEngine(data)
     ledger, exceptions = engine.run()
