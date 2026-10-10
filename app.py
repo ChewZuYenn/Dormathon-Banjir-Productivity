@@ -57,7 +57,7 @@ sys.path.insert(0, str(AGENTS_DIR))
 # ---------------------------------------------------------------------------
 
 try:
-    from flask import Flask, request, jsonify, send_from_directory
+    from flask import Flask, request, jsonify, send_from_directory, redirect
 except ImportError:
     print("Flask not installed. Run: pip install flask")
     print("Or: pip install -r requirements.txt")
@@ -240,8 +240,16 @@ FRONTEND_DIR = PROJECT_ROOT / "frontend"
 @app.route("/<path:path>")
 def serve_frontend(path):
     """Serve the frontend SPA if it exists."""
+    if not path and (FRONTEND_DIR / "web-office" / "index.html").exists():
+        return redirect("/web-office/")
     if FRONTEND_DIR.exists():
-        if path and (FRONTEND_DIR / path).exists():
+        target = FRONTEND_DIR / path
+        if path and target.is_dir() and (target / "index.html").exists():
+            # Trailing slash keeps the page's relative asset URLs inside the folder
+            if not path.endswith("/"):
+                return redirect("/" + path + "/")
+            return send_from_directory(str(target), "index.html")
+        if path and target.is_file():
             return send_from_directory(str(FRONTEND_DIR), path)
         return send_from_directory(str(FRONTEND_DIR), "index.html")
     return jsonify({

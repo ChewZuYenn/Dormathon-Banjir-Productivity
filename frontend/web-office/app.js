@@ -191,7 +191,7 @@ function init(renderer) {
 
 const agents = ["Secretary", "Logistics", "Financial"];
 let running = false;
-const labels = { idle: "等待 · idle", working: "执行中 · working", done: "模拟完成 · done" };
+const labels = { idle: "等待 · idle", working: "执行中 · working", done: "完成 · done", error: "出错 · error" };
 function setState(name, status, text) {
   const card = document.querySelector('[data-agent="' + name + '"]');
   card.dataset.status = status;
@@ -205,16 +205,26 @@ document.querySelector("#task-form").addEventListener("submit", async event => {
   if (!task) { document.querySelector("#current-step").textContent = "请先输入演示任务。"; return; }
   running = true;
   document.querySelector("#start-button").disabled = true;
-  agents.forEach(name => setState(name, "idle", "等待执行（模拟）"));
-  const descriptions = ["生成任务计划", "整理文档目录", "核对并整理异常"];
+  const step = document.querySelector("#current-step");
+  // ponytail: /api/run is synchronous, so all cards work at once; add job polling for per-agent progress
+  agents.forEach(name => setState(name, "working", "运行中…"));
+  step.textContent = "“" + task + "” 正在运行三个 Agent…";
   try {
-    for (let i = 0; i < agents.length; i++) {
-      document.querySelector("#current-step").textContent = "[模拟] " + agents[i] + " · " + descriptions[i];
-      setState(agents[i], "working", "[模拟] " + descriptions[i]);
-      await new Promise(resolve => setTimeout(resolve, 1100));
-      setState(agents[i], "done", "[模拟] 状态演示完成，未执行账务");
-    }
-    document.querySelector("#current-step").textContent = "“" + task + "”界面模拟结束，未调用真实 Agent。";
+    const res = await fetch("/api/run", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ goal: task }),
+    });
+    const data = await res.json().catch(() => ({ error: "HTTP " + res.status }));
+    if (!res.ok || !data.success) throw new Error(data.error || "HTTP " + res.status);
+    setState("Secretary", "done", data.secretary.tasks.length + " 个待办 · " + data.secretary.chase_emails.length + " 封草稿邮件");
+    setState("Logistics", "done", data.logistics.count + " 条记录");
+    setState("Financial", "done", data.financial.exception_count + " 个异常");
+    window.lastRun = data; // full result, for inspection in the console
+    step.textContent = "“" + task + "” 完成。完整结果：控制台 lastRun。";
+  } catch (error) {
+    agents.forEach(name => setState(name, "error", error.message));
+    step.textContent = "运行失败：" + error.message + "（请用 python app.py 启动，并通过 http://127.0.0.1:5000/web-office/ 打开）";
   } finally {
     running = false;
     document.querySelector("#start-button").disabled = false;

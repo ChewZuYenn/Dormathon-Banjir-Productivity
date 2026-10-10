@@ -56,23 +56,19 @@ python run_pipeline.py --goal "Close out September"
 
 Runs Logistics → Financial → Secretary on the test documents. `python run_pipeline.py --help` lists options.
 
-### API server
+### Web app (3D office + real agents)
 
 ```
-python app.py            # http://127.0.0.1:5000
+python app.py
 ```
 
-### 3D office web viewer
-
-```
-python -m http.server 8788 --directory frontend/web-office
-```
-
-Then open **http://127.0.0.1:8788**. It must be served over HTTP — double-clicking `index.html` won't load the 3D model.
+Then open **http://127.0.0.1:5000** (redirects to `/web-office/`). `app.py` serves both the 3D office page and the API, so they share one origin. Double-clicking `index.html` won't work.
 
 - Left-drag: rotate · Scroll: zoom · Right-drag or Shift+drag: pan · R or "恢复视角": reset view
-- Type a task in the bottom bar and click "开始模拟" to play the agent cards idle → working → done.
-  This is a UI simulation only; it does not call the real agents yet.
+- Type a goal in the bottom bar and click "开始运行". The page calls `POST /api/run`, which runs all three agents;
+  the cards show record / exception / task counts when it finishes. The full result is in the browser console as `lastRun`.
+- `/api/run` returns only when the whole pipeline is done, so all three cards show "working" together.
+- Each run rewrites `agents/logistics/output.json`, `ledger.json` and `exceptions.json`.
 
 ### 3D office in Godot (with real agents)
 

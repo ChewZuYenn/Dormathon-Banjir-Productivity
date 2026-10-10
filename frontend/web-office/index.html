@@ -28,16 +28,16 @@
         <div class="input-mark" aria-hidden="true">AI</div>
         <label for="task-input" class="sr-only">演示任务目标</label>
         <input id="task-input" maxlength="500" value="整理本月结账资料" placeholder="今天想让小助理帮你做什么？" autocomplete="off">
-        <button id="start-button" type="submit">开始模拟 <span aria-hidden="true">→</span></button>
+        <button id="start-button" type="submit">开始运行 <span aria-hidden="true">→</span></button>
       </form>
     </section>
-    <div class="status-heading"><span id="current-step" aria-live="polite">办公室已就绪前，请稍等模型加载。</span><span>仅界面演示 · 未调用真实 Agent</span></div>
-    <section class="agent-cards" aria-label="三个 Agent 的模拟状态">
+    <div class="status-heading"><span id="current-step" aria-live="polite">办公室已就绪前，请稍等模型加载。</span><span>调用 app.py · /api/run</span></div>
+    <section class="agent-cards" aria-label="三个 Agent 的运行状态">
       <article class="agent-card" data-agent="Secretary" data-status="idle"><div class="agent-heading"><div class="agent-icon">S</div><div><h2>Secretary</h2><p>计划与任务协调</p></div><span class="status-badge">等待 · idle</span></div><p class="agent-detail">等待你的任务</p><div class="activity-track"><span></span></div></article>
       <article class="agent-card" data-agent="Logistics" data-status="idle"><div class="agent-heading"><div class="agent-icon">L</div><div><h2>Logistics</h2><p>文档整理与校验</p></div><span class="status-badge">等待 · idle</span></div><p class="agent-detail">等待你的任务</p><div class="activity-track"><span></span></div></article>
       <article class="agent-card" data-agent="Financial" data-status="idle"><div class="agent-heading"><div class="agent-icon">F</div><div><h2>Financial</h2><p>账目核对与异常检查</p></div><span class="status-badge">等待 · idle</span></div><p class="agent-detail">等待你的任务</p><div class="activity-track"><span></span></div></article>
     </section>
-    <footer><p><strong>本轮先完成镜头交互。</strong> 人物仍为静态模型；走动、挥手和纸张拿取还没有移植。原 Godot 项目与 Agent 桥接保留，当前网页不调用后端。</p><span id="render-status">准备 WebGL</span></footer>
+    <footer><p><strong>本轮先完成镜头交互。</strong> 人物仍为静态模型；走动、挥手和纸张拿取还没有移植。任务通过 app.py 的 /api/run 调用真实 Agent。</p><span id="render-status">准备 WebGL</span></footer>
     <noscript><p class="error-message">请启用 JavaScript 后查看三维办公室。</p></noscript>
   </main>
   <script>
