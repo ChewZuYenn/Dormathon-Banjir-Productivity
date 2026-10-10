@@ -1,0 +1,17 @@
+# Secrets: Vercel gets LLM_* from project environment variables, never from a file
+.env
+.env.*
+**/credentials.json
+**/token.json
+
+# Not needed by app.py on Vercel
+office-3d/
+frontend/godot-office/
+slides/
+docs/
+.workbuddy-ai/
+**/tests/
+**/test/
+agents/test_orchestrator.py
+**/__pycache__/
+*.pyc

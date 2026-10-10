@@ -70,6 +70,12 @@ Then open **http://127.0.0.1:5000** (redirects to `/web-office/`). `app.py` serv
 - `/api/run` returns only when the whole pipeline is done, so all three cards show "working" together.
 - Each run rewrites `agents/logistics/output.json`, `ledger.json` and `exceptions.json`.
 
+### Live deployment (Vercel)
+
+**https://dormathon-banjir-productivity.vercel.app** — same `app.py` (web page + `/api/run`), Gemini via Vercel environment variables `LLM_API_URL`, `LLM_API_KEY`, `LLM_MODEL`, `LLM_VISION_MODEL`. `.vercelignore` keeps `.env`, Gmail credentials, Blender/Godot assets and tests out of the upload. Gmail is not available there (no persistent Google login on serverless).
+
+Redeploy: `npx vercel deploy --prod` (Vercel project `coltonthatgoods-projects/dormathon-banjir-productivity`; not connected to GitHub, so pushes don't auto-deploy).
+
 ### Gmail (optional)
 
 With a Gmail account connected, each run also pulls invoice/receipt/PO emails, reads their attachments with the LLM, and adds them to the documents on file.
