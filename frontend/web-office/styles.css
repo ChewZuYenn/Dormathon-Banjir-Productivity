@@ -52,3 +52,32 @@
 .check-item.checked{color:#929b86;text-decoration:line-through;text-decoration-color:#b6beab}
 .check-item.checked input[type="checkbox"]{opacity:0.6}
 .check-item code{background:#e8ece0;padding:1px 5px;border-radius:3px;font-size:11px;color:#506a50}
+
+/* === Run results (filled by app.js) === */
+.ai-note{font-size:11px;line-height:1.5;color:#8c9685;margin:10px 2px 0}
+.check-empty,.muted{font-size:12.5px;color:#858a7c}
+.results{margin:18px 0;border:1px solid #dee6d5;border-radius:22px;background:#fbfaf5;box-shadow:0 10px 30px #56634708;overflow:hidden}
+.results-tabs{display:flex;flex-wrap:wrap;gap:6px;padding:12px 14px;border-bottom:1px solid #e5e7dc;background:#f2f3ea}
+.results-tabs button{border:1px solid #d8dfcd;background:#fff;color:#506a50;border-radius:999px;padding:7px 14px;font:inherit;font-size:13px;cursor:pointer}
+.results-tabs button[aria-selected="true"]{background:#405e4c;border-color:#405e4c;color:#fff}
+.results-body{padding:16px 18px;font-size:13px;color:#344239}
+.results-body h4{margin:16px 0 8px;font-size:14px}
+.results-body ol{margin:0;padding-left:20px;line-height:1.6}
+.table-wrap{overflow-x:auto;max-height:460px;overflow-y:auto;border:1px solid #e5e7dc;border-radius:12px}
+.table-wrap table{border-collapse:collapse;width:100%;font-size:12.5px}
+.table-wrap th{position:sticky;top:0;background:#eef0e6;text-align:left;font-weight:650;padding:8px 10px;white-space:nowrap}
+.table-wrap td{padding:7px 10px;border-top:1px solid #eceee4;vertical-align:top}
+.table-wrap a,.email-meta a{color:#405e4c;font-weight:600}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:10px}
+.stat{background:#f2f3ea;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+.stat span{font-size:11px;color:#858a7c;text-transform:uppercase;letter-spacing:.4px}
+.stat strong{font-size:17px}
+.sev{display:inline-block;font-size:11px;font-weight:650;padding:2px 8px;border-radius:999px;text-transform:capitalize;white-space:nowrap}
+.sev-critical{background:#f6e3df;color:#a04030}
+.sev-warning{background:#f4ecd8;color:#ad853e}
+.sev-info{background:#e8efe0;color:#648159}
+.email-list{display:flex;flex-direction:column;gap:12px}
+.email{border:1px solid #e5e7dc;border-radius:12px;padding:12px 14px;background:#fff}
+.email-meta{font-size:12px;color:#858a7c}
+.email h4{margin:8px 0 6px}
+.email pre{white-space:pre-wrap;font-family:inherit;font-size:13px;line-height:1.55;margin:0}

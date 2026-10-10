@@ -197,6 +197,17 @@ def run_pipeline():
         }), 500
 
 
+@app.route("/api/documents/<path:ref>", methods=["GET"])
+def source_document(ref):
+    """Serve a source document image so every exception/ledger row can be traced.
+
+    Only files under test-documents/; send_from_directory rejects path traversal.
+    """
+    if not ref.startswith("test-documents/"):
+        return jsonify({"error": "not found"}), 404
+    return send_from_directory(str(PROJECT_ROOT), ref)
+
+
 @app.route("/api/tasks/<task_id>/approve", methods=["POST"])
 def approve_task(task_id):
     """Approve a task (placeholder for frontend integration)."""

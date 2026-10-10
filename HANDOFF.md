@@ -140,17 +140,20 @@ Running tests or the pipeline **rewrites** `agents/logistics/output.json`, `ledg
 
 ## 6. Known issues (most important first)
 
-1. **0 chase emails without an LLM.** Demo promises "two drafted chase emails". `/api/run` with Python fallback returned 92 tasks but 0 emails. Fix the Secretary fallback in `agents/orchestrator.py`, or run with an LLM.
-2. **Financial/Logistics WorkBuddy skills missing.** `ad6a50b` says they were added but no `SKILL.md` was committed for either. Causes the two `test_skill_file` failures.
-3. **Some runs still dirty the repo.** `app.py` / `orchestrator.py` now run Financial in a temp dir, but `run_pipeline.py` and the test suites still rewrite the tracked JSON in `agents/logistics/`.
-4. **Web UI shows counts only.** No ledger/exception/task/email views yet; full result is in the browser console as `lastRun`. Empty placeholders exist in `frontend/components/`.
-5. **No per-agent progress on web.** `/api/run` is synchronous, so all three cards are "working" together. Port the bridge's job + polling pattern to `app.py` if needed.
-6. **~12 s per run** — partly probing for an LLM at `localhost:11434` that isn't there.
-7. **Email/task approval endpoints are placeholders** — `/api/tasks/<id>/approve`, `/api/emails/<id>/approve|reject` return success without doing anything.
-8. **Financial `TODAY` is hard-coded** to 2026-10-10 in `engine.py`; `period` is a label only, records aren't filtered by month. Only MYR.
+**Fixed 2026-10-10, late evening** (live on Vercel): the report's figures come from the Financial ledger (the LLM had reported RM 21,875.70 cash out vs RM 11,974.00 + RM 1,197.40 SST in the ledger); 2 chase emails (INV-2026-016 Puteri Kraf, INV-2026-033 Buku Nusa — vendor invoices with conflicting figures or totals that don't add up); one task per exception (57) from the Python task generator; the AI Summary and Checklist panels are built from each run instead of hard-coded; a Results panel (Report · Exceptions · Tasks · Chase emails · Ledger) with links to the source document images; `LLM_TIMEOUT=20` on Vercel.
+
+**Data note — SST 10%:** every generated test document prints "SST 10%". That's an artifact of the template used to generate the data set, not a problem with the agents, so `agents/financial/engine.py` accepts it (`TEMPLATE_SST_RATES`). This removed 35 identical warnings (92 → 57 exceptions). Tax amounts that don't match the printed rate are still flagged. Remove the set before running on real documents.
+
+1. **Financial/Logistics WorkBuddy skills missing.** `ad6a50b` says they were added but no `SKILL.md` was committed for either. Causes the two `test_skill_file` failures.
+2. **Logistics on the live site reads the pre-extracted `output.json`.** Live image extraction works (`extract_documents` + `normalize_extracted`) but the page can't trigger it, and `discover_document_images()` would pick up the 4 full-page scans in `test-documents/extracted/` on top of the 36 crops (duplicates).
+3. **No per-agent progress on web.** `/api/run` is synchronous, so all three cards are "working" together. Port the bridge's job + polling pattern to `app.py` if needed (on Vercel this needs streaming or an external store).
+4. **Email/task approval endpoints are placeholders** — `/api/tasks/<id>/approve`, `/api/emails/<id>/approve|reject` return success without doing anything. Emails are drafts only.
+5. **`run_pipeline.py` (CLI) is behind `app.py`.** It doesn't go through the orchestrator, so it still drafts 0 chase emails, doesn't take report figures from the ledger, and rewrites the tracked JSON in `agents/logistics/` (so do the test suites).
+6. **Financial `TODAY` is hard-coded** to 2026-10-10 in `engine.py`; `period` is a label only, records aren't filtered by month. Only MYR.
+7. **Checklist "Critical" ≠ exception "critical".** Checklist groups use the task generator's priorities (only duplicates are P1); the AI Summary uses exception severity (8 critical).
+8. **Gmail is connected but unproven on a real inbox.** Orchestrator pulls attachments via TAO's `GmailCrawler` when `agents/secretary/credentials.json` + `token.json` exist (README → Gmail). Tested with simulated attachments only; PDFs unverified; local only (no Google login on Vercel).
 9. **Mac-only launchers.** `*.command` files in `frontend/` use zsh and Xuanyu's local paths. Use the commands in §2 instead.
-10. **Repo hygiene:** 9 `__pycache__/*.pyc` files are tracked under `agents/secretary/src/` despite `.gitignore`; root `.gitignore` ignores `*.html` (existing `index.html` is tracked, new HTML files won't be).
-11. **Gmail is connected but unproven on a real inbox.** Orchestrator pulls attachments via TAO's `GmailCrawler` when `agents/secretary/credentials.json` + `token.json` exist (README → Gmail), extracts them with the LLM and normalizes the output (`normalize_extracted`). Tested with simulated attachments only. PDFs are sent to Gemini as-is — unverified.
+10. **Repo hygiene:** 9 `__pycache__/*.pyc` files are tracked under `agents/secretary/src/`; root `.gitignore` ignores `*.html` (existing `index.html` is tracked, new HTML files won't be); pytest can't collect all agents' `tests/` folders in one run (same package name).
 
 ---
 

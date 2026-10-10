@@ -153,6 +153,87 @@ def normalize_extracted(rec: dict) -> dict:
     return rec
 
 
+# ---------------------------------------------------------------------------
+# Secretary output helpers
+# ---------------------------------------------------------------------------
+
+# Problems only the vendor can fix (they must confirm or re-issue the document).
+# The Python Secretary drafts emails for overdue invoices only, and this data set
+# has no due dates, so without this it never drafts any.
+VENDOR_FIX_TYPES = {"conflicting_printed_values", "arithmetic_mismatch"}
+
+
+def chase_targets(exceptions: list[dict]) -> list[dict]:
+    """One chase-email target per vendor document (invoice/receipt) with a vendor-fixable problem."""
+    targets: dict[str, dict] = {}
+    for exc in exceptions:
+        if exc.get("type") not in VENDOR_FIX_TYPES or exc.get("document_type") not in ("invoice", "receipt"):
+            continue
+        doc = exc.get("document_number") or exc.get("source_ref", "?")
+        target = targets.setdefault(doc, {
+            "document_number": doc, "vendor_name": exc.get("vendor_name") or "Vendor",
+            "source_ref": exc.get("source_ref", ""), "problems": [],
+        })
+        target["problems"].append(exc.get("reason", exc.get("type")))
+    return list(targets.values())
+
+
+def template_chase_email(target: dict, n: int) -> dict:
+    """Plain draft used when the LLM is unavailable or skipped a target."""
+    problems = "\n".join(f"- {p}" for p in target["problems"])
+    return {
+        "email_id": f"EMAIL-{n:03d}",
+        "related_invoice": target["document_number"],
+        "vendor_name": target["vendor_name"],
+        "source_ref": target["source_ref"],
+        "subject": f"Please confirm {target['document_number']}",
+        "body": (f"Dear {target['vendor_name']},\n\n"
+                 f"While closing our books we found the following on {target['document_number']}:\n"
+                 f"{problems}\n\nCould you confirm the correct figures or send a corrected copy?\n\n"
+                 "Thank you."),
+        "status": "draft",
+        "source": "template",
+    }
+
+
+def build_chase_emails(targets: list[dict], llm_emails: list) -> list[dict]:
+    """One draft per target: the LLM's text when it wrote a usable one, else the template."""
+    by_doc = {e.get("related_invoice"): e for e in llm_emails or []
+              if isinstance(e, dict) and e.get("subject") and e.get("body")}
+    emails = []
+    for n, target in enumerate(targets, 1):
+        email = template_chase_email(target, n)
+        llm = by_doc.get(target["document_number"])
+        if llm:
+            email.update(subject=str(llm["subject"]), body=str(llm["body"]), source="llm")
+        emails.append(email)
+    return emails
+
+
+def report_from_ledger(report: dict, ledger: dict, exceptions: list, tasks: list, emails: list) -> dict:
+    """Overwrite every figure in the report with the Financial ledger's numbers.
+
+    An LLM-written report invented cash figures (RM 21,875.70 out vs RM 11,974.00
+    in the ledger); the report must never disagree with the ledger.
+    """
+    s = ledger.get("summary", {})
+    report = dict(report or {})
+    report.update(
+        cash_in=s.get("total_in", 0.0),
+        cash_out=round(s.get("total_out", 0.0) + s.get("total_tax", 0.0), 2),  # incl. SST, so in - out = net
+        net_cash=s.get("net_cash_flow", 0.0),
+        total_tax=s.get("total_tax", 0.0),
+        categories=[{"category": c["category"], "total": round(c["total_amount"], 2), "count": c["row_count"]}
+                    for c in s.get("by_category", [])],
+        reconciliation_rate=s.get("reconciliation_rate", 0.0),
+        total_exceptions=len(exceptions),
+        tasks_generated=len(tasks),
+        chase_emails_drafted=len(emails),
+        figures_source="financial_ledger",
+    )
+    return report
+
+
 class PipelineOrchestrator:
     """Orchestrates the 3-agent pipeline with optional LLM calls.
 
@@ -539,57 +620,42 @@ class PipelineOrchestrator:
         }
 
     # ------------------------------------------------------------------
-    # Step 4: Secretary LLM — Tasks, Chase Emails, Final Report
+    # Step 4: Secretary — tasks (Python), chase emails + report (LLM)
     # ------------------------------------------------------------------
 
-    def secretary_report_llm(
-        self,
-        goal: str,
-        exceptions: list[dict],
-        logistics_records: list[dict],
-    ) -> dict:
-        """Secretary LLM converts exceptions to tasks, chase emails, and a final report.
+    def secretary_report_llm(self, goal: str, exceptions: list[dict], targets: list[dict]) -> dict | None:
+        """LLM writes the chase emails for `targets` and the report narrative.
 
-        If LLM is not available, falls back to the Python Secretary.
-
-        Returns a dict with:
-            - plan: dict (from step 1)
-            - tasks: list of task dicts
-            - chase_emails: list of email dicts
-            - final_report: dict
-            - source: "llm" or "python_fallback"
+        Tasks are NOT asked of the LLM: the Python task generator makes one per
+        exception, which the LLM never reliably did. Returns None when the LLM is
+        unavailable or fails, so callers fall back to templates.
         """
         if not self._llm_available():
-            return self._secretary_report_python(goal, exceptions, logistics_records)
+            return None
 
         system_prompt = self.secretary_prompt or self._fallback_secretary_prompt()
-
-        # Prepare exceptions summary for the LLM
-        exc_summary = json.dumps(exceptions[:50], ensure_ascii=False, indent=2)  # Cap at 50 to fit context
-        doc_summary = json.dumps(
-            [{"vendor": r.get("vendor_name", "?"), "amount": r.get("grand_total", r.get("amount", 0)),
-              "type": r.get("document_type", "?"), "ref": r.get("source_ref", "?")}
-             for r in logistics_records],
-            ensure_ascii=False, indent=2
-        )
+        counts: dict[str, int] = {}
+        for exc in exceptions:
+            counts[exc.get("type", "unknown")] = counts.get(exc.get("type", "unknown"), 0) + 1
+        critical = [
+            {k: exc.get(k) for k in ("type", "document_number", "vendor_name", "reason")}
+            for exc in exceptions if exc.get("severity") == "critical"
+        ][:30]
 
         user_prompt = (
             f"Business goal: {goal}\n\n"
-            f"Exceptions from Financial agent ({len(exceptions)} total):\n{exc_summary}\n\n"
-            f"Document summary ({len(logistics_records)} docs):\n{doc_summary}\n\n"
-            "Based on these exceptions, generate:\n"
-            "1. A list of tasks (one per exception) with priority (P1-P4), plain-language title, and action required.\n"
-            "2. Chase emails ONLY for overdue items (human-in-the-loop: drafts, never sent).\n"
-            "3. A final report with cash flow summary, category breakdown, and top 3 actions.\n\n"
+            f"Exception counts from the Financial agent ({len(exceptions)} total): {json.dumps(counts)}\n"
+            f"Critical exceptions:\n{json.dumps(critical, ensure_ascii=False, indent=2)}\n\n"
+            f"Vendor documents that need a chase email ({len(targets)}):\n"
+            f"{json.dumps(targets, ensure_ascii=False, indent=2)}\n\n"
+            "Write:\n"
+            "1. Exactly one polite chase email per vendor document above, asking the vendor to confirm or "
+            "re-issue the document and explaining each problem in plain language. Drafts only, never sent. "
+            "Do not invent amounts or dates beyond what is given.\n"
+            "2. The top 3 actions for the business owner, in plain language.\n\n"
             "Return a JSON object:\n"
-            '{"tasks": [{"task_id": "TASK-0001", "title": "...", "priority": "P1"|"P2"|"P3"|"P4", '
-            '"invoice_number": "...", "vendor_name": "...", "amount": 0.0, "action_required": "...", '
-            '"status": "pending"}], '
-            '"chase_emails": [{"email_id": "EMAIL-001", "subject": "...", "body": "...", '
-            '"related_invoice": "...", "status": "draft"}], '
-            '"final_report": {"goal": "...", "period": "...", "cash_in": 0.0, "cash_out": 0.0, '
-            '"net_cash": 0.0, "top_3_actions": ["...", "...", "..."], '
-            '"total_exceptions": 0, "tasks_generated": 0, "chase_emails_drafted": 0}}\n'
+            '{"chase_emails": [{"related_invoice": "<document_number>", "subject": "...", "body": "..."}], '
+            '"top_3_actions": ["...", "...", "..."]}\n'
             "Return ONLY the JSON, no explanation."
         )
 
@@ -602,12 +668,11 @@ class PipelineOrchestrator:
                 json_mode=True,
                 temperature=0.3,
             )
-            report_data = json.loads(response)
-            report_data["source"] = "llm"
-            return report_data
+            data = json.loads(response)
+            return data if isinstance(data, dict) else None
         except Exception as e:
-            print(f"  [Orchestrator] Secretary report LLM failed: {e}")
-            return self._secretary_report_python(goal, exceptions, logistics_records)
+            print(f"  [Orchestrator] Secretary LLM failed: {e}")
+            return None
 
     def _secretary_report_python(
         self,
@@ -821,18 +886,25 @@ class PipelineOrchestrator:
         print(f"  Total out: RM {ledger.get('summary', {}).get('total_out', 0):,.2f}")
         print(f"  Exceptions: {len(exc_list)}")
 
-        # Step 4: Secretary LLM — Tasks, Chase Emails, Final Report
+        # Step 4: Secretary — one task per exception (Python), chase emails +
+        # report narrative (LLM, template fallback), figures from the ledger
         print("\n" + "=" * 60)
         print("  STEP 4/4: SECRETARY (TASKS + REPORT)")
         print("=" * 60)
         t = time.time()
-        secretary_result = self.secretary_report_llm(goal, exc_list, logistics_records)
-        timings["step4_secretary"] = round(time.time() - t, 2)
-        sources["secretary"] = secretary_result.get("source", "unknown")
-        print(f"  Secretary source: {sources['secretary']}")
+        secretary_result = self._secretary_report_python(goal, exc_list, logistics_records)
         tasks = secretary_result.get("tasks", [])
-        chase_emails = secretary_result.get("chase_emails", [])
+        targets = chase_targets(exc_list)
+        llm = self.secretary_report_llm(goal, exc_list, targets)
+        chase_emails = build_chase_emails(targets, (llm or {}).get("chase_emails"))
         final_report = secretary_result.get("final_report", {})
+        if llm and isinstance(llm.get("top_3_actions"), list) and llm["top_3_actions"]:
+            final_report["top_3_actions"] = [str(a) for a in llm["top_3_actions"][:3]]
+        final_report = report_from_ledger(final_report, ledger, exc_list, tasks, chase_emails)
+        timings["step4_secretary"] = round(time.time() - t, 2)
+        sources["secretary"] = "llm" if llm else "python_fallback"
+        sources["tasks"] = "python_task_generator"
+        print(f"  Secretary source: {sources['secretary']}")
         print(f"  Tasks generated: {len(tasks)}")
         print(f"  Chase emails drafted: {len(chase_emails)}")
         if final_report:
@@ -869,6 +941,7 @@ class PipelineOrchestrator:
                 "tasks": tasks,
                 "chase_emails": chase_emails,
                 "final_report": final_report,
+                "chase_targets": targets,
                 "exceptions_processed": secretary_result.get("exceptions_processed", len(exc_list)),
                 "warnings": secretary_result.get("warnings", []),
             },

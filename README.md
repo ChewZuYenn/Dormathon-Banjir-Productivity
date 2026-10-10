@@ -105,8 +105,17 @@ python app.py
 Then open **http://127.0.0.1:5000** (redirects to `/web-office/`). `app.py` serves both the 3D office page and the API, so they share one origin. Double-clicking `index.html` won't work.
 
 - Left-drag: rotate · Scroll: zoom · Right-drag or Shift+drag: pan · R or "Reset view": reset view
-- Type a goal in the bottom bar and click "Run". The page calls `POST /api/run`, which runs all three agents;
-  the cards show record / exception / task counts when it finishes. The full result is in the browser console as `lastRun`.
+- Type a goal in the bottom bar and click "Run". The page calls `POST /api/run`, which runs all three agents, then fills:
+  - **AI Summary** (left): exceptions grouped by type, critical first, plus the Secretary's top 3 actions.
+  - **Checklist** (right): one task per exception, grouped by priority; ticks are saved in the browser.
+  - **Results** (below the cards): Report · Exceptions · Tasks · Chase emails · Ledger. "view" opens the source document image (`/api/documents/test-documents/...`).
+  The full JSON is in the browser console as `lastRun`.
+- How the Secretary step works: tasks come from the Python task generator (one per exception); Gemini writes the chase emails
+  (one per vendor invoice/receipt with conflicting figures or totals that don't add up; template if no LLM) and the top 3 actions;
+  every figure in the report is overwritten from the Financial ledger, so the report can't disagree with it.
+- **Data note — SST 10%:** every generated test document prints "SST 10%". That's an artifact of the template used to generate the data,
+  not a problem with the agents, so the Financial engine accepts 10% (`TEMPLATE_SST_RATES` in `agents/financial/engine.py`).
+  Tax amounts that don't match the printed rate are still flagged. Remove it before running on real documents.
 - `/api/run` returns only when the whole pipeline is done, so all three cards show "working" together.
 - Runs through `app.py` don't modify repo files (Financial works in a temp dir). `run_pipeline.py` and the test suites still rewrite `agents/logistics/ledger.json` and `exceptions.json`.
 

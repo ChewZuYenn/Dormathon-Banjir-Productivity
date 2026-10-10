@@ -223,7 +223,8 @@ document.querySelector("#task-form").addEventListener("submit", async event => {
     setState("Logistics", "done", data.logistics.count + " records" + gmailNote);
     setState("Financial", "done", data.financial.exception_count + " exceptions");
     window.lastRun = data; // full result, for inspection in the console
-    step.textContent = "“" + task + "” done. Full result: lastRun in the browser console.";
+    renderRun(data);
+    step.textContent = "“" + task + "” done. Results below; full JSON: lastRun in the browser console.";
   } catch (error) {
     agents.forEach(name => setState(name, "error", error.message));
     step.textContent = "Run failed: " + error.message + " (start with python app.py and open http://127.0.0.1:5000/web-office/)";
@@ -233,37 +234,144 @@ document.querySelector("#task-form").addEventListener("submit", async event => {
   }
 });
 
-// === Interactive checklist checkboxes — persist to localStorage ===
-(function() {
-  const CHECK_KEY = "banjir-checklist-state";
-  const totalChecks = document.querySelectorAll('.check-item input[type="checkbox"][data-check]').length;
 
-  // Load saved state
-  let saved = {};
-  try { saved = JSON.parse(localStorage.getItem(CHECK_KEY) || "{}"); } catch(e) {}
-
-  document.querySelectorAll('.check-item input[type="checkbox"][data-check]').forEach(cb => {
-    const id = cb.getAttribute("data-check");
-    if (saved[id]) {
-      cb.checked = true;
-      cb.closest(".check-item").classList.add("checked");
-    }
-    cb.addEventListener("change", () => {
-      if (cb.checked) cb.closest(".check-item").classList.add("checked");
-      else cb.closest(".check-item").classList.remove("checked");
-      saved[id] = cb.checked;
-      try { localStorage.setItem(CHECK_KEY, JSON.stringify(saved)); } catch(e) {}
-      updateProgress();
-    });
-  });
-
-  function updateProgress() {
-    const checked = document.querySelectorAll('.check-item input[type="checkbox"]:checked').length;
-    const pct = totalChecks > 0 ? Math.round(checked / totalChecks * 100) : 0;
-    const fill = document.getElementById("check-progress-fill");
-    const text = document.getElementById("check-progress-text");
-    if (fill) fill.style.width = pct + "%";
-    if (text) text.textContent = checked + " / " + totalChecks + " fixed (" + pct + "%)";
+// === Render a run: AI Summary, Checklist, Results (all text via textContent) ===
+function el(tag, attrs, ...children) {
+  const node = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (k === "class") node.className = v; else if (v != null) node.setAttribute(k, v);
   }
-  updateProgress();
-})();
+  for (const c of children.flat()) if (c != null) node.append(c instanceof Node ? c : String(c));
+  return node;
+}
+const rm = n => "RM " + Number(n || 0).toLocaleString("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const TYPE_LABELS = {
+  conflicting_printed_values: "Conflicting printed figures",
+  arithmetic_mismatch: "Totals don't add up",
+  duplicate_similar_confidence: "Duplicate invoice",
+  missing_po_match: "PO referenced but not on file",
+  missing_po_reference_high_value: "High-value invoice without a PO",
+  no_due_date: "No due date",
+  low_confidence: "Low extraction confidence",
+  quantity_mismatch: "Quantity differs from the PO",
+  tax_rate_anomaly: "SST doesn't match the printed rate",
+};
+const typeLabel = t => TYPE_LABELS[t] || String(t || "other").replace(/_/g, " ");
+const SEVERITY_ORDER = { critical: 0, warning: 1, info: 2 };
+// Only the bundled test documents can be opened; Gmail refs have no public file
+const docLink = ref => typeof ref === "string" && ref.startsWith("test-documents/")
+  ? el("a", { href: "/api/documents/" + ref, target: "_blank", rel: "noopener" }, "view")
+  : el("span", { class: "muted" }, ref ? "—" : "");
+
+function renderRun(data) {
+  const exceptions = (data.financial.exceptions && data.financial.exceptions.exceptions) || [];
+  renderSummary(data, exceptions);
+  renderChecklist(data.secretary.tasks || []);
+  renderResults(data, exceptions);
+}
+
+function renderSummary(data, exceptions) {
+  const groups = {};
+  for (const e of exceptions) (groups[e.type] = groups[e.type] || []).push(e);
+  const ordered = Object.values(groups).sort((a, b) =>
+    (SEVERITY_ORDER[a[0].severity] ?? 3) - (SEVERITY_ORDER[b[0].severity] ?? 3) || b.length - a.length);
+  document.querySelector("#wrong-list").replaceChildren(...ordered.map(list => {
+    const docs = [...new Set(list.map(e => e.document_number).filter(Boolean))];
+    return el("li", null, el("strong", null, list.length + " × " + typeLabel(list[0].type)),
+      " — " + (list[0].reason || "") + (docs.length > 1 ? " (" + docs.slice(0, 4).join(", ") + (docs.length > 4 ? ", …" : "") + ")" : ""));
+  }));
+  const actions = (data.secretary.final_report && data.secretary.final_report.top_3_actions) || [];
+  document.querySelector("#change-list").replaceChildren(...actions.map(a => el("li", null, a)));
+  document.querySelector("#ai-generated").textContent =
+    "Built by the agents · " + new Date().toLocaleTimeString() + " · secretary: " + (data.sources.secretary || "?");
+}
+
+function renderChecklist(tasks) {
+  const KEY = "banjir-checklist-state";
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
+  const groups = [
+    { title: "🔴 Critical — fix first", cls: "critical", match: p => p === 1 },
+    { title: "🟡 High priority", cls: "warning", match: p => p === 2 },
+    { title: "🟢 Tidy up", cls: "tidy", match: p => p !== 1 && p !== 2 },
+  ];
+  const boxes = [];
+  const sections = groups.map(g => {
+    const items = tasks.filter(t => g.match(Number(t.priority)));
+    if (!items.length) return null;
+    return el("div", { class: "check-group" }, el("h3", { class: "check-group-title " + g.cls }, g.title + " (" + items.length + ")"),
+      items.map(t => {
+        const id = (t.invoice_number || "") + "|" + t.title;
+        const box = el("input", { type: "checkbox" });
+        const label = el("label", { class: "check-item", title: t.action_required || "" }, box, " " + t.title);
+        box.checked = !!saved[id];
+        label.classList.toggle("checked", box.checked);
+        box.addEventListener("change", () => {
+          label.classList.toggle("checked", box.checked);
+          saved[id] = box.checked;
+          try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {}
+          progress();
+        });
+        boxes.push(box);
+        return label;
+      }));
+  });
+  document.querySelector("#check-groups").replaceChildren(...sections.filter(Boolean));
+  function progress() {
+    const done = boxes.filter(b => b.checked).length;
+    const pct = boxes.length ? Math.round(done / boxes.length * 100) : 0;
+    document.querySelector("#check-progress-fill").style.width = pct + "%";
+    document.querySelector("#check-progress-text").textContent = done + " / " + boxes.length + " fixed (" + pct + "%)";
+  }
+  progress();
+}
+
+function table(headers, rows) {
+  return el("div", { class: "table-wrap" }, el("table", null,
+    el("thead", null, el("tr", null, headers.map(h => el("th", null, h)))),
+    el("tbody", null, rows.map(r => el("tr", null, r.map(c => el("td", null, c)))))));
+}
+
+function renderResults(data, exceptions) {
+  const report = data.secretary.final_report || {};
+  const ledger = data.financial.ledger || {};
+  const views = {
+    report: () => el("div", null,
+      el("div", { class: "stat-grid" }, [
+        ["Cash in", rm(report.cash_in)], ["Cash out (incl. SST)", rm(report.cash_out)], ["Net cash", rm(report.net_cash)],
+        ["SST", rm(report.total_tax)], ["Reconciled invoices", Math.round((report.reconciliation_rate || 0) * 100) + "%"],
+        ["Exceptions", report.total_exceptions], ["Tasks", report.tasks_generated], ["Chase emails", report.chase_emails_drafted],
+      ].map(([k, v]) => el("div", { class: "stat" }, el("span", null, k), el("strong", null, v)))),
+      el("p", { class: "muted" }, "Every figure comes from the Financial ledger (" + (ledger.rows || []).length + " rows), not from the language model."),
+      el("h4", null, "Top actions"), el("ol", null, (report.top_3_actions || []).map(a => el("li", null, a))),
+      el("h4", null, "By category (excl. SST)"),
+      table(["Category", "Rows", "Total"], (report.categories || []).map(c => [c.category, c.count, rm(c.total)]))),
+    exceptions: () => table(["Severity", "Problem", "Document", "Vendor", "Reason", "Source"],
+      [...exceptions].sort((a, b) => (SEVERITY_ORDER[a.severity] ?? 3) - (SEVERITY_ORDER[b.severity] ?? 3))
+        .map(e => [el("span", { class: "sev sev-" + e.severity }, e.severity), typeLabel(e.type), e.document_number || "",
+          e.vendor_name || "", e.reason || "", docLink(e.source_ref)])),
+    tasks: () => table(["Priority", "Task", "Action required"],
+      (data.secretary.tasks || []).map(t => ["P" + t.priority, t.title, t.action_required || ""])),
+    emails: () => {
+      const emails = data.secretary.chase_emails || [];
+      if (!emails.length) return el("p", { class: "muted" }, "No vendor documents need a chase email.");
+      return el("div", { class: "email-list" }, emails.map(m => el("article", { class: "email" },
+        el("div", { class: "email-meta" }, el("span", { class: "sev sev-info" }, "Draft · not sent"),
+          " To " + (m.vendor_name || "vendor") + " · " + (m.related_invoice || "") + " · written by " + (m.source === "llm" ? "Gemini" : "template") + " · ",
+          docLink(m.source_ref)),
+        el("h4", null, m.subject || ""), el("pre", null, m.body || ""))));
+    },
+    ledger: () => table(["Row", "Date", "Document", "Vendor", "Description", "Category", "Amount", "SST", "Source"],
+      (ledger.rows || []).map(r => [r.row_id, r.document_date || "", r.document_number || "", r.vendor_name || "",
+        r.description || "", r.category, rm(r.amount), rm(r.tax_amount), docLink(r.source_ref)])),
+  };
+  const body = document.querySelector("#results-body");
+  const tabs = document.querySelectorAll(".results-tabs [data-tab]");
+  const show = name => {
+    tabs.forEach(b => b.setAttribute("aria-selected", String(b.dataset.tab === name)));
+    body.replaceChildren(views[name]());
+  };
+  tabs.forEach(b => { b.onclick = () => show(b.dataset.tab); });
+  document.querySelector("#results").hidden = false;
+  show("report");
+}
