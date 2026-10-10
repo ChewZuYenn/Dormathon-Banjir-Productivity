@@ -1,0 +1,109 @@
+小小办公室｜Godot 本地场景与三个 Agent 接入
+
+一、你现在可以怎么打开
+本机已有 Godot：/Users/xuanyuwu/Downloads/Godot.app（4.7.2 standard）。没有修改或覆盖它。
+项目目录：/Users/xuanyuwu/WorkBuddy AI/2026-10-10-15-19-51/outputs/godot-office
+1. 打开 Godot 项目管理器，点击“导入”，选择该目录内 project.godot。
+2. 等待 assets/office.glb 首次导入，点击“编辑”。
+3. F5 运行项目；打开 scenes/main.tscn 后也可按 F6 运行当前场景。
+4. F8 停止运行。也可以双击“打开办公室.command”打开项目编辑器。
+本轮没有导出 macOS 独立游戏应用；这是 Godot 源项目，需 Godot 4.x。
+
+二、先检查场景，再检查 Agent
+办公室 GLB 来自你已认可的人物细化版；原 .blend 保留，未保存任何导出改动。
+导出不包含 Blender 原相机、灯光和200米棚拍底板；Godot 新建斜前方正交相机、暖色背景、环境填光和方向光。室内家具几何与人物保留。
+Godot 实时渲染不会与 Cycles 一模一样，Blender 程序化布纹没有原样移植；基础颜色与脸部顶点色保留。
+三张 Agent 状态卡在办公室下方。上面是任务输入、连接本机桥接、运行仓库测试、界面模拟。
+“界面模拟”：不需要 Python 服务，仅演示 idle → working → done，明确标注模拟，不生成账本。
+“运行仓库测试”：真实调用三模块代码，但输入是仓库预抽取样例，不读取你的账务文件，不进行OCR。
+
+三、连接你的三个 Agent
+你提供的 .webloc 是 GitHub 链接快捷方式，不是 Python 程序本身。
+源仓库：https://github.com/ChewZuYenn/Dormathon-Banjir-Productivity
+固定版本：fdb1d58c8bd386a79c947c62f397dedc818a59f7
+已审查并复制三个 agents 目录到 bridge/vendor/agents；没有修改远程仓库，也没有执行它的安装脚本。
+本机已准备隔离 Python 3.13.12 环境，安装 pydantic 2.14.0；没有全局安装依赖。
+
+操作：
+1. 双击 bridge/start_bridge.command，保持弹出的终端窗口开启。
+2. 终端应显示 Local Agent bridge ready at http://127.0.0.1:8765。
+3. 在 Godot 运行画面点击“连接本机桥接”，应显示已连接。
+4. 点击“运行仓库测试”，观察状态卡和当前步骤。
+5. 输出在 bridge/runs/<job_id>/：records.json、ledger.json、exceptions.json、secretary.json、result.json。
+6. 在桥接终端按 Ctrl+C 停止服务；不要在服务运行期间重复启动第二个8765端口实例。
+服务只监听127.0.0.1，不对外提供，不接收任意磁盘路径，不执行shell命令，不含邮件发送或付款。
+服务器重启会清空内存任务索引，但不删除已有结果文件；结果文件可能含业务数据，请自行保管。
+
+四、实际接通方式
+Godot → HTTPRequest → 本机 Python 桥接 → 已审查的原 Agent 模块。
+bridge/worker.py 使用独立模块别名，避免 Logistics 与 Secretary 都叫 src 导致导入冲突。
+顺序：Secretary Planner生成计划 → Logistics校验预抽取记录 → Financial核对引擎 → Secretary转换异常、生成任务/草稿/报告。
+初始计划是仓库原规划输出；真实执行顺序由桥接控制。计划文字中写到OCR不等于本轮已执行OCR。
+Secretary原 run() 不实际调度另外两个；原 dispatch_to_financial() 返回样例。桥接没有调用这些模拟dispatch，而是调用真实模块并传真实输出。
+Logistics原CLI只读文本，不调用字段抽取模型。桥接明确要求已有结构化字段；接入图片/PDF的抽取模块属于下一阶段。
+
+五、脚本接口（可在 Godot 其他脚本调用）
+假设调用脚本位于 OfficeDemo 根节点：
+$AgentState.set_agent_status("Secretary", "working", "生成执行计划")
+$AgentState.set_agent_status("Logistics", "done", "文档校验完成")
+$AgentState.set_agent_status("Financial", "error", "输入字段缺失")
+$AgentState.set_current_step("第2步：核对发票与收据")
+$AgentState.reset_agents()
+var snapshot = $AgentState.get_agent_state("Secretary")
+
+合法状态：idle、working、done、error。非法角色或状态返回false，不会修改界面。
+真实状态快照接口：$AgentState.apply_snapshot({"agents": {...}, "current_step": "..."})，三个角色都必须有status/step。
+提交仓库样例：$AgentClient.start_fixture("Close out September")
+提交你已抽取的记录：$AgentClient.start_records("Close out September", "2026-09", records_array)
+连接检测：$AgentClient.connect_bridge()
+信号：AgentState.agent_changed、current_step_changed；AgentClient.job_finished(result)、job_failed(message)。
+不要同时从外部脚本写状态和让桥接轮询写状态；轮询会用服务返回的最新状态覆盖界面。
+网络中断保留已接受任务编号，可点连接本机桥接恢复轮询；提交响应丢失时服务可能仍在执行，服务以单活动任务限制避免同时重复执行，需检查bridge/runs。
+
+六、本机 HTTP 约定
+GET /health：服务状态与能力边界。
+POST /jobs：异步提交，返回202及job_id。
+请求样例：{"mode":"fixture","goal":"Close out September"}
+另一种请求：{"mode":"records","goal":"Check pre-extracted records","period":"2026-09","records":[...原Logistics schema记录...]}
+GET /jobs/<job_id>：status、agents、current_step、events、warnings和统计。
+GET /jobs/<job_id>/result：任务完成后返回原结果及转换映射；未完成返回409。
+Bridge默认8765；修改server --port时，也要修改AgentClient Inspector中的bridge_url。
+UI默认只提供fixture测试。records输入接口已实现并测试，但没有上传/文件选择界面。
+每次最多100条记录、请求最多1MB；source_ref必须唯一；金额/字段置信度必须真实提供，不能缺失自动填0。
+原Financial使用MYR，仅接受MYR输入，没有换汇、没有把MYR当作人民币。
+
+七、必须知道的当前限制
+1. 这是原代码接通验证，不是生产结账系统，没有实现OCR、大模型提取、数据库或账户接入。
+2. 原 Financial 的 TODAY=2026-10-10，period为标签，不会按月份过滤。记录须调用者先筛选，其他月份不能直接当正式结账。
+3. Financial与Secretary现金流定义不同：原Secretary把receipt当收入、PO/发票当支出；Financial有支付凭据去重和其他口径。桥接分别保留输出、不合并财务数字，不宣称正确现金流。
+4. Financial异常字段type/document_number与Secretary的event_type/invoice_number不同。桥接解包并映射，从原source_ref记录补充实际金额、日期和币种；重复匹配转换为单据编号。
+5. 无法映射的异常保留原exceptions，标警告，不编造金额。完成后底部显示警告数量，悬停可查看，完整warnings在result.json。
+6. 邮件只为草稿，不自动approve，不发送；角色done代表函数成功返回，不代表异常已经处理或账务已结清。
+7. 当前人物是静态模型。网页版本的纸张拿取交互并未移植到Godot，不在本轮范围。
+8. 模型858个Mesh，适合桌面演示但还未做移动端减面或批处理优化。
+
+八、修改场景
+scenes/main.tscn包含OfficeDemo、AgentState、AgentClient、AgentUI。
+办公室、相机、灯光在 scripts/office_scene.gd 运行时生成；编辑器静止视口可能看不到房间，运行即显示。
+要检查运行时节点，在运行时切Scene面板的Remote标签。
+换GLB：替换assets/office.glb，等待Godot重新导入；相机会自动按模型包围盒取景。
+调方向：OfficeDemo Inspector中的camera_direction。Godot Y向上，斜前方默认(0.56,0.72,0.80)。
+调距离：camera_distance。正交镜头远近不会改变大小。
+调大小：camera_size_multiplier；值越大房间越小，给UI留空。
+调灯光：office_scene.gd 的 WarmWindowSun / SoftFrontFill light_energy和环境ambient_light_energy。
+基础渲染选择Compatibility，便于本机运行；阴影柔化只是实时近似，不是Cycles面积光。
+
+九、复验命令
+本机脚本接口测试：
+"/Users/xuanyuwu/Downloads/Godot.app/Contents/MacOS/Godot" --headless --path "/Users/xuanyuwu/WorkBuddy AI/2026-10-10-15-19-51/outputs/godot-office" --script res://tests/test_agents.gd
+Python真实模块测试：
+"/Users/xuanyuwu/.workbuddy-ai/binaries/python/envs/default/bin/python" "/Users/xuanyuwu/WorkBuddy AI/2026-10-10-15-19-51/outputs/godot-office/bridge/test_bridge.py"
+启动桥接后端到端测试：
+"/Users/xuanyuwu/Downloads/Godot.app/Contents/MacOS/Godot" --headless --path "/Users/xuanyuwu/WorkBuddy AI/2026-10-10-15-19-51/outputs/godot-office" --script res://tests/test_integration.gd
+
+十、文件包与授权
+godot-office项目文件夹完整打包于办公室-Godot-Agent接入版.zip，解压后导入project.godot。
+包内包含固定版本Agent代码和作者原README等说明；原仓库未发现LICENSE，未判断其公开再分发许可。本包仅交给你做本地演示，发布或商业使用前需核实作者授权。
+不包含Godot应用或Python虚拟环境；启动command当前针对你的机器路径。
+换机器时使用Godot项目管理器导入；按官方Python方式准备隔离环境安装bridge/requirements.txt（pydantic），用该环境python运行bridge/server.py。
+本机可用隔离环境位置：/Users/xuanyuwu/.workbuddy-ai/binaries/python/envs/default。

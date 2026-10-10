@@ -1,0 +1,24 @@
+{
+  "result": "PASS",
+  "browser": "Chrome for Testing 155 (headless / SwiftShader)",
+  "meshes": 858,
+  "modelSha256": "298b3aa102ac617bc38862e9305656fb1b6d33b84a87f026e19f8da325d514e2",
+  "modelMatchesDeliveredGLB": true,
+  "resetPositionError": 0,
+  "resetTargetError": 5.551115123125783e-17,
+  "tests": [
+    "WebGL GLB loaded",
+    "mouse drag rotates camera",
+    "mouse wheel zooms",
+    "right drag and Shift drag pan",
+    "view reset including residual inertia",
+    "automatic orbit",
+    "keyboard controls and zoom buttons",
+    "three sequential simulation states and safe text",
+    "mobile no horizontal overflow and chatbar inside scene",
+    "emulated touch drag and pinch"
+  ],
+  "pageErrors": [],
+  "failedRequests": [],
+  "scope": "Camera interaction only. Static characters. No real Agent/backend call. Emulated touch is not physical-device testing."
+}

@@ -1,0 +1,33 @@
+{
+  "godot_version": "4.7.2.stable.official.ed1daf0bf",
+  "godot_path": "/Users/xuanyuwu/Downloads/Godot.app/Contents/MacOS/Godot",
+  "python": "3.13.12 isolated venv",
+  "pydantic": "2.14.0",
+  "upstream_commit": "fdb1d58c8bd386a79c947c62f397dedc818a59f7",
+  "source_blend_preserved": true,
+  "glb_mesh_instances": 858,
+  "tests": {
+    "basic_scene": "BASIC_SCENE_TEST_PASS",
+    "state_interface_and_mock_ui": "AGENT_STATE_UI_TEST_PASS",
+    "real_godot_http_agent_pipeline": "GODOT_REAL_AGENT_INTEGRATION_PASS",
+    "python_bridge_health_validation_and_real_pipeline": "2 unittest tests OK",
+    "preextracted_record_mode": "PREEXTRACTED_RECORD_TEST_PASS",
+    "missing_connection_and_resume_id": "CONNECTION_FAILURE_TEST_PASS"
+  },
+  "fixture_result_counts": {
+    "records": 12,
+    "ledger_rows": 13,
+    "exceptions": 13,
+    "tasks": 13,
+    "email_drafts_not_sent": 2
+  },
+  "rendering": "Actual Godot OpenGL Compatibility frames captured on Apple M2, not Blender/image generation",
+  "limitations": [
+    "Several engine runs reached assertion PASS and wrote screenshots, then sandbox blocked macOS application-state/log/recovery-lock cleanup at shutdown. Do not treat those wrapper exits as a clean application shutdown.",
+    "No OCR, image/PDF extraction, LLM calls, real payment or email sending.",
+    "Financial uses fixed TODAY=2026-10-10 and does not filter records by period.",
+    "Financial and Secretary cash-flow definitions differ; kept separate and not validated as production accounting.",
+    "Blender procedural fabric and exact Cycles lighting not reproduced in glTF/Godot.",
+    "Upstream public redistribution license not found; verify authorization before publication/commercial use."
+  ]
+}
