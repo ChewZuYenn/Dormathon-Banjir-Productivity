@@ -108,7 +108,13 @@ Then open **http://127.0.0.1:5000** (redirects to `/web-office/`). `app.py` serv
 - Type a goal in the bottom bar and click "Run". The page calls `POST /api/run`, which runs all three agents;
   the cards show record / exception / task counts when it finishes. The full result is in the browser console as `lastRun`.
 - `/api/run` returns only when the whole pipeline is done, so all three cards show "working" together.
-- Each run rewrites `agents/logistics/output.json`, `ledger.json` and `exceptions.json`.
+- Runs through `app.py` don't modify repo files (Financial works in a temp dir). `run_pipeline.py` and the test suites still rewrite `agents/logistics/ledger.json` and `exceptions.json`.
+
+### Live deployment (Vercel)
+
+**https://dormathon-banjir-productivity.vercel.app** — same `app.py` (web page + `/api/run`), Gemini via Vercel environment variables `LLM_API_URL`, `LLM_API_KEY`, `LLM_MODEL`, `LLM_VISION_MODEL`, plus `LLM_TIMEOUT=20` (seconds per Gemini call; a slow call falls back to Python instead of running into the function time limit). `.vercelignore` keeps `.env`, Gmail credentials, Blender/Godot assets and tests out of the upload. Gmail is not available there (no persistent Google login on serverless).
+
+Redeploy: `npx vercel deploy --prod` (Vercel project `coltonthatgoods-projects/dormathon-banjir-productivity`). After changing an environment variable, redeploy for it to take effect.
 
 ### Gmail (optional)
 
