@@ -1,0 +1,411 @@
+[
+  {
+    "document_type": "invoice",
+    "vendor_name": "Syarikat Bekal Sdn Bhd",
+    "vendor_sst_id": "SW-12345678-0001",
+    "invoice_number": "INV-2026-0941",
+    "invoice_date": "2026-09-05",
+    "due_date": "2026-10-05",
+    "po_reference": "PO-2026-0033",
+    "line_items": [
+      {
+        "description": "Raw coffee beans 1kg x 50",
+        "quantity": 50,
+        "unit_price": 25.0,
+        "tax_amount": 75.0,
+        "tax_rate": 6
+      },
+      {
+        "description": "Paper cups 500pcs",
+        "quantity": 10,
+        "unit_price": 45.0,
+        "tax_amount": 27.0,
+        "tax_rate": 6
+      }
+    ],
+    "subtotal": 1700.0,
+    "total_tax": 102.0,
+    "grand_total": 1802.0,
+    "currency": "MYR",
+    "source_ref": "docs/INV-2026-0941.pdf",
+    "confidence": {
+      "vendor_name": 0.98,
+      "invoice_number": 0.95,
+      "invoice_date": 0.99,
+      "po_reference": 0.92,
+      "line_items": 0.96,
+      "grand_total": 0.97
+    },
+    "status": "clean",
+    "flags": []
+  },
+  {
+    "document_type": "invoice",
+    "vendor_name": "Syarikat Bekal Sdn Bhd",
+    "vendor_sst_id": "SW-12345678-0001",
+    "invoice_number": "INV-2026-0941",
+    "invoice_date": "2026-09-05",
+    "due_date": "2026-10-05",
+    "po_reference": "PO-2026-0033",
+    "line_items": [
+      {
+        "description": "Raw coffee beans 1kg x 50",
+        "quantity": 50,
+        "unit_price": 25.0,
+        "tax_amount": 75.0,
+        "tax_rate": 6
+      },
+      {
+        "description": "Paper cups 500pcs",
+        "quantity": 10,
+        "unit_price": 45.0,
+        "tax_amount": 27.0,
+        "tax_rate": 6
+      }
+    ],
+    "subtotal": 1700.0,
+    "total_tax": 102.0,
+    "grand_total": 1802.0,
+    "currency": "MYR",
+    "source_ref": "docs/INV-2026-0941-copy.jpg",
+    "confidence": {
+      "vendor_name": 0.85,
+      "invoice_number": 0.8,
+      "invoice_date": 0.88,
+      "po_reference": 0.7,
+      "line_items": 0.82,
+      "grand_total": 0.86
+    },
+    "status": "flagged",
+    "flags": [
+      "blurry_image"
+    ]
+  },
+  {
+    "document_type": "invoice",
+    "vendor_name": "TNB Tenaga Nasional",
+    "vendor_sst_id": "",
+    "invoice_number": "TNB-SEP-2026-8821",
+    "invoice_date": "2026-09-15",
+    "due_date": "2026-09-30",
+    "po_reference": null,
+    "line_items": [
+      {
+        "description": "Electricity consumption Sep 2026",
+        "quantity": 1,
+        "unit_price": 485.3,
+        "tax_amount": 29.12,
+        "tax_rate": 6
+      }
+    ],
+    "subtotal": 485.3,
+    "total_tax": 29.12,
+    "grand_total": 514.42,
+    "currency": "MYR",
+    "source_ref": "docs/TNB-SEP-2026.pdf",
+    "confidence": {
+      "vendor_name": 0.97,
+      "invoice_number": 0.93,
+      "invoice_date": 0.95,
+      "po_reference": 0.0,
+      "line_items": 0.94,
+      "grand_total": 0.91
+    },
+    "status": "clean",
+    "flags": [
+      "no_po_reference",
+      "escalate_missing_po"
+    ]
+  },
+  {
+    "document_type": "invoice",
+    "vendor_name": "Kedai Alat Tulis Maju",
+    "vendor_sst_id": "SW-99887766-0022",
+    "invoice_number": "KAT-2026-077",
+    "invoice_date": "2026-09-18",
+    "due_date": "2026-10-18",
+    "po_reference": "PO-2026-0041",
+    "line_items": [
+      {
+        "description": "A4 paper ream 500 sheets",
+        "quantity": 20,
+        "unit_price": 12.5,
+        "tax_amount": 15.0,
+        "tax_rate": 6
+      },
+      {
+        "description": "Ballpoint pens blue box of 50",
+        "quantity": 5,
+        "unit_price": 35.0,
+        "tax_amount": 10.5,
+        "tax_rate": 6
+      }
+    ],
+    "subtotal": 425.0,
+    "total_tax": 25.5,
+    "grand_total": 450.5,
+    "currency": "MYR",
+    "source_ref": "docs/KAT-2026-077.pdf",
+    "confidence": {
+      "vendor_name": 0.96,
+      "invoice_number": 0.94,
+      "invoice_date": 0.97,
+      "po_reference": 0.9,
+      "line_items": 0.93,
+      "grand_total": 0.95
+    },
+    "status": "clean",
+    "flags": []
+  },
+  {
+    "document_type": "invoice",
+    "vendor_name": "Syarikat Servis Teknik",
+    "vendor_sst_id": "SW-44556677-0033",
+    "invoice_number": "ST-2026-088",
+    "invoice_date": "2026-09-22",
+    "due_date": "2026-09-29",
+    "po_reference": null,
+    "line_items": [
+      {
+        "description": "Espresso machine service and descale",
+        "quantity": 1,
+        "unit_price": 350.0,
+        "tax_amount": 28.0,
+        "tax_rate": 8
+      },
+      {
+        "description": "Replacement gasket set",
+        "quantity": 2,
+        "unit_price": 45.0,
+        "tax_amount": 7.2,
+        "tax_rate": 8
+      }
+    ],
+    "subtotal": 440.0,
+    "total_tax": 35.2,
+    "grand_total": 475.2,
+    "currency": "MYR",
+    "source_ref": "docs/ST-2026-088.jpg",
+    "confidence": {
+      "vendor_name": 0.62,
+      "invoice_number": 0.55,
+      "invoice_date": 0.7,
+      "po_reference": 0.0,
+      "line_items": 0.5,
+      "grand_total": 0.48
+    },
+    "status": "flagged",
+    "flags": [
+      "blurry_image",
+      "handwritten"
+    ]
+  },
+  {
+    "document_type": "invoice",
+    "vendor_name": "Grab Food Delivery",
+    "vendor_sst_id": "",
+    "invoice_number": "GRAB-WEEKLY-0938",
+    "invoice_date": "2026-09-28",
+    "due_date": "2026-10-12",
+    "po_reference": null,
+    "line_items": [
+      {
+        "description": "Delivery fees week 38",
+        "quantity": 1,
+        "unit_price": 180.0,
+        "tax_amount": 10.8,
+        "tax_rate": 6
+      }
+    ],
+    "subtotal": 180.0,
+    "total_tax": 10.8,
+    "grand_total": 210.0,
+    "currency": "MYR",
+    "source_ref": "docs/GRAB-WEEKLY-0938.pdf",
+    "confidence": {
+      "vendor_name": 0.99,
+      "invoice_number": 0.95,
+      "invoice_date": 0.97,
+      "po_reference": 0.0,
+      "line_items": 0.96,
+      "grand_total": 0.98
+    },
+    "status": "clean",
+    "flags": [
+      "no_po_reference"
+    ]
+  },
+  {
+    "document_type": "invoice",
+    "vendor_name": "Pemasaran Digital Sdn Bhd",
+    "vendor_sst_id": "SW-11223344-0044",
+    "invoice_number": "PD-2026-055",
+    "invoice_date": "2026-09-10",
+    "due_date": "2026-08-25",
+    "po_reference": "PO-2026-0050",
+    "line_items": [
+      {
+        "description": "Facebook ad campaign September",
+        "quantity": 1,
+        "unit_price": 600.0,
+        "tax_amount": 48.0,
+        "tax_rate": 8
+      },
+      {
+        "description": "Flyer printing 2000pcs",
+        "quantity": 2000,
+        "unit_price": 0.5,
+        "tax_amount": 50.0,
+        "tax_rate": 5
+      }
+    ],
+    "subtotal": 1600.0,
+    "total_tax": 98.0,
+    "grand_total": 1698.0,
+    "currency": "MYR",
+    "source_ref": "docs/PD-2026-055.pdf",
+    "confidence": {
+      "vendor_name": 0.97,
+      "invoice_number": 0.94,
+      "invoice_date": 0.96,
+      "po_reference": 0.88,
+      "line_items": 0.92,
+      "grand_total": 0.95
+    },
+    "status": "clean",
+    "flags": []
+  },
+  {
+    "document_type": "order",
+    "po_number": "PO-2026-0033",
+    "po_date": "2026-09-01",
+    "vendor_name": "Syarikat Bekal Sdn Bhd",
+    "buyer_name": "Kopitiam Banjir",
+    "delivery_date": "2026-09-04",
+    "line_items": [
+      {
+        "description": "Raw coffee beans 1kg x 50",
+        "quantity": 50,
+        "unit_price": 25.0,
+        "tax_amount": 75.0
+      },
+      {
+        "description": "Paper cups 500pcs",
+        "quantity": 10,
+        "unit_price": 45.0,
+        "tax_amount": 27.0
+      }
+    ],
+    "subtotal": 1700.0,
+    "total_tax": 102.0,
+    "grand_total": 1802.0,
+    "currency": "MYR",
+    "source_ref": "docs/PO-2026-0033.pdf",
+    "confidence": {
+      "po_number": 0.98,
+      "po_date": 0.95,
+      "vendor_name": 0.97,
+      "line_items": 0.94,
+      "grand_total": 0.96
+    },
+    "status": "clean",
+    "flags": []
+  },
+  {
+    "document_type": "order",
+    "po_number": "PO-2026-0041",
+    "po_date": "2026-09-15",
+    "vendor_name": "Kedai Alat Tulis Maju",
+    "buyer_name": "Kopitiam Banjir",
+    "delivery_date": "2026-09-17",
+    "line_items": [
+      {
+        "description": "A4 paper ream 500 sheets",
+        "quantity": 20,
+        "unit_price": 12.5,
+        "tax_amount": 15.0
+      },
+      {
+        "description": "Ballpoint pens blue box of 50",
+        "quantity": 3,
+        "unit_price": 35.0,
+        "tax_amount": 6.3
+      }
+    ],
+    "subtotal": 355.0,
+    "total_tax": 21.3,
+    "grand_total": 376.3,
+    "currency": "MYR",
+    "source_ref": "docs/PO-2026-0041.pdf",
+    "confidence": {
+      "po_number": 0.97,
+      "po_date": 0.94,
+      "vendor_name": 0.95,
+      "line_items": 0.93,
+      "grand_total": 0.92
+    },
+    "status": "clean",
+    "flags": []
+  },
+  {
+    "document_type": "receipt",
+    "vendor_name": "Syarikat Bekal Sdn Bhd",
+    "receipt_number": "RCP-2026-0941",
+    "receipt_date": "2026-09-20",
+    "payment_method": "bank_transfer",
+    "amount": 1802.0,
+    "tax_amount": 102.0,
+    "invoice_reference": "INV-2026-0941",
+    "currency": "MYR",
+    "source_ref": "docs/RCP-2026-0941.pdf",
+    "confidence": {
+      "vendor_name": 0.98,
+      "receipt_date": 0.96,
+      "amount": 0.99,
+      "payment_method": 0.9
+    },
+    "status": "clean",
+    "flags": []
+  },
+  {
+    "document_type": "receipt",
+    "vendor_name": "TNB Tenaga Nasional",
+    "receipt_number": "TNB-PAY-SEP-8821",
+    "receipt_date": "2026-09-28",
+    "payment_method": "duitnow",
+    "amount": 514.42,
+    "tax_amount": 29.12,
+    "invoice_reference": "TNB-SEP-2026-8821",
+    "currency": "MYR",
+    "source_ref": "docs/TNB-PAY-SEP.pdf",
+    "confidence": {
+      "vendor_name": 0.97,
+      "receipt_date": 0.95,
+      "amount": 0.98,
+      "payment_method": 0.92
+    },
+    "status": "clean",
+    "flags": []
+  },
+  {
+    "document_type": "receipt",
+    "vendor_name": "Walk-in customer",
+    "receipt_number": "SALES-2026-09-20",
+    "receipt_date": "2026-09-20",
+    "payment_method": "cash",
+    "amount": 850.0,
+    "tax_amount": null,
+    "invoice_reference": null,
+    "direction": "in",
+    "currency": "MYR",
+    "source_ref": "docs/SALES-2026-09-20.jpg",
+    "confidence": {
+      "vendor_name": 0.8,
+      "receipt_date": 0.9,
+      "amount": 0.85,
+      "payment_method": 0.95
+    },
+    "status": "clean",
+    "flags": []
+  }
+]
