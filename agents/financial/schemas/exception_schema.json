@@ -1,0 +1,115 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Exception List Schema",
+  "description": "Output from the Financial agent. Each exception has a type, reason, source document reference, and a suggested action for the Secretary.",
+  "type": "object",
+  "required": ["period", "generated_at", "exceptions"],
+  "properties": {
+    "period": {
+      "type": "string",
+      "description": "The month being closed, e.g. '2026-09'"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "exceptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["exception_id", "type", "reason", "source_ref", "severity", "suggested_action"],
+        "properties": {
+          "exception_id": {
+            "type": "string",
+            "description": "Unique exception ID, e.g. 'EXC-0001'"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "arithmetic_mismatch",
+              "tax_rate_anomaly",
+              "duplicate",
+              "missing_po_match",
+              "quantity_mismatch",
+              "price_mismatch",
+              "overdue",
+              "traceability_broken",
+              "low_confidence",
+              "unparseable_total",
+              "handwritten_low_ocr",
+              "missing_po_reference_high_value",
+              "duplicate_similar_confidence",
+              "invalid_sst_rate",
+              "unknown_document_type",
+              "uncategorised"
+            ],
+            "description": "Exception type — matches the types defined in rules/rules.md"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Human-readable explanation of what went wrong, e.g. 'Grand total RM 1,250.00 does not match subtotal + tax = RM 1,260.00 (delta: RM 10.00, exceeds tolerance of RM 5.00)'"
+          },
+          "source_ref": {
+            "type": "string",
+            "description": "Reference to the source document that triggered the exception"
+          },
+          "document_number": {
+            "type": ["string", "null"],
+            "description": "Invoice/receipt/PO number of the source document"
+          },
+          "document_type": {
+            "type": ["string", "null"],
+            "enum": ["invoice", "receipt", "order", null]
+          },
+          "vendor_name": {
+            "type": ["string", "null"]
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["critical", "warning", "info"],
+            "description": "critical = blocks reconciliation, warning = needs attention but non-blocking, info = FYI"
+          },
+          "delta": {
+            "type": ["number", "null"],
+            "description": "Numeric delta if applicable (e.g., arithmetic mismatch amount, quantity/price difference)"
+          },
+          "details": {
+            "type": "object",
+            "description": "Additional structured details specific to the exception type",
+            "properties": {
+              "expected": { "type": ["number", "string", "null"] },
+              "actual": { "type": ["number", "string", "null"] },
+              "tolerance": { "type": ["number", "null"] },
+              "matched_with": { "type": ["string", "null"], "description": "source_ref of the other document in a duplicate/mismatch pair" },
+              "field": { "type": ["string", "null"], "description": "Field name for low_confidence exceptions" },
+              "confidence_score": { "type": ["number", "null"] }
+            }
+          },
+          "suggested_action": {
+            "type": "string",
+            "description": "What the Secretary should turn into a task, e.g. 'Confirm the total on invoice INV-2026-0941 — the printed total does not match the sum of line items.'"
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "properties": {
+        "total_exceptions": { "type": "integer" },
+        "critical_count": { "type": "integer" },
+        "warning_count": { "type": "integer" },
+        "info_count": { "type": "integer" },
+        "by_type": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string" },
+              "count": { "type": "integer" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

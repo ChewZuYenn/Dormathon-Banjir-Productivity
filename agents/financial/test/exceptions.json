@@ -1,0 +1,220 @@
+{
+  "period": "2026-09",
+  "generated_at": "2026-10-10T15:18:21.701668",
+  "exceptions": [
+    {
+      "exception_id": "EXC-0001",
+      "source_ref": "docs/GRAB-WEEKLY-0938.pdf",
+      "type": "arithmetic_mismatch",
+      "reason": "Grand total RM 210.00 does not match subtotal + tax = RM 190.80 (delta: RM 19.20, exceeds tolerance of RM 1.00)",
+      "document_number": "GRAB-WEEKLY-0938",
+      "document_type": "invoice",
+      "vendor_name": "Grab Food Delivery",
+      "severity": "critical",
+      "delta": 19.2,
+      "details": {
+        "expected": 190.8,
+        "actual": 210.0,
+        "tolerance": 1.0
+      },
+      "suggested_action": "Verify the total on GRAB-WEEKLY-0938 — the printed grand total does not match the sum of subtotal and tax."
+    },
+    {
+      "exception_id": "EXC-0002",
+      "source_ref": "docs/PD-2026-055.pdf",
+      "type": "tax_rate_anomaly",
+      "reason": "SST rate on line 'Flyer printing 2000pcs' in PD-2026-055 is 5.0%, which is not a standard Malaysian rate (0%, 6%, 8%)",
+      "document_number": "PD-2026-055",
+      "document_type": "invoice",
+      "vendor_name": "Pemasaran Digital Sdn Bhd",
+      "severity": "warning",
+      "details": {
+        "field": "line_item_sst_rate:Flyer printing 2000pcs",
+        "confidence_score": null
+      },
+      "suggested_action": "Check the SST calculation on line 'Flyer printing 2000pcs' in PD-2026-055."
+    },
+    {
+      "exception_id": "EXC-0003",
+      "source_ref": "docs/INV-2026-0941.pdf",
+      "type": "duplicate",
+      "reason": "Duplicate detected: INV-2026-0941 and INV-2026-0941 — same number and vendor",
+      "document_number": "INV-2026-0941",
+      "document_type": "invoice",
+      "vendor_name": "Syarikat Bekal Sdn Bhd",
+      "severity": "warning",
+      "details": {
+        "matched_with": "docs/INV-2026-0941-copy.jpg"
+      },
+      "suggested_action": "Verify which document is the correct one — INV-2026-0941 and INV-2026-0941 appear to be duplicates."
+    },
+    {
+      "exception_id": "EXC-0004",
+      "source_ref": "docs/TNB-SEP-2026.pdf",
+      "type": "missing_po_match",
+      "reason": "No purchase order found matching invoice TNB-SEP-2026-8821",
+      "document_number": "TNB-SEP-2026-8821",
+      "document_type": "invoice",
+      "vendor_name": "TNB Tenaga Nasional",
+      "severity": "warning",
+      "suggested_action": "Locate the PO for invoice TNB-SEP-2026-8821 from TNB Tenaga Nasional, or confirm the purchase was without a PO."
+    },
+    {
+      "exception_id": "EXC-0005",
+      "source_ref": "docs/KAT-2026-077.pdf",
+      "type": "quantity_mismatch",
+      "reason": "Quantity mismatch on 'Ballpoint pens blue box of 50': invoice KAT-2026-077 shows 5 but PO PO-2026-0041 ordered 3",
+      "document_number": "KAT-2026-077",
+      "document_type": "invoice",
+      "vendor_name": "Kedai Alat Tulis Maju",
+      "severity": "warning",
+      "delta": 2,
+      "details": {
+        "expected": 3,
+        "actual": 5,
+        "matched_with": "docs/PO-2026-0041.pdf"
+      },
+      "suggested_action": "Invoice KAT-2026-077 shows 5 units but PO PO-2026-0041 ordered 3 for 'Ballpoint pens blue box of 50'."
+    },
+    {
+      "exception_id": "EXC-0006",
+      "source_ref": "docs/ST-2026-088.jpg",
+      "type": "missing_po_match",
+      "reason": "No purchase order found matching invoice ST-2026-088",
+      "document_number": "ST-2026-088",
+      "document_type": "invoice",
+      "vendor_name": "Syarikat Servis Teknik",
+      "severity": "warning",
+      "suggested_action": "Locate the PO for invoice ST-2026-088 from Syarikat Servis Teknik, or confirm the purchase was without a PO."
+    },
+    {
+      "exception_id": "EXC-0007",
+      "source_ref": "docs/GRAB-WEEKLY-0938.pdf",
+      "type": "missing_po_match",
+      "reason": "No purchase order found matching invoice GRAB-WEEKLY-0938",
+      "document_number": "GRAB-WEEKLY-0938",
+      "document_type": "invoice",
+      "vendor_name": "Grab Food Delivery",
+      "severity": "warning",
+      "suggested_action": "Locate the PO for invoice GRAB-WEEKLY-0938 from Grab Food Delivery, or confirm the purchase was without a PO."
+    },
+    {
+      "exception_id": "EXC-0008",
+      "source_ref": "docs/PD-2026-055.pdf",
+      "type": "missing_po_match",
+      "reason": "No purchase order found matching invoice PD-2026-055",
+      "document_number": "PD-2026-055",
+      "document_type": "invoice",
+      "vendor_name": "Pemasaran Digital Sdn Bhd",
+      "severity": "warning",
+      "suggested_action": "Locate the PO for invoice PD-2026-055 from Pemasaran Digital Sdn Bhd, or confirm the purchase was without a PO."
+    },
+    {
+      "exception_id": "EXC-0009",
+      "source_ref": "docs/ST-2026-088.jpg",
+      "type": "overdue",
+      "reason": "Invoice ST-2026-088 from Syarikat Servis Teknik is overdue (due: 2026-09-29). No matching payment receipt found.",
+      "document_number": "ST-2026-088",
+      "document_type": "invoice",
+      "vendor_name": "Syarikat Servis Teknik",
+      "severity": "critical",
+      "suggested_action": "Draft a chase email to Syarikat Servis Teknik for overdue invoice ST-2026-088 (RM 475.20, due 2026-09-29)."
+    },
+    {
+      "exception_id": "EXC-0010",
+      "source_ref": "docs/PD-2026-055.pdf",
+      "type": "overdue",
+      "reason": "Invoice PD-2026-055 from Pemasaran Digital Sdn Bhd is overdue (due: 2026-08-25). No matching payment receipt found.",
+      "document_number": "PD-2026-055",
+      "document_type": "invoice",
+      "vendor_name": "Pemasaran Digital Sdn Bhd",
+      "severity": "critical",
+      "suggested_action": "Draft a chase email to Pemasaran Digital Sdn Bhd for overdue invoice PD-2026-055 (RM 1698.00, due 2026-08-25)."
+    },
+    {
+      "exception_id": "EXC-0011",
+      "source_ref": "docs/TNB-SEP-2026.pdf",
+      "type": "missing_po_reference_high_value",
+      "reason": "Invoice TNB-SEP-2026-8821 (RM 514.42) has no PO reference and exceeds RM 500 threshold",
+      "document_number": "TNB-SEP-2026-8821",
+      "document_type": "invoice",
+      "vendor_name": "TNB Tenaga Nasional",
+      "severity": "warning",
+      "suggested_action": "Confirm the PO reference for invoice TNB-SEP-2026-8821 (RM 514.42) — no PO was referenced."
+    },
+    {
+      "exception_id": "EXC-0012",
+      "source_ref": "docs/ST-2026-088.jpg",
+      "type": "low_confidence",
+      "reason": "Critical field 'po_reference' has confidence 0.48 on ST-2026-088",
+      "document_number": "ST-2026-088",
+      "document_type": "invoice",
+      "vendor_name": "Syarikat Servis Teknik",
+      "severity": "warning",
+      "details": {
+        "field": "po_reference",
+        "confidence_score": 0.48
+      },
+      "suggested_action": "Verify po_reference on ST-2026-088 — extraction confidence is low (0.48)."
+    },
+    {
+      "exception_id": "EXC-0013",
+      "source_ref": "docs/ST-2026-088.jpg",
+      "type": "handwritten_low_ocr",
+      "reason": "Document ST-2026-088 is handwritten with OCR confidence 0.48 (below 0.60)",
+      "document_number": "ST-2026-088",
+      "document_type": "invoice",
+      "vendor_name": "Syarikat Servis Teknik",
+      "severity": "warning",
+      "details": {
+        "field": "overall_ocr",
+        "confidence_score": 0.48
+      },
+      "suggested_action": "Manually transcribe ST-2026-088 — it is handwritten and OCR confidence is too low."
+    }
+  ],
+  "summary": {
+    "total_exceptions": 13,
+    "critical_count": 3,
+    "warning_count": 10,
+    "info_count": 0,
+    "by_type": [
+      {
+        "type": "arithmetic_mismatch",
+        "count": 1
+      },
+      {
+        "type": "tax_rate_anomaly",
+        "count": 1
+      },
+      {
+        "type": "duplicate",
+        "count": 1
+      },
+      {
+        "type": "missing_po_match",
+        "count": 4
+      },
+      {
+        "type": "quantity_mismatch",
+        "count": 1
+      },
+      {
+        "type": "overdue",
+        "count": 2
+      },
+      {
+        "type": "missing_po_reference_high_value",
+        "count": 1
+      },
+      {
+        "type": "low_confidence",
+        "count": 1
+      },
+      {
+        "type": "handwritten_low_ocr",
+        "count": 1
+      }
+    ]
+  }
+}
