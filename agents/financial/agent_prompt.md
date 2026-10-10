@@ -44,12 +44,12 @@ For each **invoice** and **receipt** record:
 
 1. For each line item in the record, create a ledger row:
    - `row_id`: sequential (`LED-0001`, `LED-0002`, …)
-   - `direction`: `"out"` for invoice line items (money paid out), `"in"` for receipts (money received). Note: if a receipt is payment proof for an expense, direction is still `"out"` and `reconciled_with` links to the receipt.
+   - `direction`: `"out"` for invoice lines and purchase receipts; `"in"` only for receipts Logistics marked `direction: "in"` (a sale). Skip receipts that pay an invoice in the batch (by `invoice_reference` or the Step 8 match) — the invoice rows already count that spend.
    - `category`: assign using the categorisation rules (see Step 3).
    - `description`: from the line item
    - `quantity`, `unit_price`: from the line item
-   - `amount`: `quantity × unit_price`
-   - `tax_amount`: from the line item
+   - `amount`: `quantity × unit_price` (receipt lines: the printed `amount`)
+   - `tax_amount`: from the line item. If no line carries tax but the record has a document-level SST (`total_tax` / receipt `tax_amount`), spread it across the lines pro rata to `amount`, rounding remainder on the last line, so the rows add up to the printed SST.
    - `amount_incl_tax`: `amount + tax_amount` if tax present
    - `source_ref`: from the record
    - `document_type`, `document_number`, `document_date`, `vendor_name`: from the record
@@ -57,7 +57,7 @@ For each **invoice** and **receipt** record:
    - `reconciled`: `false` (will be set in Step 6)
    - `flags`: carry over from the source record
 
-2. For receipts that represent income (not payment proof), create `"in"` rows with `amount` = receipt amount.
+2. A receipt with no line items gets one row for its total, net of tax.
 
 ### Step 3: Categorise Each Line Item
 
@@ -78,7 +78,13 @@ If you assign `MISC`, add an exception of type `uncategorised` with severity `in
 
 ### Step 4: Arithmetic Validation
 
-For each invoice and order record that has `subtotal`, `total_tax`, and `grand_total` (all non-null):
+For each invoice, order and receipt record (for receipts, `amount` and `tax_amount` stand in for `grand_total` and `total_tax`):
+
+- If the record's `flags` contain `conflicting_values` (the document itself prints two different figures), raise `conflicting_printed_values`, severity `critical`, quoting the record's `notes`.
+- If the line items don't add up to `subtotal` within tolerance, raise `arithmetic_mismatch`, severity `critical`, with `details.check = "subtotal_vs_line_items"`.
+- If the lines carry their own `tax_amount` and those don't add up to `total_tax` within RM 1.00, raise `arithmetic_mismatch`, severity `warning`, with `details.check = "total_tax_vs_line_items"`. Skip this when line `tax_amount` is null (the document prints SST once).
+
+Then, when `subtotal`, `total_tax`, and `grand_total` are all non-null:
 
 1. Compute `expected_total = subtotal + total_tax`
 2. Determine tolerance:
@@ -100,7 +106,9 @@ For each invoice and order record that has `subtotal`, `total_tax`, and `grand_t
 
 ### Step 5: SST Rate Validation
 
-For each invoice line item that has `tax_amount > 0` and `tax_rate` is not null:
+**Document level** — when no line carries tax (the document prints one SST figure): compute `effective_rate = total_tax / subtotal × 100` and raise one `tax_rate_anomaly` (severity `warning`) per document if the printed `tax_rate` is not 0, 6 or 8, if `effective_rate` differs from the printed `tax_rate` by more than 0.5, or — no printed rate — if `effective_rate` is not within ±0.5 of 0, 6 or 8.
+
+**Line level** — for each line item that has `tax_amount > 0` and `tax_rate` is not null:
 
 1. Compute `effective_rate = tax_amount / (quantity × unit_price) × 100`
 2. Valid rates: 0, 6, 8 (Malaysian SST)
@@ -144,6 +152,7 @@ For each **invoice**:
 
 1. Search `orders[]` for a match:
    - **Match if:** `po_reference` on invoice matches `po_number` on an order, OR vendor name matches + invoice date is within ±7 days of `po_date` + line item description overlap > 50%
+   - Descriptions are bilingual (`Malay / English`); two lines are the same item if either half matches. This is also how lines are paired for the quantity and price checks below.
 2. If no match found:
    - `type`: `missing_po_match`
    - `severity`: `warning`
@@ -215,6 +224,8 @@ For each ledger row:
    - `suggested_action`: `"Identify the source document for ledger row {row_id}."`
 
 ### Step 12: Build Summary
+
+Rows flagged `duplicate` stay in the ledger but are left out of items 1–6, so the same spend is never counted twice.
 
 1. `total_in` = sum of all `"in"` row amounts
 2. `total_out` = sum of all `"out"` row amounts (excluding tax)

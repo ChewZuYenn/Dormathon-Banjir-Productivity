@@ -45,12 +45,12 @@
         "required": ["description", "quantity", "unit_price", "tax_amount"],
         "properties": {
           "description": { "type": "string" },
-          "quantity": { "type": "number", "minimum": 0 },
+          "quantity": { "type": ["number", "null"], "minimum": 0, "description": "Null if the quantity cell is blank" },
           "unit_price": { "type": "number", "minimum": 0 },
           "tax_amount": {
-            "type": "number",
+            "type": ["number", "null"],
             "minimum": 0,
-            "description": "SST amount per line. 0 if not applicable."
+            "description": "SST amount per line as printed. 0 if not applicable; null if only a document-level SST is printed."
           },
           "tax_rate": {
             "type": ["number", "null"],
@@ -70,6 +70,14 @@
     "grand_total": {
       "type": ["number", "null"],
       "description": "Grand total as printed. Logistics records it but NEVER computes or validates it."
+    },
+    "tax_rate": {
+      "type": ["number", "null"],
+      "description": "Document-level SST rate as printed (e.g. 'SST 10%' -> 10). Recorded, not validated."
+    },
+    "notes": {
+      "type": ["string", "null"],
+      "description": "What is on the page when it is contradictory or unreadable (e.g. two different totals printed). Logistics describes; it never picks."
     },
     "currency": {
       "type": "string",

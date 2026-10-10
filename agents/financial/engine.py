@@ -13,6 +13,7 @@ Output:
 """
 
 import json
+import re
 import sys
 import os
 from datetime import date, datetime, timedelta
@@ -43,10 +44,48 @@ CATEGORY_KEYWORDS = [
 VALID_SST_RATES = {0, 6, 8}
 SST_RATE_TOLERANCE = 0.5  # ±0.5%
 
+# Same critical fields Logistics escalates on (agents/logistics/src/confidence.py)
+CRITICAL_CONF_FIELDS = ("vendor_name", "invoice_number", "receipt_number", "po_number",
+                        "invoice_date", "receipt_date", "po_date", "grand_total", "amount", "line_items")
+
 
 def get_tolerance(amount: float) -> float:
     """Arithmetic tolerance: ±RM 1.00 up to RM 1,000; ±RM 5.00 above."""
     return 1.00 if amount <= 1000 else 5.00
+
+
+def valid_sst(rate: float) -> bool:
+    return any(abs(rate - r) <= SST_RATE_TOLERANCE for r in VALID_SST_RATES)
+
+
+def doc_number(rec) -> str:
+    return rec.get("invoice_number") or rec.get("po_number") or rec.get("receipt_number") or "?"
+
+
+def doc_date(rec):
+    return rec.get("invoice_date") or rec.get("po_date") or rec.get("receipt_date")
+
+
+def doc_total(rec):
+    """Printed total: receipts call it `amount`, invoices/POs `grand_total`."""
+    return rec.get("amount") if rec.get("document_type") == "receipt" else rec.get("grand_total")
+
+
+def doc_tax(rec):
+    return rec.get("tax_amount") if rec.get("document_type") == "receipt" else rec.get("total_tax")
+
+
+def line_amount(li) -> float:
+    """Receipts print one price per line; invoices/POs print qty x unit price."""
+    if "amount" in li:
+        return li["amount"] or 0
+    return (li.get("quantity") or 0) * (li.get("unit_price") or 0)
+
+
+def same_item(a, b) -> bool:
+    """Lines are bilingual ('Gunting dahan / Branch cutter'); a match in either language counts."""
+    keys = lambda li: {p.strip().lower() for p in li.get("description", "").split("/") if p.strip()}
+    return bool(keys(a) & keys(b))
 
 
 def safe_date(s):
@@ -64,7 +103,8 @@ def safe_date(s):
 def categorise(description: str, quantity=None) -> str:
     desc = description.lower()
     for keywords, category in CATEGORY_KEYWORDS:
-        if any(kw in desc for kw in keywords):
+        # Keyword must start a word, so 'air' no longer matches 'repair'
+        if any(re.search(r"\b" + re.escape(kw), desc) for kw in keywords):
             return category
     # Default: COGS if quantity > 0 and looks like inventory
     if quantity and quantity > 0:
@@ -77,7 +117,10 @@ def categorise(description: str, quantity=None) -> str:
 # ─── Engine ──────────────────────────────────────────────────────────────────
 
 class FinancialEngine:
-    def __init__(self, records_data: dict):
+    def __init__(self, records_data):
+        # Logistics hands over a bare JSON array; the mock wraps it as {"period", "records"}
+        if isinstance(records_data, list):
+            records_data = {"records": records_data}
         self.period = records_data.get("period", PERIOD)
         self.records = records_data.get("records", [])
         self.invoices = []
@@ -128,110 +171,97 @@ class FinancialEngine:
     # ── Step 2 & 3: Build Ledger + Categorise ──
     def step2_build_ledger(self):
         for inv in self.invoices:
-            min_conf = self._min_confidence(inv)
-            for li in inv.get("line_items", []):
-                qty = li.get("quantity", 0)
-                price = li.get("unit_price", 0)
-                amount = qty * price
-                tax = li.get("tax_amount", 0) or 0
-                cat = categorise(li.get("description", ""), qty)
-                row = {
-                    "row_id": self._next_row_id(),
-                    "direction": "out",
-                    "category": cat,
-                    "description": li.get("description", ""),
-                    "quantity": qty,
-                    "unit_price": price,
-                    "amount": round(amount, 2),
-                    "tax_amount": round(tax, 2),
-                    "amount_incl_tax": round(amount + tax, 2),
-                    "source_ref": inv.get("source_ref", ""),
-                    "document_type": "invoice",
-                    "document_number": inv.get("invoice_number", ""),
-                    "document_date": inv.get("invoice_date", ""),
-                    "vendor_name": inv.get("vendor_name", ""),
-                    "confidence": min_conf,
-                    "reconciled": False,
-                    "reconciled_with": None,
-                    "flags": list(inv.get("flags", []))
-                }
-                if cat == "MISC":
-                    row["flags"].append("uncategorised")
-                self.ledger_rows.append(row)
+            self._add_rows(inv, "out")
 
+        # A receipt that pays one of our invoices is payment proof, not a second expense
+        paid = {r.get("source_ref") for r in map(self._find_matching_receipt, self.invoices) if r}
         for recpt in self.receipts:
-            # Income receipts (no invoice_reference) = cash in
-            if not recpt.get("invoice_reference"):
-                min_conf = self._min_confidence(recpt)
-                row = {
-                    "row_id": self._next_row_id(),
-                    "direction": "in",
-                    "category": "MISC",
-                    "description": f"Sales income — {recpt.get('vendor_name','')}",
-                    "quantity": 1,
-                    "unit_price": recpt.get("amount", 0),
-                    "amount": recpt.get("amount", 0),
-                    "tax_amount": recpt.get("tax_amount"),
-                    "amount_incl_tax": None,
-                    "source_ref": recpt.get("source_ref", ""),
-                    "document_type": "receipt",
-                    "document_number": recpt.get("receipt_number", ""),
-                    "document_date": recpt.get("receipt_date", ""),
-                    "vendor_name": recpt.get("vendor_name", ""),
-                    "confidence": min_conf,
-                    "reconciled": False,
-                    "reconciled_with": None,
-                    "flags": list(recpt.get("flags", []))
-                }
-                self.ledger_rows.append(row)
+            if recpt.get("invoice_reference") or recpt.get("source_ref") in paid:
+                continue
+            # Receipts are purchases unless Logistics marked one as issued by us (a sale)
+            self._add_rows(recpt, "in" if recpt.get("direction") == "in" else "out")
+
+    def _add_rows(self, rec, direction):
+        lines = rec.get("line_items") or []
+        if not lines:  # receipt with only a total printed
+            tax = doc_tax(rec) or 0
+            label = "Sales income" if direction == "in" else "Purchase"
+            lines = [{"description": f"{label} — {rec.get('vendor_name', '')}", "amount": (doc_total(rec) or 0) - tax, "tax_amount": tax}]
+
+        amounts = [round(line_amount(li), 2) for li in lines]
+        taxes = [li.get("tax_amount") or 0 for li in lines]
+        total_tax = doc_tax(rec) or 0
+        if not any(taxes) and total_tax and sum(amounts):
+            # Only a document-level SST is printed: spread it pro rata, rounding remainder on the last line
+            taxes = [round(total_tax * a / sum(amounts), 2) for a in amounts]
+            taxes[-1] = round(total_tax - sum(taxes[:-1]), 2)
+
+        min_conf = self._min_confidence(rec)
+        for li, amount, tax in zip(lines, amounts, taxes):
+            cat = "MISC" if direction == "in" else categorise(li.get("description", ""), li.get("quantity"))
+            row = {
+                "row_id": self._next_row_id(),
+                "direction": direction,
+                "category": cat,
+                "description": li.get("description", ""),
+                "quantity": li.get("quantity"),
+                "unit_price": li.get("unit_price"),
+                "amount": amount,
+                "tax_amount": round(tax, 2),
+                "amount_incl_tax": round(amount + tax, 2),
+                "source_ref": rec.get("source_ref", ""),
+                "document_type": rec.get("document_type"),
+                "document_number": doc_number(rec),
+                "document_date": doc_date(rec) or "",
+                "vendor_name": rec.get("vendor_name", ""),
+                "confidence": min_conf,
+                "reconciled": False,
+                "reconciled_with": None,
+                "flags": list(rec.get("flags", []))
+            }
+            if cat == "MISC" and direction == "out":
+                row["flags"].append("uncategorised")
+            self.ledger_rows.append(row)
 
     def _min_confidence(self, rec: dict) -> float:
         conf = rec.get("confidence", {})
-        critical_fields = []
-        if "vendor_name" in conf:
-            critical_fields.append(conf["vendor_name"])
-        if "invoice_number" in conf:
-            critical_fields.append(conf["invoice_number"])
-        if "receipt_number" in conf:
-            critical_fields.append(conf["receipt_number"])
-        if "invoice_date" in conf:
-            critical_fields.append(conf["invoice_date"])
-        if "receipt_date" in conf:
-            critical_fields.append(conf["receipt_date"])
-        if "grand_total" in conf:
-            critical_fields.append(conf["grand_total"])
-        if "amount" in conf:
-            critical_fields.append(conf["amount"])
-        if not critical_fields:
-            return 1.0
-        return min(critical_fields)
+        return min((conf[f] for f in CRITICAL_CONF_FIELDS if conf.get(f) is not None), default=1.0)
 
     # ── Step 4: Arithmetic Validation ──
     def step4_arithmetic(self):
-        for rec in [*self.invoices, *self.orders]:
-            grand = rec.get("grand_total")
+        for rec in [*self.invoices, *self.orders, *self.receipts]:
+            doc_num = doc_number(rec)
+            doc = dict(source_ref=rec.get("source_ref", ""), document_number=doc_num,
+                       document_type=rec.get("document_type"), vendor_name=rec.get("vendor_name"))
+
+            if "conflicting_values" in rec.get("flags", []):
+                self._add_exception(
+                    type="conflicting_printed_values",
+                    reason=f"{doc_num} prints conflicting figures: {rec.get('notes') or 'see source document'}",
+                    severity="critical",
+                    suggested_action=f"Check the original {doc_num} and confirm which figure is correct.",
+                    **doc
+                )
+
+            grand = doc_total(rec)
             subtotal = rec.get("subtotal")
-            total_tax = rec.get("total_tax")
-            doc_num = rec.get("invoice_number") or rec.get("po_number", "?")
+            total_tax = doc_tax(rec)
+            lines = rec.get("line_items") or []
 
             # 4a: Check line items sum vs subtotal
-            line_items = rec.get("line_items", [])
-            if subtotal is not None and line_items:
-                computed_subtotal = sum(li.get("quantity", 0) * li.get("unit_price", 0) for li in line_items)
+            if subtotal is not None and lines:
+                computed_subtotal = round(sum(line_amount(li) for li in lines), 2)
                 tol = get_tolerance(subtotal)
                 delta_sub = abs(subtotal - computed_subtotal)
                 if delta_sub > tol:
                     self._add_exception(
                         type="arithmetic_mismatch",
                         reason=f"Subtotal RM {subtotal:.2f} on {doc_num} does not match sum of line items RM {computed_subtotal:.2f} (delta: RM {delta_sub:.2f}, exceeds tolerance of RM {tol:.2f})",
-                        source_ref=rec.get("source_ref", ""),
-                        document_number=doc_num,
-                        document_type=rec.get("document_type"),
-                        vendor_name=rec.get("vendor_name"),
                         severity="critical",
                         delta=round(delta_sub, 2),
                         details={"expected": computed_subtotal, "actual": subtotal, "tolerance": tol, "check": "subtotal_vs_line_items"},
-                        suggested_action=f"Verify the subtotal on {doc_num} — it does not match the sum of line item amounts."
+                        suggested_action=f"Verify the subtotal on {doc_num} — it does not match the sum of line item amounts.",
+                        **doc
                     )
 
             # 4b: Check grand_total vs subtotal + total_tax
@@ -239,79 +269,99 @@ class FinancialEngine:
                 self._add_exception(
                     type="unparseable_total",
                     reason=f"Grand total is missing or unparseable on {doc_num}",
-                    source_ref=rec.get("source_ref", ""),
-                    document_number=doc_num,
-                    document_type=rec.get("document_type"),
-                    vendor_name=rec.get("vendor_name"),
                     severity="critical",
-                    suggested_action=f"Confirm the grand total on {doc_num} — it is missing or unreadable."
+                    suggested_action=f"Confirm the grand total on {doc_num} — it is missing or unreadable.",
+                    **doc
                 )
                 continue
             if subtotal is None or total_tax is None:
                 continue  # Can't check grand total
-            expected = subtotal + total_tax
+            expected = round(subtotal + total_tax, 2)
             tolerance = get_tolerance(grand)
             delta = abs(grand - expected)
             if delta > tolerance:
                 self._add_exception(
                     type="arithmetic_mismatch",
                     reason=f"Grand total RM {grand:.2f} does not match subtotal + tax = RM {expected:.2f} (delta: RM {delta:.2f}, exceeds tolerance of RM {tolerance:.2f})",
-                    source_ref=rec.get("source_ref", ""),
-                    document_number=doc_num,
-                    document_type=rec.get("document_type"),
-                    vendor_name=rec.get("vendor_name"),
                     severity="critical",
                     delta=round(delta, 2),
                     details={"expected": expected, "actual": grand, "tolerance": tolerance},
-                    suggested_action=f"Verify the total on {doc_num} — the printed grand total does not match the sum of subtotal and tax."
+                    suggested_action=f"Verify the total on {doc_num} — the printed grand total does not match the sum of subtotal and tax.",
+                    **doc
                 )
 
-            # 4c: Check total_tax vs sum of line item tax_amounts
-            if total_tax is not None and line_items:
-                computed_tax = sum(li.get("tax_amount", 0) or 0 for li in line_items)
+            # 4c: Check total_tax vs sum of line item tax_amounts — only when the lines carry tax
+            # (tax_amount null = the document prints SST once, not per line)
+            if any(li.get("tax_amount") is not None for li in lines):
+                computed_tax = sum(li.get("tax_amount", 0) or 0 for li in lines)
                 delta_tax = abs(total_tax - computed_tax)
                 if delta_tax > 1.00:  # RM 1 tolerance on tax
                     self._add_exception(
                         type="arithmetic_mismatch",
                         reason=f"Total tax RM {total_tax:.2f} on {doc_num} does not match sum of line item taxes RM {computed_tax:.2f} (delta: RM {delta_tax:.2f})",
-                        source_ref=rec.get("source_ref", ""),
-                        document_number=doc_num,
-                        document_type=rec.get("document_type"),
-                        vendor_name=rec.get("vendor_name"),
                         severity="warning",
                         delta=round(delta_tax, 2),
                         details={"expected": computed_tax, "actual": total_tax, "tolerance": 1.0, "check": "total_tax_vs_line_items"},
-                        suggested_action=f"Verify the tax total on {doc_num} — it does not match the sum of line item tax amounts."
+                        suggested_action=f"Verify the tax total on {doc_num} — it does not match the sum of line item tax amounts.",
+                        **doc
                     )
 
     # ── Step 5: SST Rate Validation ──
     def step5_sst(self):
-        for rec in self.invoices:
-            for li in rec.get("line_items", []):
-                tax = li.get("tax_amount", 0) or 0
-                if tax <= 0:
-                    continue
-                qty = li.get("quantity", 0)
-                price = li.get("unit_price", 0)
-                line_subtotal = qty * price
-                if line_subtotal <= 0:
-                    continue
-                effective_rate = (tax / line_subtotal) * 100
-                valid = any(abs(effective_rate - r) <= SST_RATE_TOLERANCE for r in VALID_SST_RATES)
-                if not valid:
-                    doc_num = rec.get("invoice_number", "?")
-                    desc = li.get("description", "?")
-                    self._add_exception(
-                        type="tax_rate_anomaly",
-                        reason=f"SST rate on line '{desc}' in {doc_num} is {effective_rate:.1f}%, which is not a standard Malaysian rate (0%, 6%, 8%)",
-                        source_ref=rec.get("source_ref", ""),
-                        document_number=doc_num,
-                        document_type="invoice",
-                        vendor_name=rec.get("vendor_name"),
-                        severity="warning",
-                        details={"field": f"line_item_sst_rate:{desc}", "confidence_score": None},
-                        suggested_action=f"Check the SST calculation on line '{desc}' in {doc_num}."
-                    )
+        for rec in [*self.invoices, *self.orders, *self.receipts]:
+            doc_num = doc_number(rec)
+            lines = rec.get("line_items") or []
+            if any((li.get("tax_amount") or 0) > 0 for li in lines):
+                self._check_line_sst(rec, doc_num, lines)
+                continue
+
+            # Only a document-level SST is printed: check it against the subtotal and the printed rate
+            subtotal, tax, printed = rec.get("subtotal"), doc_tax(rec), rec.get("tax_rate")
+            if not subtotal or tax is None:
+                continue
+            effective = tax / subtotal * 100
+            problems = []
+            if printed is not None and not valid_sst(printed):
+                problems.append(f"printed rate {printed:g}% is not a standard Malaysian rate (0%, 6%, 8%)")
+            if printed is not None and abs(effective - printed) > SST_RATE_TOLERANCE:
+                problems.append(f"RM {tax:.2f} is {effective:.1f}% of the RM {subtotal:.2f} subtotal, not the printed {printed:g}%")
+            elif printed is None and not valid_sst(effective):
+                problems.append(f"RM {tax:.2f} is {effective:.1f}% of the RM {subtotal:.2f} subtotal, not a standard rate (0%, 6%, 8%)")
+            if problems:
+                self._add_exception(
+                    type="tax_rate_anomaly",
+                    reason=f"SST on {doc_num}: " + "; ".join(problems),
+                    source_ref=rec.get("source_ref", ""),
+                    document_number=doc_num,
+                    document_type=rec.get("document_type"),
+                    vendor_name=rec.get("vendor_name"),
+                    severity="warning",
+                    details={"expected": printed, "actual": round(effective, 2)},
+                    suggested_action=f"Check the SST on {doc_num}."
+                )
+
+    def _check_line_sst(self, rec, doc_num, lines):
+        for li in lines:
+            tax = li.get("tax_amount", 0) or 0
+            if tax <= 0:
+                continue
+            line_subtotal = line_amount(li)
+            if line_subtotal <= 0:
+                continue
+            effective_rate = (tax / line_subtotal) * 100
+            if not valid_sst(effective_rate):
+                desc = li.get("description", "?")
+                self._add_exception(
+                    type="tax_rate_anomaly",
+                    reason=f"SST rate on line '{desc}' in {doc_num} is {effective_rate:.1f}%, which is not a standard Malaysian rate (0%, 6%, 8%)",
+                    source_ref=rec.get("source_ref", ""),
+                    document_number=doc_num,
+                    document_type=rec.get("document_type"),
+                    vendor_name=rec.get("vendor_name"),
+                    severity="warning",
+                    details={"field": f"line_item_sst_rate:{desc}", "confidence_score": None},
+                    suggested_action=f"Check the SST calculation on line '{desc}' in {doc_num}."
+                )
 
     # ── Step 6: Duplicate Detection ──
     def step6_duplicates(self):
@@ -385,9 +435,11 @@ class FinancialEngine:
             matched_po = self._find_matching_po(inv)
             if not matched_po:
                 num = inv.get("invoice_number", "?")
+                ref = inv.get("po_reference")
                 self._add_exception(
                     type="missing_po_match",
-                    reason=f"No purchase order found matching invoice {num}",
+                    reason=f"Invoice {num} references {ref}, but that purchase order is not among the documents" if ref
+                    else f"No purchase order found matching invoice {num}",
                     source_ref=inv.get("source_ref", ""),
                     document_number=num,
                     document_type="invoice",
@@ -399,7 +451,7 @@ class FinancialEngine:
             # Compare line items
             for inv_li in inv.get("line_items", []):
                 for po_li in matched_po.get("line_items", []):
-                    if inv_li.get("description", "").strip().lower() == po_li.get("description", "").strip().lower():
+                    if same_item(inv_li, po_li):
                         # Quantity check
                         if inv_li.get("quantity", 0) != po_li.get("quantity", 0):
                             num = inv.get("invoice_number", "?")
@@ -413,7 +465,7 @@ class FinancialEngine:
                                 document_type="invoice",
                                 vendor_name=inv.get("vendor_name"),
                                 severity="warning",
-                                delta=inv_li["quantity"] - po_li["quantity"],
+                                delta=(inv_li.get("quantity") or 0) - (po_li.get("quantity") or 0),
                                 details={"expected": po_li["quantity"], "actual": inv_li["quantity"], "matched_with": matched_po.get("source_ref")},
                                 suggested_action=f"Invoice {num} shows {inv_li['quantity']} units but PO {po_num} ordered {po_li['quantity']} for '{desc}'."
                             )
@@ -440,17 +492,16 @@ class FinancialEngine:
         for po in self.orders:
             if po_ref and po.get("po_number") == po_ref:
                 return po
-            # Fallback: vendor + date proximity + line overlap
-            if po.get("vendor_name") == inv.get("vendor_name"):
-                po_date = safe_date(po.get("po_date"))
-                inv_date = safe_date(inv.get("invoice_date"))
-                if po_date and inv_date and abs((inv_date - po_date).days) <= 7:
-                    inv_descs = {li.get("description", "").strip().lower() for li in inv.get("line_items", [])}
-                    po_descs = {li.get("description", "").strip().lower() for li in po.get("line_items", [])}
-                    if inv_descs and po_descs:
-                        overlap = len(inv_descs & po_descs) / max(len(inv_descs), 1)
-                        if overlap > 0.5:
-                            return po
+        # Fallback: same vendor + PO within ±7 days + more than half the invoice lines on the PO
+        inv_date = safe_date(inv.get("invoice_date"))
+        inv_lines = inv.get("line_items") or []
+        for po in self.orders:
+            po_date = safe_date(po.get("po_date"))
+            if po.get("vendor_name") != inv.get("vendor_name") or not (po_date and inv_date) or abs((inv_date - po_date).days) > 7:
+                continue
+            on_po = sum(any(same_item(li, po_li) for po_li in po.get("line_items", [])) for li in inv_lines)
+            if inv_lines and on_po / len(inv_lines) > 0.5:
+                return po
         return None
 
     # ── Step 8: Reconciliation (Invoice → Receipt) ──
@@ -516,13 +567,7 @@ class FinancialEngine:
             conf = rec.get("confidence", {})
             min_conf = self._min_confidence(rec)
             if min_conf < 0.7:
-                # Find which field is lowest
-                lowest_field = "unknown"
-                lowest_val = 1.0
-                for field, val in conf.items():
-                    if val is not None and val < lowest_val:
-                        lowest_val = val
-                        lowest_field = field
+                lowest_field = min((f for f in CRITICAL_CONF_FIELDS if conf.get(f) is not None), key=conf.get)
                 num = rec.get("invoice_number") or rec.get("po_number") or rec.get("receipt_number", "?")
                 self._add_exception(
                     type="low_confidence",
@@ -582,14 +627,15 @@ class FinancialEngine:
 
     # ── Step 12 & 13: Build Summary ──
     def build_outputs(self) -> tuple:
-        # Ledger summary
-        total_in = sum(r["amount"] for r in self.ledger_rows if r["direction"] == "in")
-        total_out = sum(r["amount"] for r in self.ledger_rows if r["direction"] == "out")
-        total_tax = sum(r.get("tax_amount", 0) or 0 for r in self.ledger_rows)
+        # Ledger summary — duplicate rows stay visible in the ledger but are not counted twice
+        counted = [r for r in self.ledger_rows if "duplicate" not in r["flags"]]
+        total_in = sum(r["amount"] for r in counted if r["direction"] == "in")
+        total_out = sum(r["amount"] for r in counted if r["direction"] == "out")
+        total_tax = sum(r.get("tax_amount", 0) or 0 for r in counted)
 
         # By category
         cat_map = {}
-        for r in self.ledger_rows:
+        for r in counted:
             cat = r["category"]
             if cat not in cat_map:
                 cat_map[cat] = {"category": cat, "total_amount": 0, "total_tax": 0, "row_count": 0}
@@ -597,7 +643,7 @@ class FinancialEngine:
             cat_map[cat]["total_tax"] += r.get("tax_amount", 0) or 0
             cat_map[cat]["row_count"] += 1
 
-        invoice_rows = [r for r in self.ledger_rows if r["document_type"] == "invoice"]
+        invoice_rows = [r for r in counted if r["document_type"] == "invoice"]
         reconciled_rows = [r for r in invoice_rows if r["reconciled"]]
         recon_rate = len(reconciled_rows) / len(invoice_rows) if invoice_rows else 0
         flagged = sum(1 for r in self.ledger_rows if r.get("flags"))
