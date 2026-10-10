@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Order / Purchase Order Extraction Schema",
+  "description": "Structured record extracted from a Malaysian purchase order. Logistics owns this — never computes a grand total.",
+  "type": "object",
+  "required": ["document_type", "po_number", "po_date", "vendor_name", "line_items", "currency", "source_ref"],
+  "properties": {
+    "document_type": {
+      "type": "string",
+      "enum": ["order", "po"]
+    },
+    "po_number": {
+      "type": "string",
+      "description": "Purchase order number as printed"
+    },
+    "po_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "vendor_name": {
+      "type": "string",
+      "description": "Supplier name"
+    },
+    "buyer_name": {
+      "type": ["string", "null"],
+      "description": "Purchasing entity if different from default"
+    },
+    "delivery_date": {
+      "type": ["string", "null"],
+      "format": "date",
+      "description": "Expected delivery date if stated"
+    },
+    "line_items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["description", "quantity", "unit_price"],
+        "properties": {
+          "description": { "type": "string" },
+          "quantity": { "type": "number", "minimum": 0 },
+          "unit_price": { "type": "number", "minimum": 0 },
+          "tax_amount": {
+            "type": ["number", "null"],
+            "minimum": 0,
+            "description": "SST per line if specified"
+          }
+        }
+      }
+    },
+    "subtotal": {
+      "type": ["number", "null"],
+      "description": "Subtotal before tax if printed"
+    },
+    "total_tax": {
+      "type": ["number", "null"],
+      "description": "Total SST if printed"
+    },
+    "grand_total": {
+      "type": ["number", "null"],
+      "description": "Grand total as printed. Recorded, NOT computed or validated by Logistics."
+    },
+    "tax_rate": {
+      "type": ["number", "null"],
+      "description": "Document-level SST rate as printed (e.g. 'SST 10%' -> 10). Recorded, not validated."
+    },
+    "notes": {
+      "type": ["string", "null"],
+      "description": "What is on the page when it is contradictory or unreadable (e.g. two different totals printed). Logistics describes; it never picks."
+    },
+    "currency": {
+      "type": "string",
+      "enum": ["MYR", "RM"],
+      "default": "MYR"
+    },
+    "source_ref": {
+      "type": "string",
+      "description": "Reference to source document for traceability"
+    },
+    "confidence": {
+      "type": "object",
+      "properties": {
+        "po_number": { "type": "number" },
+        "po_date": { "type": "number" },
+        "vendor_name": { "type": "number" },
+        "line_items": { "type": "number" },
+        "grand_total": { "type": "number" }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["clean", "flagged", "error"],
+      "default": "clean"
+    },
+    "flags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Issues, e.g., ['no_vendor_name', 'blurry_image', 'missing_lines']"
+    }
+  }
+}

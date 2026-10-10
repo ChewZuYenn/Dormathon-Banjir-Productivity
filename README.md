@@ -105,9 +105,10 @@ python app.py
 Then open **http://127.0.0.1:5000** (redirects to `/web-office/`). `app.py` serves both the 3D office page and the API, so they share one origin. Double-clicking `index.html` won't work.
 
 - Left-drag: rotate · Scroll: zoom · Right-drag or Shift+drag: pan · R or "Reset view": reset view
-- Type a goal in the bottom bar and click "Run". The page calls `POST /api/run`, which runs all three agents, then fills:
+- Type a goal in the bottom bar and click "Run". The page calls `POST /api/run/stream`, which runs all three agents and streams
+  each agent's progress (the cards light up one at a time: Secretary plan → Logistics → Financial → Secretary report), then fills:
   - **AI Summary** (left): exceptions grouped by type, critical first, plus the Secretary's top 3 actions.
-  - **Checklist** (right): one task per exception, grouped by priority; ticks are saved in the browser.
+  - **Checklist** (right): one fix item per exception, grouped by severity (same as the summary); ticks are saved in the browser.
   - **Results** (below the cards): Report · Exceptions · Tasks · Chase emails · Ledger. "view" opens the source document image (`/api/documents/test-documents/...`).
   The full JSON is in the browser console as `lastRun`.
 - How the Secretary step works: tasks come from the Python task generator (one per exception); Gemini writes the chase emails
@@ -116,12 +117,17 @@ Then open **http://127.0.0.1:5000** (redirects to `/web-office/`). `app.py` serv
 - **Data note — SST 10%:** every generated test document prints "SST 10%". That's an artifact of the template used to generate the data,
   not a problem with the agents, so the Financial engine accepts 10% (`TEMPLATE_SST_RATES` in `agents/financial/engine.py`).
   Tax amounts that don't match the printed rate are still flagged. Remove it before running on real documents.
-- `/api/run` returns only when the whole pipeline is done, so all three cards show "working" together.
-- Runs through `app.py` don't modify repo files (Financial works in a temp dir). `run_pipeline.py` and the test suites still rewrite `agents/logistics/ledger.json` and `exceptions.json`.
+- **"Read the 36 scans live with Gemini"** (toggle above the cards, off by default): Logistics reads every scan with Gemini
+  (4 in parallel, ~25 s, ~38 API calls) instead of loading the hand-checked `agents/logistics/output.json`, then checks itself
+  against it (document type, vendor, number, date, total). First live run: 36/36 scans, 180/180 fields matched. Off by default
+  to save free-tier quota; turn it on to show real extraction.
+- `POST /api/run` (same body, one JSON response) still works for scripts. Neither endpoint modifies repo files (Financial works in a temp dir).
+- `python run_pipeline.py` runs the same orchestrator from the command line (same tasks, emails and figures as the site).
+- WorkBuddy skills for all three agents are in `.workbuddy-ai/skills/` (secretary-agent, logistics-coordinator, financial-agent).
 
 ### Live deployment (Vercel)
 
-**https://dormathon-banjir-productivity.vercel.app** — same `app.py` (web page + `/api/run`), Gemini via Vercel environment variables `LLM_API_URL`, `LLM_API_KEY`, `LLM_MODEL`, `LLM_VISION_MODEL`, plus `LLM_TIMEOUT=20` (seconds per Gemini call; a slow call falls back to Python instead of running into the function time limit). `.vercelignore` keeps `.env`, Gmail credentials, Blender/Godot assets and tests out of the upload. Gmail is not available there (no persistent Google login on serverless).
+**https://dormathon-banjir-productivity.vercel.app** — same `app.py` (web page + `/api/run`), Gemini via Vercel environment variables `LLM_API_URL`, `LLM_API_KEY`, `LLM_MODEL`, `LLM_VISION_MODEL`, plus `LLM_TIMEOUT=20` (seconds per Gemini call; a slow call falls back to Python instead of running into the function time limit). Optional: `LLM_CONCURRENCY` (parallel scans in live mode, default 4). `.vercelignore` keeps `.env`, Gmail credentials, Blender/Godot assets and tests out of the upload. Gmail is not available there (no persistent Google login on serverless).
 
 Redeploy: `npx vercel deploy --prod` (Vercel project `coltonthatgoods-projects/dormathon-banjir-productivity`). After changing an environment variable, redeploy for it to take effect.
 

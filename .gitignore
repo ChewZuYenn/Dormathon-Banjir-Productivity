@@ -31,3 +31,6 @@ build/
 .env.local
 .vercel
 .env*
+
+# run_pipeline.py output
+agents/logistics/secretary_result.json

@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Receipt Extraction Schema",
+  "description": "Structured record extracted from a Malaysian receipt (payment proof). Logistics owns this — never computes a grand total.",
+  "type": "object",
+  "required": ["document_type", "vendor_name", "receipt_date", "amount", "currency", "source_ref"],
+  "properties": {
+    "document_type": {
+      "type": "string",
+      "enum": ["receipt"]
+    },
+    "vendor_name": {
+      "type": "string",
+      "description": "Vendor or payee name"
+    },
+    "receipt_number": {
+      "type": ["string", "null"],
+      "description": "Receipt number if present"
+    },
+    "receipt_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "payment_method": {
+      "type": ["string", "null"],
+      "enum": ["cash", "cheque", "bank_transfer", "card", "ewallet", "duitnow", null],
+      "description": "Payment method if discernible"
+    },
+    "amount": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Amount paid as printed. Recorded, not computed."
+    },
+    "tax_amount": {
+      "type": ["number", "null"],
+      "description": "SST portion if broken out on receipt"
+    },
+    "subtotal": {
+      "type": ["number", "null"],
+      "description": "Subtotal before tax if printed"
+    },
+    "tax_rate": {
+      "type": ["number", "null"],
+      "description": "SST rate as printed (e.g. 'SST 10%' -> 10). Recorded, not validated."
+    },
+    "line_items": {
+      "type": "array",
+      "description": "Items as printed. Receipts print one price per line, so each item has an amount, not qty x unit price.",
+      "items": {
+        "type": "object",
+        "required": ["description", "amount"],
+        "properties": {
+          "description": { "type": "string" },
+          "amount": { "type": "number", "minimum": 0 }
+        }
+      }
+    },
+    "direction": {
+      "type": "string",
+      "enum": ["in", "out"],
+      "default": "out",
+      "description": "'in' only if the receipt was issued BY the business (a sale). Purchase receipts are 'out'."
+    },
+    "notes": {
+      "type": ["string", "null"],
+      "description": "What is on the page when it is contradictory or unreadable. Logistics describes; it never picks."
+    },
+    "invoice_reference": {
+      "type": ["string", "null"],
+      "description": "Linked invoice number if present"
+    },
+    "currency": {
+      "type": "string",
+      "enum": ["MYR", "RM"],
+      "default": "MYR"
+    },
+    "source_ref": {
+      "type": "string",
+      "description": "Reference to source document for traceability"
+    },
+    "confidence": {
+      "type": "object",
+      "properties": {
+        "vendor_name": { "type": "number" },
+        "receipt_date": { "type": "number" },
+        "amount": { "type": "number" },
+        "payment_method": { "type": "number" }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["clean", "flagged", "error"],
+      "default": "clean"
+    },
+    "flags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Issues, e.g., ['handwritten', 'blurry_image', 'no_receipt_number']"
+    }
+  }
+}

@@ -3,7 +3,24 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from agents.orchestrator import build_chase_emails, chase_targets, normalize_extracted, report_from_ledger
+from agents.orchestrator import build_chase_emails, chase_targets, normalize_extracted, report_from_ledger, verify_extraction
+
+
+def test_verify_extraction_reports_field_mismatches():
+    reference = [
+        {"source_ref": "a.png", "document_type": "invoice", "vendor_name": "Kedai A", "invoice_number": "INV-1",
+         "invoice_date": "2026-09-01", "grand_total": 100.0},
+        {"source_ref": "b.png", "document_type": "order", "vendor_name": "B", "po_number": "PO-1", "po_date": None, "grand_total": 5.0},
+    ]
+    live = [
+        {"source_ref": "a.png", "document_type": "invoice", "vendor_name": "kedai a ", "invoice_number": "INV-1",
+         "invoice_date": "2026-09-01", "grand_total": 109.0},
+        {"source_ref": "b.png", "document_type": "po", "vendor_name": "B", "po_number": "PO-1", "po_date": None, "grand_total": 5.0},
+        {"source_ref": "unknown.png", "document_type": "invoice"},
+    ]
+    v = verify_extraction(live, reference)
+    assert v["documents_compared"] == 2 and v["fields_checked"] == 10 and v["fields_matched"] == 9
+    assert v["mismatches"] == [{"source_ref": "a.png", "field": "grand_total", "expected": 100.0, "extracted": 109.0}]
 
 
 def test_chase_emails_one_per_vendor_document_with_template_fallback():

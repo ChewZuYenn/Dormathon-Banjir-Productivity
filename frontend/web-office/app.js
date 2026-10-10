@@ -206,21 +206,41 @@ document.querySelector("#task-form").addEventListener("submit", async event => {
   running = true;
   document.querySelector("#start-button").disabled = true;
   const step = document.querySelector("#current-step");
-  // ponytail: /api/run is synchronous, so all cards work at once; add job polling for per-agent progress
-  agents.forEach(name => setState(name, "working", "Running…"));
-  step.textContent = "“" + task + "” — running the three agents…";
+  const live = document.querySelector("#live-read").checked;
+  agents.forEach(name => setState(name, "idle", "Queued"));
+  step.textContent = "“" + task + "” — running the three agents" + (live ? " (reading the scans live with Gemini)…" : "…");
   try {
-    const res = await fetch("/api/run", {
+    // Streamed NDJSON: one status line per agent step, then the result
+    const res = await fetch("/api/run/stream", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ goal: task }),
+      body: JSON.stringify({ goal: task, use_images: live }),
     });
-    const data = await res.json().catch(() => ({ error: "HTTP " + res.status }));
-    if (!res.ok || !data.success) throw new Error(data.error || "HTTP " + res.status);
+    if (!res.ok || !res.body) throw new Error("HTTP " + res.status);
+    const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
+    let buffer = "", data = null;
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (value) buffer += value;
+      const lines = buffer.split("\n");
+      buffer = done ? "" : lines.pop();
+      for (const line of lines.filter(l => l.trim())) {
+        const msg = JSON.parse(line);
+        if (msg.kind === "status") {
+          setState(msg.agent, msg.status, msg.step);
+          step.textContent = msg.agent + " · " + msg.step;
+        } else if (msg.kind === "result") data = msg.data;
+        else if (msg.kind === "error") throw new Error(msg.error);
+      }
+      if (done) break;
+    }
+    if (!data || !data.success) throw new Error("The run ended without a result");
     setState("Secretary", "done", data.secretary.tasks.length + " tasks · " + data.secretary.chase_emails.length + " draft emails");
     const gmail = data.gmail || {};
     const gmailNote = gmail.status === "ok" ? " · Gmail " + gmail.emails.length + " emails / " + gmail.document_count + " documents" : " · Gmail not connected";
-    setState("Logistics", "done", data.logistics.count + " records" + gmailNote);
+    const check = data.logistics.verification;
+    const checkNote = check && check.accuracy != null ? " · " + check.fields_matched + "/" + check.fields_checked + " fields match the hand-checked set" : "";
+    setState("Logistics", "done", data.logistics.count + " records" + checkNote + gmailNote);
     setState("Financial", "done", data.financial.exception_count + " exceptions");
     window.lastRun = data; // full result, for inspection in the console
     renderRun(data);
@@ -266,7 +286,7 @@ const docLink = ref => typeof ref === "string" && ref.startsWith("test-documents
 function renderRun(data) {
   const exceptions = (data.financial.exceptions && data.financial.exceptions.exceptions) || [];
   renderSummary(data, exceptions);
-  renderChecklist(data.secretary.tasks || []);
+  renderChecklist(exceptions);
   renderResults(data, exceptions);
 }
 
@@ -286,24 +306,26 @@ function renderSummary(data, exceptions) {
     "Built by the agents · " + new Date().toLocaleTimeString() + " · secretary: " + (data.sources.secretary || "?");
 }
 
-function renderChecklist(tasks) {
+// Checklist = one item per exception, grouped by the same severity as the AI Summary
+function renderChecklist(exceptions) {
   const KEY = "banjir-checklist-state";
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
   const groups = [
-    { title: "🔴 Critical — fix first", cls: "critical", match: p => p === 1 },
-    { title: "🟡 High priority", cls: "warning", match: p => p === 2 },
-    { title: "🟢 Tidy up", cls: "tidy", match: p => p !== 1 && p !== 2 },
+    { title: "🔴 Critical — fix first", cls: "critical", match: s => s === "critical" },
+    { title: "🟡 Warnings", cls: "warning", match: s => s === "warning" },
+    { title: "🟢 Info", cls: "tidy", match: s => s !== "critical" && s !== "warning" },
   ];
   const boxes = [];
   const sections = groups.map(g => {
-    const items = tasks.filter(t => g.match(Number(t.priority)));
+    const items = exceptions.filter(x => g.match(x.severity));
     if (!items.length) return null;
     return el("div", { class: "check-group" }, el("h3", { class: "check-group-title " + g.cls }, g.title + " (" + items.length + ")"),
-      items.map(t => {
-        const id = (t.invoice_number || "") + "|" + t.title;
+      items.map(x => {
+        const id = [x.source_ref, x.type, x.document_number, x.reason].join("|");
         const box = el("input", { type: "checkbox" });
-        const label = el("label", { class: "check-item", title: t.action_required || "" }, box, " " + t.title);
+        const label = el("label", { class: "check-item", title: x.reason || "" }, box,
+          " " + (x.document_number ? x.document_number + ": " : "") + (x.suggested_action || typeLabel(x.type)));
         box.checked = !!saved[id];
         label.classList.toggle("checked", box.checked);
         box.addEventListener("change", () => {
@@ -325,7 +347,6 @@ function renderChecklist(tasks) {
   }
   progress();
 }
-
 function table(headers, rows) {
   return el("div", { class: "table-wrap" }, el("table", null,
     el("thead", null, el("tr", null, headers.map(h => el("th", null, h)))),
@@ -343,6 +364,7 @@ function renderResults(data, exceptions) {
         ["Exceptions", report.total_exceptions], ["Tasks", report.tasks_generated], ["Chase emails", report.chase_emails_drafted],
       ].map(([k, v]) => el("div", { class: "stat" }, el("span", null, k), el("strong", null, v)))),
       el("p", { class: "muted" }, "Every figure comes from the Financial ledger (" + (ledger.rows || []).length + " rows), not from the language model."),
+      data.logistics.verification ? el("p", { class: "muted" }, "Live extraction check: Gemini read " + data.logistics.verification.documents_compared + " scans; " + data.logistics.verification.fields_matched + " of " + data.logistics.verification.fields_checked + " key fields match the hand-checked records" + (data.logistics.verification.mismatches.length ? " (mismatches: " + data.logistics.verification.mismatches.map(m => m.source_ref.split("/").pop() + " " + m.field).join(", ") + ")." : ".")) : null,
       el("h4", null, "Top actions"), el("ol", null, (report.top_3_actions || []).map(a => el("li", null, a))),
       el("h4", null, "By category (excl. SST)"),
       table(["Category", "Rows", "Total"], (report.categories || []).map(c => [c.category, c.count, rm(c.total)]))),

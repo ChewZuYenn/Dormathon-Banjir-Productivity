@@ -21,7 +21,7 @@ _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 _LOGISTICS_DIR = os.path.dirname(_THIS_DIR)        # .../agents/logistics
 _AGENTS_DIR = os.path.dirname(_LOGISTICS_DIR)      # .../agents
 PROJECT_ROOT = os.path.dirname(_AGENTS_DIR)         # .../Dormathon-Banjir-Productivity
-HACKATHON_ROOT = os.path.dirname(PROJECT_ROOT)     # .../2026-10-10-13-50-26
+HACKATHON_ROOT = PROJECT_ROOT                                          # skills live in the repo: .workbuddy-ai/skills/
 SKILL_DIR = os.path.join(HACKATHON_ROOT, ".workbuddy-ai", "skills", "logistics-coordinator")
 REPO_DIR = _LOGISTICS_DIR
 

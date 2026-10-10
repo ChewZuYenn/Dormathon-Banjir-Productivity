@@ -41,7 +41,9 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import queue
 import sys
+import threading
 import time
 import traceback
 from pathlib import Path
@@ -57,7 +59,7 @@ sys.path.insert(0, str(AGENTS_DIR))
 # ---------------------------------------------------------------------------
 
 try:
-    from flask import Flask, request, jsonify, send_from_directory, redirect
+    from flask import Flask, Response, request, jsonify, send_from_directory, redirect
 except ImportError:
     print("Flask not installed. Run: pip install flask")
     print("Or: pip install -r requirements.txt")
@@ -195,6 +197,37 @@ def run_pipeline():
             "error": str(e),
             "traceback": traceback_str,
         }), 500
+
+
+@app.route("/api/run/stream", methods=["POST"])
+def run_pipeline_stream():
+    """Same as /api/run, streamed as NDJSON so the page can show each agent's progress.
+
+    Lines: {"kind": "status", "agent", "status", "step"} as agents start/finish,
+    then one {"kind": "result", "data": {...same body as /api/run...}}
+    or {"kind": "error", "error": "..."}.
+    """
+    data = request.get_json(silent=True) or {}
+    goal = data.get("goal", "Close out September")
+    document_images = discover_document_images() if data.get("use_images") else None
+    events: queue.Queue = queue.Queue()
+
+    def work():
+        try:
+            result = get_orchestrator().run(goal=goal, document_images=document_images, on_event=events.put)
+            events.put({"kind": "result", "data": {"success": True, **result}})
+        except Exception as e:
+            events.put({"kind": "error", "error": str(e)})
+        finally:
+            events.put(None)
+
+    threading.Thread(target=work, daemon=True).start()
+
+    def stream():
+        while (item := events.get()) is not None:
+            yield json.dumps(item, ensure_ascii=False, default=str) + "\n"
+
+    return Response(stream(), mimetype="application/x-ndjson", headers={"X-Accel-Buffering": "no", "Cache-Control": "no-cache"})
 
 
 @app.route("/api/documents/<path:ref>", methods=["GET"])

@@ -19,7 +19,7 @@ _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 _FINANCIAL_DIR = os.path.dirname(_THIS_DIR)                              # .../agents/financial
 _AGENTS_DIR = os.path.dirname(_FINANCIAL_DIR)                            # .../agents
 PROJECT_ROOT = os.path.dirname(_AGENTS_DIR)                              # .../Dormathon-Banjir-Productivity
-HACKATHON_ROOT = os.path.dirname(PROJECT_ROOT)                           # .../2026-10-10-13-50-26
+HACKATHON_ROOT = PROJECT_ROOT                                          # skills live in the repo: .workbuddy-ai/skills/
 SKILL_DIR = os.path.join(HACKATHON_ROOT, ".workbuddy-ai", "skills", "financial-agent")
 LOGISTICS_DIR = os.path.join(_AGENTS_DIR, "logistics")
 LOGISTICS_SKILL_DIR = os.path.join(HACKATHON_ROOT, ".workbuddy-ai", "skills", "logistics-coordinator")
@@ -120,7 +120,7 @@ def test_logistics_to_financial_pipeline():
         records = json.load(f)
 
     check("Records is a list", isinstance(records, list))
-    check(f"Has {len(records)} records", len(records) == 34, f"Got {len(records)}")
+    check(f"Has {len(records)} records", len(records) == 36, f"Got {len(records)}")  # 36 since the re-extraction in 8f2f2f1
 
     # Run through Financial engine
     engine = FinancialEngine(records)
@@ -143,7 +143,7 @@ def test_logistics_to_financial_pipeline():
     check("Summary has by_category", "by_category" in s)
     check("Summary has reconciliation_rate", "reconciliation_rate" in s)
     check("Summary has document_count", "document_count" in s)
-    check(f"Document count = 34", s["document_count"] == 34)
+    check(f"Document count = 36", s["document_count"] == 36)
 
     # Verify exceptions
     check("Exceptions returned", exceptions is not None)

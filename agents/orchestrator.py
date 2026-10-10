@@ -43,6 +43,8 @@ import sys
 import tempfile
 import time
 import traceback
+import urllib.error
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -82,6 +84,8 @@ LLM_VISION_MODEL = os.environ.get("LLM_VISION_MODEL", LLM_MODEL)
 
 # Timeout for LLM calls (seconds)
 LLM_TIMEOUT = int(os.environ.get("LLM_TIMEOUT", "120"))
+# Parallel vision calls when reading documents live (free tiers rate-limit bursts)
+LLM_CONCURRENCY = int(os.environ.get("LLM_CONCURRENCY", "4"))
 
 # Test document images directory (optional — if missing, use pre-extracted JSON)
 TEST_DOCS_DIR = PROJECT_ROOT / "test-documents"
@@ -151,6 +155,51 @@ def normalize_extracted(rec: dict) -> dict:
             rec["status"] = "flagged"
         rec["notes"] = f"{rec.get('notes') or ''} Unparseable from extraction: {', '.join(bad)}.".strip()
     return rec
+
+
+_CHECK_FIELDS = {  # per document type: number, date, printed total
+    "invoice": ("invoice_number", "invoice_date", "grand_total"),
+    "receipt": ("receipt_number", "receipt_date", "amount"),
+    "order": ("po_number", "po_date", "grand_total"),
+    "po": ("po_number", "po_date", "grand_total"),
+}
+
+
+def verify_extraction(records: list[dict], reference: list[dict]) -> dict:
+    """Self-check live extraction against the hand-checked records (same source_ref).
+
+    Compares document type, vendor, number, date and printed total. Returns field
+    accuracy plus every mismatch, so a wrong read is visible instead of silent.
+    """
+    ref_by_src = {r.get("source_ref"): r for r in reference}
+    checked = matched = compared = 0
+    mismatches = []
+    for rec in records:
+        ref = ref_by_src.get(rec.get("source_ref"))
+        if not ref:
+            continue
+        compared += 1
+        doc_type = ref.get("document_type", "invoice")
+        fields = ("document_type", "vendor_name") + _CHECK_FIELDS.get(doc_type, _CHECK_FIELDS["invoice"])
+        for field in fields:
+            want, got = ref.get(field), rec.get(field)
+            if isinstance(want, (int, float)) and isinstance(got, (int, float)):
+                ok = abs(want - got) <= 0.01
+            else:
+                ok = str(want or "").strip().lower() == str(got or "").strip().lower()
+            if field == "document_type":
+                ok = ok or {str(want), str(got)} == {"order", "po"}
+            checked += 1
+            matched += ok
+            if not ok:
+                mismatches.append({"source_ref": rec.get("source_ref"), "field": field, "expected": want, "extracted": got})
+    return {
+        "documents_compared": compared,
+        "fields_checked": checked,
+        "fields_matched": matched,
+        "accuracy": round(matched / checked, 3) if checked else None,
+        "mismatches": mismatches,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -446,71 +495,71 @@ class PipelineOrchestrator:
         return all_records
 
     def extract_documents(self, document_paths: list[Path]) -> list[dict]:
-        """Vision-extract each document (image or PDF). No fallback: a failed
-        document comes back as an error record so Financial flags it."""
+        """Vision-extract each document (image or PDF), LLM_CONCURRENCY at a time.
+
+        No fallback: a failed document comes back as an error record so
+        Financial flags it. Output order matches document_paths.
+        """
+        with ThreadPoolExecutor(max_workers=max(1, LLM_CONCURRENCY)) as pool:
+            return list(pool.map(self._extract_one, document_paths))
+
+    def _extract_one(self, img_path: Path) -> dict:
         system_prompt = self.logistics_prompt or self._fallback_logistics_prompt()
-        extraction_template = self.extraction_template or ""
-
-        all_records = []
-
-        for img_path in document_paths:
-            try:
-                # Read image as base64
-                with open(img_path, "rb") as f:
-                    img_b64 = base64.b64encode(f.read()).decode("utf-8")
-
-                mime = mimetypes.guess_type(img_path.name)[0] or "image/jpeg"
-
-                user_prompt = (
-                    f"Extract this document into a structured record.\n"
-                    f"Document source: {img_path.name}\n\n"
-                    f"{extraction_template}\n\n"
-                    "Rules:\n"
-                    "1. Record fields exactly as printed. NEVER compute or verify any total.\n"
-                    "2. Assign a confidence score (0.0-1.0) to each critical field.\n"
-                    "3. If a field is unparseable, set it to null and add a flag.\n"
-                    "4. If the document is bad (blurry, handwritten), do not guess. Flag it.\n"
-                    "5. Malaysian SST rates: 0%, 6%, 8%.\n"
-                    "6. Return a single JSON object. No explanation.\n"
-                    "7. Numbers are JSON numbers (tax_rate 10, not '10%'; 1200.0, not 'RM 1,200'). "
-                    "Dates are YYYY-MM-DD.\n"
-                    "Output fields: document_type, vendor_name, invoice_number, "
-                    "invoice_date, due_date, po_reference, line_items, subtotal, "
-                    "total_tax, grand_total, tax_rate, currency, source_ref, "
-                    "confidence, status, flags."
-                )
-
-                response = self.call_llm(
-                    messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": [
-                            {"type": "text", "text": user_prompt},
-                            {"type": "image_url", "image_url": {
-                                "url": f"data:{mime};base64,{img_b64}"
-                            }},
-                        ]},
-                    ],
-                    model=LLM_VISION_MODEL,
-                    temperature=0.1,
-                    json_mode=True,
-                )
-
-                record = normalize_extracted(json.loads(response))
-                record.setdefault("source_ref", img_path.name)
-                all_records.append(record)
-
-            except Exception as e:
-                print(f"  [Orchestrator] Failed to extract {img_path.name}: {e}")
-                # Flag as error
-                all_records.append({
-                    "document_type": "unknown",
-                    "source_ref": img_path.name,
-                    "status": "error",
-                    "flags": ["extraction_failed"],
-                    "confidence": {},
-                })
-
-        return all_records
+        try:
+            source_ref = img_path.resolve().relative_to(PROJECT_ROOT).as_posix()
+        except ValueError:
+            source_ref = img_path.name
+        try:
+            img_b64 = base64.b64encode(img_path.read_bytes()).decode("utf-8")
+            mime = mimetypes.guess_type(img_path.name)[0] or "image/jpeg"
+            user_prompt = (
+                "Extract this document into one structured JSON record.\n"
+                f"Document source: {img_path.name}\n\n"
+                f"{self.extraction_template or ''}\n\n"
+                "Rules:\n"
+                "1. Record fields exactly as printed. NEVER compute or verify any total.\n"
+                "2. Assign a confidence score (0.0-1.0) to each critical field, in a 'confidence' object.\n"
+                "3. If a field is unparseable, set it to null and add a flag.\n"
+                "4. If the document is bad (blurry, handwritten), do not guess. Flag it.\n"
+                "5. Record the SST rate and amount as printed; do not correct them.\n"
+                "6. Numbers are JSON numbers (tax_rate 10, not '10%'; 1200.0, not 'RM 1,200'). Dates are YYYY-MM-DD.\n"
+                "7. Return a single JSON object, no explanation.\n\n"
+                "document_type is one of invoice, receipt, order. Use the fields for that type:\n"
+                "- invoice: vendor_name, invoice_number, invoice_date, due_date, po_reference, "
+                "line_items [{description, quantity, unit_price}], subtotal, total_tax, tax_rate, grand_total\n"
+                "- receipt: vendor_name, receipt_number, receipt_date, payment_method, "
+                "line_items [{description, amount}], subtotal, tax_amount, tax_rate, amount, invoice_reference\n"
+                "- order (purchase order): vendor_name, po_number, po_date, buyer_name, delivery_date, "
+                "line_items [{description, quantity, unit_price}], subtotal, total_tax, tax_rate, grand_total\n"
+                "Always include: document_type, currency, confidence, status (clean|flagged|error), flags."
+            )
+            messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": [
+                    {"type": "text", "text": user_prompt},
+                    {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{img_b64}"}},
+                ]},
+            ]
+            for attempt in range(3):
+                try:
+                    response = self.call_llm(messages, model=LLM_VISION_MODEL, temperature=0.1, json_mode=True)
+                    break
+                except urllib.error.HTTPError as e:
+                    if e.code != 429 or attempt == 2:  # only rate limits are worth retrying
+                        raise
+                    time.sleep(2 * (attempt + 1))
+            record = normalize_extracted(json.loads(response))
+            record["source_ref"] = source_ref
+            return record
+        except Exception as e:
+            print(f"  [Orchestrator] Failed to extract {img_path.name}: {e}")
+            return {
+                "document_type": "unknown",
+                "source_ref": source_ref,
+                "status": "error",
+                "flags": ["extraction_failed"],
+                "confidence": {},
+            }
 
     def _logistics_python(self) -> list[dict]:
         """Fallback: use pre-extracted output.json from process_test_docs.py."""
@@ -807,13 +856,16 @@ class PipelineOrchestrator:
     # Full Pipeline
     # ------------------------------------------------------------------
 
-    def run(self, goal: str = "Close out September", document_images: list[Path] | None = None) -> dict:
+    def run(self, goal: str = "Close out September", document_images: list[Path] | None = None,
+            on_event=None) -> dict:
         """Run the full 4-step pipeline.
 
         Args:
             goal: Business goal string (e.g., "Close out September")
             document_images: Optional list of image paths for LLM vision extraction.
                 If None, uses pre-extracted output.json.
+            on_event: Optional callback, called with {"agent", "status", "step"} as each
+                agent starts and finishes (app.py streams these to the web page).
 
         Returns:
             A dict with all pipeline stages:
@@ -830,6 +882,12 @@ class PipelineOrchestrator:
         timings: dict[str, float] = {}
         sources: dict[str, str] = {}
         t_start = time.time()
+
+        def emit(agent: str, status: str, step: str) -> None:
+            if on_event:
+                on_event({"kind": "status", "agent": agent, "status": status, "step": step})
+
+        emit("Secretary", "working", "Writing the plan")
 
         # Step 1: Secretary LLM — Generate Plan
         print("\n" + "=" * 60)
@@ -848,9 +906,15 @@ class PipelineOrchestrator:
         print("\n" + "=" * 60)
         print("  STEP 2/4: LOGISTICS (EXTRACT)")
         print("=" * 60)
+        emit("Secretary", "done", f"Plan ready ({len(plan_data.get('phases', []))} phases)")
+        emit("Logistics", "working",
+             f"Reading {len(document_images)} scans with Gemini" if document_images else "Loading extracted documents")
         t = time.time()
         logistics_records = self.logistics_extract_llm(document_images)
         sources["logistics"] = "llm" if document_images and self._llm_available() else "python_fallback"
+        # Live reads are checked against the hand-checked extraction of the same scans
+        verification = (verify_extraction(logistics_records, self._logistics_python())
+                        if sources["logistics"] == "llm" else None)
 
         # Gmail: new documents from the inbox join the ones already on file
         gmail = self.gmail_fetch()
@@ -872,6 +936,8 @@ class PipelineOrchestrator:
         flagged = sum(1 for r in logistics_records if r.get("status") == "flagged")
         error = sum(1 for r in logistics_records if r.get("status") == "error")
         print(f"  Status: {clean} clean, {flagged} flagged, {error} error")
+        emit("Logistics", "done", f"{len(logistics_records)} records ({clean} clean, {flagged} flagged, {error} error)")
+        emit("Financial", "working", "Building the ledger and checking every document")
 
         # Step 3: Financial Python — Validate
         print("\n" + "=" * 60)
@@ -885,6 +951,8 @@ class PipelineOrchestrator:
         print(f"  Ledger rows: {len(ledger.get('rows', []))}")
         print(f"  Total out: RM {ledger.get('summary', {}).get('total_out', 0):,.2f}")
         print(f"  Exceptions: {len(exc_list)}")
+        emit("Financial", "done", f"{len(ledger.get('rows', []))} ledger rows, {len(exc_list)} exceptions")
+        emit("Secretary", "working", "Turning exceptions into tasks, emails and the report")
 
         # Step 4: Secretary — one task per exception (Python), chase emails +
         # report narrative (LLM, template fallback), figures from the ledger
@@ -912,6 +980,7 @@ class PipelineOrchestrator:
             print(f"  Cash out: RM {final_report.get('cash_out', 0):,.2f}")
             print(f"  Net cash: RM {final_report.get('net_cash', 0):,.2f}")
 
+        emit("Secretary", "done", f"{len(tasks)} tasks, {len(chase_emails)} draft emails")
         timings["total"] = round(time.time() - t_start, 2)
 
         # Assemble full result
@@ -926,6 +995,7 @@ class PipelineOrchestrator:
                     "flagged": flagged,
                     "error": error,
                 },
+                "verification": verification,
             },
             "gmail": {
                 "status": gmail["status"],
@@ -961,7 +1031,9 @@ def discover_document_images() -> list[Path]:
     images = []
     for ext in ["*.png", "*.jpg", "*.jpeg"]:
         images.extend(TEST_DOCS_DIR.rglob(ext))
-    return sorted(images)
+    # test-documents/extracted/ holds the 4 full-page scans the per-document crops
+    # were cut from; reading both would double every document
+    return sorted(p for p in images if "extracted" not in p.relative_to(TEST_DOCS_DIR).parts)
 
 
 def main():

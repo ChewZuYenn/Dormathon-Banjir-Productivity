@@ -140,20 +140,24 @@ Running tests or the pipeline **rewrites** `agents/logistics/output.json`, `ledg
 
 ## 6. Known issues (most important first)
 
-**Fixed 2026-10-10, late evening** (live on Vercel): the report's figures come from the Financial ledger (the LLM had reported RM 21,875.70 cash out vs RM 11,974.00 + RM 1,197.40 SST in the ledger); 2 chase emails (INV-2026-016 Puteri Kraf, INV-2026-033 Buku Nusa — vendor invoices with conflicting figures or totals that don't add up); one task per exception (57) from the Python task generator; the AI Summary and Checklist panels are built from each run instead of hard-coded; a Results panel (Report · Exceptions · Tasks · Chase emails · Ledger) with links to the source document images; `LLM_TIMEOUT=20` on Vercel.
+**Fixed 2026-10-10/11** (live on Vercel):
+- The report's figures come from the Financial ledger (the LLM had reported RM 21,875.70 cash out vs RM 11,974.00 + RM 1,197.40 SST in the ledger).
+- 2 chase emails (INV-2026-016 Puteri Kraf, INV-2026-033 Buku Nusa — vendor invoices with conflicting figures or totals that don't add up); one task per exception (57) from the Python task generator.
+- AI Summary and Checklist built from each run; the Checklist groups by exception severity, same as the summary (8 critical). Results panel with links to the source document images.
+- Cards update one agent at a time (`POST /api/run/stream`, NDJSON).
+- Optional live extraction ("Read the 36 scans live with Gemini"): parallel, rate-limit retries, per-type field names, skips the 4 full-page scans, and checks itself against the hand-checked records — first run 36/36 scans, 180/180 fields.
+- WorkBuddy skills for Logistics and Financial now live in the repo (`.workbuddy-ai/skills/`); they had been created one folder above the repo and never committed. All test suites pass.
+- `run_pipeline.py` goes through the same orchestrator as the site.
 
 **Data note — SST 10%:** every generated test document prints "SST 10%". That's an artifact of the template used to generate the data set, not a problem with the agents, so `agents/financial/engine.py` accepts it (`TEMPLATE_SST_RATES`). This removed 35 identical warnings (92 → 57 exceptions). Tax amounts that don't match the printed rate are still flagged. Remove the set before running on real documents.
 
-1. **Financial/Logistics WorkBuddy skills missing.** `ad6a50b` says they were added but no `SKILL.md` was committed for either. Causes the two `test_skill_file` failures.
-2. **Logistics on the live site reads the pre-extracted `output.json`.** Live image extraction works (`extract_documents` + `normalize_extracted`) but the page can't trigger it, and `discover_document_images()` would pick up the 4 full-page scans in `test-documents/extracted/` on top of the 36 crops (duplicates).
-3. **No per-agent progress on web.** `/api/run` is synchronous, so all three cards are "working" together. Port the bridge's job + polling pattern to `app.py` if needed (on Vercel this needs streaming or an external store).
-4. **Email/task approval endpoints are placeholders** — `/api/tasks/<id>/approve`, `/api/emails/<id>/approve|reject` return success without doing anything. Emails are drafts only.
-5. **`run_pipeline.py` (CLI) is behind `app.py`.** It doesn't go through the orchestrator, so it still drafts 0 chase emails, doesn't take report figures from the ledger, and rewrites the tracked JSON in `agents/logistics/` (so do the test suites).
-6. **Financial `TODAY` is hard-coded** to 2026-10-10 in `engine.py`; `period` is a label only, records aren't filtered by month. Only MYR.
-7. **Checklist "Critical" ≠ exception "critical".** Checklist groups use the task generator's priorities (only duplicates are P1); the AI Summary uses exception severity (8 critical).
-8. **Gmail is connected but unproven on a real inbox.** Orchestrator pulls attachments via TAO's `GmailCrawler` when `agents/secretary/credentials.json` + `token.json` exist (README → Gmail). Tested with simulated attachments only; PDFs unverified; local only (no Google login on Vercel).
-9. **Mac-only launchers.** `*.command` files in `frontend/` use zsh and Xuanyu's local paths. Use the commands in §2 instead.
-10. **Repo hygiene:** 9 `__pycache__/*.pyc` files are tracked under `agents/secretary/src/`; root `.gitignore` ignores `*.html` (existing `index.html` is tracked, new HTML files won't be); pytest can't collect all agents' `tests/` folders in one run (same package name).
+1. **Live extraction finds fewer conflicts than the hand-check.** With live reading on, Gemini reads every printed value correctly but flags fewer documents as printing two conflicting totals, so a live run shows ~47 exceptions and 1 chase email instead of 57 and 2. The default (off) uses the hand-checked extraction.
+2. **Email/task approval endpoints are placeholders** — `/api/tasks/<id>/approve`, `/api/emails/<id>/approve|reject` return success without doing anything. Emails are drafts only.
+3. **Financial `TODAY` is hard-coded** to 2026-10-10 in `engine.py`; `period` is a label only, records aren't filtered by month. Only MYR.
+4. **Gmail is connected but unproven on a real inbox.** Orchestrator pulls attachments via TAO's `GmailCrawler` when `agents/secretary/credentials.json` + `token.json` exist (README → Gmail). Tested with simulated attachments only; PDFs unverified; local only (no Google login on Vercel).
+5. **Free-tier limits.** Live extraction uses ~38 Gemini calls per click (free tier: 500/day per model); Vercel's function time limit for this project couldn't be read from the CLI (live runs take ~25–30 s).
+6. **Mac-only launchers.** `*.command` files in `frontend/` use zsh and Xuanyu's local paths. Use the commands in §2 instead.
+7. **Repo hygiene:** 9 `__pycache__/*.pyc` files are tracked under `agents/secretary/src/`; root `.gitignore` ignores `*.html` (existing `index.html` is tracked, new HTML files won't be); pytest can't collect all agents' `tests/` folders in one run (same package name); the test suites rewrite the tracked JSON in `agents/logistics/` and `agents/financial/test/`.
 
 ---
 

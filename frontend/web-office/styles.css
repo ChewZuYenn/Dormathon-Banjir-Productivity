@@ -81,3 +81,5 @@
 .email-meta{font-size:12px;color:#858a7c}
 .email h4{margin:8px 0 6px}
 .email pre{white-space:pre-wrap;font-family:inherit;font-size:13px;line-height:1.55;margin:0}
+.live-toggle{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#506a50;cursor:pointer}
+.live-toggle input{accent-color:#405e4c}
