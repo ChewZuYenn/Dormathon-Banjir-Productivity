@@ -1,0 +1,18 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/office_scene.gd" id="1_office"]
+[ext_resource type="Script" path="res://scripts/agent_state.gd" id="2_state"]
+[ext_resource type="Script" path="res://scripts/agent_client.gd" id="3_client"]
+[ext_resource type="Script" path="res://scripts/agent_ui.gd" id="4_ui"]
+
+[node name="OfficeDemo" type="Node3D"]
+script = ExtResource("1_office")
+
+[node name="AgentState" type="Node" parent="."]
+script = ExtResource("2_state")
+
+[node name="AgentClient" type="Node" parent="."]
+script = ExtResource("3_client")
+
+[node name="AgentUI" type="CanvasLayer" parent="."]
+script = ExtResource("4_ui")

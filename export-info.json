@@ -1,0 +1,13 @@
+{
+  "source_blend": "office-character-detail.blend",
+  "source_sha256": "ab889fdd604c1c6becc8d74c337fca6f20bf61e2acdc0842b747bca1819686c2",
+  "glb": "office.glb",
+  "bytes": 12449296,
+  "source_unchanged": true,
+  "excluded": [
+    "Blender cameras",
+    "Blender lights",
+    "200m studio floor"
+  ],
+  "material_limitations": "glTF preserves basic PBR colors and vertex-color cheeks; Blender procedural fabric and exact Cycles lighting are not replicated."
+}
