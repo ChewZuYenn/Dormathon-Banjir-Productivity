@@ -16,3 +16,4 @@ vendors.json
 audit_log.json
 replies.json
 schedule.json
+output/
