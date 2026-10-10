@@ -218,7 +218,9 @@ document.querySelector("#task-form").addEventListener("submit", async event => {
     const data = await res.json().catch(() => ({ error: "HTTP " + res.status }));
     if (!res.ok || !data.success) throw new Error(data.error || "HTTP " + res.status);
     setState("Secretary", "done", data.secretary.tasks.length + " 个待办 · " + data.secretary.chase_emails.length + " 封草稿邮件");
-    setState("Logistics", "done", data.logistics.count + " 条记录");
+    const gmail = data.gmail || {};
+    const gmailNote = gmail.status === "ok" ? " · Gmail " + gmail.emails.length + " 封邮件 / " + gmail.document_count + " 份文件" : " · Gmail 未连接";
+    setState("Logistics", "done", data.logistics.count + " 条记录" + gmailNote);
     setState("Financial", "done", data.financial.exception_count + " 个异常");
     window.lastRun = data; // full result, for inspection in the console
     step.textContent = "“" + task + "” 完成。完整结果：控制台 lastRun。";

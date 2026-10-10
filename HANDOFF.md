@@ -142,7 +142,7 @@ Running tests or the pipeline **rewrites** `agents/logistics/output.json`, `ledg
 
 1. **0 chase emails without an LLM.** Demo promises "two drafted chase emails". `/api/run` with Python fallback returned 92 tasks but 0 emails. Fix the Secretary fallback in `agents/orchestrator.py`, or run with an LLM.
 2. **Financial/Logistics WorkBuddy skills missing.** `ad6a50b` says they were added but no `SKILL.md` was committed for either. Causes the two `test_skill_file` failures.
-3. **Pipeline runs dirty the repo.** Generated JSON in `agents/logistics/` is tracked and rewritten every run (flag order also changes between runs). Consider `.gitignore`-ing it and keeping a fixed sample elsewhere.
+3. **Some runs still dirty the repo.** `app.py` / `orchestrator.py` now run Financial in a temp dir, but `run_pipeline.py` and the test suites still rewrite the tracked JSON in `agents/logistics/`.
 4. **Web UI shows counts only.** No ledger/exception/task/email views yet; full result is in the browser console as `lastRun`. Empty placeholders exist in `frontend/components/`.
 5. **No per-agent progress on web.** `/api/run` is synchronous, so all three cards are "working" together. Port the bridge's job + polling pattern to `app.py` if needed.
 6. **~12 s per run** — partly probing for an LLM at `localhost:11434` that isn't there.
@@ -150,6 +150,7 @@ Running tests or the pipeline **rewrites** `agents/logistics/output.json`, `ledg
 8. **Financial `TODAY` is hard-coded** to 2026-10-10 in `engine.py`; `period` is a label only, records aren't filtered by month. Only MYR.
 9. **Mac-only launchers.** `*.command` files in `frontend/` use zsh and Xuanyu's local paths. Use the commands in §2 instead.
 10. **Repo hygiene:** 9 `__pycache__/*.pyc` files are tracked under `agents/secretary/src/` despite `.gitignore`; root `.gitignore` ignores `*.html` (existing `index.html` is tracked, new HTML files won't be).
+11. **Gmail is connected but unproven on a real inbox.** Orchestrator pulls attachments via TAO's `GmailCrawler` when `agents/secretary/credentials.json` + `token.json` exist (README → Gmail), extracts them with the LLM and normalizes the output (`normalize_extracted`). Tested with simulated attachments only. PDFs are sent to Gemini as-is — unverified.
 
 ---
 

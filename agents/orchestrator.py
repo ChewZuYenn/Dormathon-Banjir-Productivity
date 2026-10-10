@@ -35,11 +35,15 @@ from __future__ import annotations
 import argparse
 import base64
 import json
+import mimetypes
 import os
+import re
 import subprocess
 import sys
+import tempfile
 import time
 import traceback
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -81,6 +85,72 @@ LLM_TIMEOUT = int(os.environ.get("LLM_TIMEOUT", "120"))
 
 # Test document images directory (optional — if missing, use pre-extracted JSON)
 TEST_DOCS_DIR = PROJECT_ROOT / "test-documents"
+
+
+# ---------------------------------------------------------------------------
+# Self-check for LLM-extracted records
+# ---------------------------------------------------------------------------
+
+_NUMBER_FIELDS = ("subtotal", "total_tax", "grand_total", "tax_rate", "amount", "tax_amount")
+_LINE_NUMBER_FIELDS = ("quantity", "unit_price", "amount", "tax_amount", "tax_rate")
+_DATE_FORMATS = ("%Y-%m-%d", "%d %b %Y", "%d %B %Y", "%d/%m/%Y", "%d-%m-%Y", "%d.%m.%Y", "%Y/%m/%d", "%b %d, %Y")
+
+
+def _to_number(value):
+    """'10%' -> 10.0, 'RM 1,200.00' -> 1200.0. Returns (value, ok)."""
+    if value is None or isinstance(value, (int, float)):
+        return value, True
+    try:
+        return float(re.sub(r"(?i)rm|myr|%|,|\s", "", str(value))), True
+    except ValueError:
+        return None, False
+
+
+def _to_iso_date(value):
+    """'07 Oct 2026' -> '2026-10-07'. Returns (value, ok)."""
+    if not value:
+        return value, True
+    for fmt in _DATE_FORMATS:
+        try:
+            return datetime.strptime(str(value).strip(), fmt).date().isoformat(), True
+        except ValueError:
+            pass
+    return None, False
+
+
+def normalize_extracted(rec: dict) -> dict:
+    """Coerce an LLM-extracted record to the types the Financial engine expects.
+
+    Anything that can't be parsed becomes null and the record is flagged
+    'unparseable_field' -- never guessed, so Financial raises it as an exception.
+    """
+    bad: list[str] = []
+
+    def fix(obj: dict, key: str, convert, label: str) -> None:
+        if key in obj:
+            obj[key], ok = convert(obj[key])
+            if not ok:
+                bad.append(label)
+
+    for key in _NUMBER_FIELDS:
+        fix(rec, key, _to_number, key)
+    for key in [k for k in rec if k == "date" or k.endswith("_date")]:
+        fix(rec, key, _to_iso_date, key)
+    for i, line in enumerate(rec.get("line_items") or []):
+        if isinstance(line, dict):
+            for key in _LINE_NUMBER_FIELDS:
+                fix(line, key, _to_number, f"line_items[{i}].{key}")
+    if isinstance(rec.get("confidence"), dict):
+        rec["confidence"] = {k: (_to_number(v)[0] or 0.0) for k, v in rec["confidence"].items()}
+
+    flags = rec.get("flags") or []
+    rec["flags"] = [flags] if isinstance(flags, str) else list(flags)
+    if bad:
+        rec["flags"].append("unparseable_field")
+        if rec.get("status") != "error":
+            rec["status"] = "flagged"
+        rec["notes"] = f"{rec.get('notes') or ''} Unparseable from extraction: {', '.join(bad)}.".strip()
+    return rec
 
 
 class PipelineOrchestrator:
@@ -285,20 +355,30 @@ class PipelineOrchestrator:
         if not self._llm_available() or not document_images:
             return self._logistics_python()
 
+        all_records = self.extract_documents(document_images)
+
+        # If all extractions failed, fall back
+        if not all_records:
+            print("  [Orchestrator] All LLM extractions failed, using Python fallback")
+            return self._logistics_python()
+
+        return all_records
+
+    def extract_documents(self, document_paths: list[Path]) -> list[dict]:
+        """Vision-extract each document (image or PDF). No fallback: a failed
+        document comes back as an error record so Financial flags it."""
         system_prompt = self.logistics_prompt or self._fallback_logistics_prompt()
         extraction_template = self.extraction_template or ""
 
         all_records = []
 
-        for img_path in document_images:
+        for img_path in document_paths:
             try:
                 # Read image as base64
                 with open(img_path, "rb") as f:
                     img_b64 = base64.b64encode(f.read()).decode("utf-8")
 
-                # Determine MIME type
-                ext = img_path.suffix.lower()
-                mime = "image/png" if ext == ".png" else "image/jpeg"
+                mime = mimetypes.guess_type(img_path.name)[0] or "image/jpeg"
 
                 user_prompt = (
                     f"Extract this document into a structured record.\n"
@@ -311,6 +391,8 @@ class PipelineOrchestrator:
                     "4. If the document is bad (blurry, handwritten), do not guess. Flag it.\n"
                     "5. Malaysian SST rates: 0%, 6%, 8%.\n"
                     "6. Return a single JSON object. No explanation.\n"
+                    "7. Numbers are JSON numbers (tax_rate 10, not '10%'; 1200.0, not 'RM 1,200'). "
+                    "Dates are YYYY-MM-DD.\n"
                     "Output fields: document_type, vendor_name, invoice_number, "
                     "invoice_date, due_date, po_reference, line_items, subtotal, "
                     "total_tax, grand_total, tax_rate, currency, source_ref, "
@@ -332,7 +414,7 @@ class PipelineOrchestrator:
                     json_mode=True,
                 )
 
-                record = json.loads(response)
+                record = normalize_extracted(json.loads(response))
                 record.setdefault("source_ref", img_path.name)
                 all_records.append(record)
 
@@ -346,11 +428,6 @@ class PipelineOrchestrator:
                     "flags": ["extraction_failed"],
                     "confidence": {},
                 })
-
-        # If all extractions failed, fall back
-        if not all_records:
-            print("  [Orchestrator] All LLM extractions failed, using Python fallback")
-            return self._logistics_python()
 
         return all_records
 
@@ -396,33 +473,70 @@ class PipelineOrchestrator:
         Returns:
             (ledger_dict, exceptions_dict)
         """
-        # Write records to a temp file for the engine
-        temp_input = LOGISTICS_DIR / "output.json"
-        with open(temp_input, "w", encoding="utf-8") as f:
-            json.dump(logistics_records, f, indent=2, ensure_ascii=False)
+        # Engine writes ledger.json + exceptions.json next to its input, so run it
+        # in a temp dir: keeps agents/logistics/output.json intact (and works on
+        # read-only hosts like Vercel, where only the temp dir is writable).
+        with tempfile.TemporaryDirectory() as run_dir:
+            temp_input = Path(run_dir) / "records.json"
+            temp_input.write_text(json.dumps(logistics_records, indent=2, ensure_ascii=False), encoding="utf-8")
 
-        engine_script = FINANCIAL_DIR / "engine.py"
-        result = subprocess.run(
-            [PYTHON, str(engine_script), str(temp_input)],
-            cwd=str(FINANCIAL_DIR),
-            capture_output=True,
-            text=True,
-            timeout=60,
-        )
+            engine_script = FINANCIAL_DIR / "engine.py"
+            result = subprocess.run(
+                [PYTHON, str(engine_script), str(temp_input)],
+                cwd=str(FINANCIAL_DIR),
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
 
-        if result.returncode != 0:
-            raise RuntimeError(f"Financial engine failed: {result.stderr[-500:]}")
+            if result.returncode != 0:
+                raise RuntimeError(f"Financial engine failed: {result.stderr[-500:]}")
 
-        logistics_dir = temp_input.parent
-        ledger_path = logistics_dir / "ledger.json"
-        exceptions_path = logistics_dir / "exceptions.json"
-
-        with open(ledger_path, "r", encoding="utf-8") as f:
-            ledger = json.load(f)
-        with open(exceptions_path, "r", encoding="utf-8") as f:
-            exceptions = json.load(f)
+            ledger = json.loads((Path(run_dir) / "ledger.json").read_text(encoding="utf-8"))
+            exceptions = json.loads((Path(run_dir) / "exceptions.json").read_text(encoding="utf-8"))
 
         return ledger, exceptions
+
+    # ------------------------------------------------------------------
+    # Step 1b: Secretary — fetch new documents from Gmail
+    # ------------------------------------------------------------------
+
+    def gmail_fetch(self) -> dict:
+        """Pull invoice/receipt/PO attachments from Gmail (TAO's GmailCrawler).
+
+        Runs only with a real, already-authorised account: credentials.json AND
+        token.json in agents/secretary/ (create the token once with
+        `cd agents/secretary && python -m src.cli --gmail`). A web request never
+        opens the OAuth browser flow, and mock-mode attachments are placeholder
+        PDFs, so they are never sent to extraction.
+
+        Returns {"status", "emails": [...], "files": [(path, email), ...]}.
+        """
+        from src.config import GMAIL_CREDENTIALS_FILE, GMAIL_TOKEN_FILE
+
+        if not (GMAIL_CREDENTIALS_FILE.exists() and GMAIL_TOKEN_FILE.exists()):
+            status = "needs_login" if GMAIL_CREDENTIALS_FILE.exists() else "not_configured"
+            return {"status": status, "emails": [], "files": []}
+
+        from src.gmail_crawler import GmailCrawler
+        crawler = GmailCrawler()
+        crawler.authenticate()
+        if crawler.mock:  # Google libraries missing -> crawler fell back to mock
+            return {"status": "libraries_missing", "emails": [], "files": []}
+
+        # Month-end close needs every matching email, not just unseen ones
+        emails = crawler.fetch_invoice_emails(skip_processed=False)
+        files = [(Path(f), e) for e in emails for f in e.downloaded_files]
+        return {
+            "status": "ok",
+            "emails": [
+                {"message_id": e.message_id, "sender": e.sender, "subject": e.subject,
+                 "date": e.date, "vendor_name": e.vendor_name,
+                 "attachments": [Path(f).name for f in e.downloaded_files]}
+                for e in emails
+            ],
+            "files": files,
+        }
 
     # ------------------------------------------------------------------
     # Step 4: Secretary LLM — Tasks, Chase Emails, Final Report
@@ -671,9 +785,23 @@ class PipelineOrchestrator:
         print("=" * 60)
         t = time.time()
         logistics_records = self.logistics_extract_llm(document_images)
-        timings["step2_logistics"] = round(time.time() - t, 2)
         sources["logistics"] = "llm" if document_images and self._llm_available() else "python_fallback"
+
+        # Gmail: new documents from the inbox join the ones already on file
+        gmail = self.gmail_fetch()
+        sources["gmail"] = gmail["status"]
+        gmail_records: list[dict] = []
+        if gmail["files"] and not self._llm_available():
+            gmail["status"] = sources["gmail"] = "skipped_no_llm"  # attachments need vision extraction
+        elif gmail["files"]:
+            gmail_records = self.extract_documents([path for path, _ in gmail["files"]])
+            for rec, (path, email) in zip(gmail_records, gmail["files"]):
+                rec["source_ref"] = f"gmail:{email.message_id}/{path.name}"
+                rec["source_email"] = {"sender": email.sender, "subject": email.subject, "date": email.date}
+            logistics_records = logistics_records + gmail_records
+        timings["step2_logistics"] = round(time.time() - t, 2)
         print(f"  Logistics source: {sources['logistics']}")
+        print(f"  Gmail: {gmail['status']} ({len(gmail['emails'])} emails, {len(gmail_records)} documents extracted)")
         print(f"  Documents extracted: {len(logistics_records)}")
         clean = sum(1 for r in logistics_records if r.get("status") == "clean")
         flagged = sum(1 for r in logistics_records if r.get("status") == "flagged")
@@ -726,6 +854,11 @@ class PipelineOrchestrator:
                     "flagged": flagged,
                     "error": error,
                 },
+            },
+            "gmail": {
+                "status": gmail["status"],
+                "emails": gmail["emails"],
+                "document_count": len(gmail_records),
             },
             "financial": {
                 "ledger": ledger,

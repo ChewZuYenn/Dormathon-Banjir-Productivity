@@ -70,6 +70,16 @@ Then open **http://127.0.0.1:5000** (redirects to `/web-office/`). `app.py` serv
 - `/api/run` returns only when the whole pipeline is done, so all three cards show "working" together.
 - Each run rewrites `agents/logistics/output.json`, `ledger.json` and `exceptions.json`.
 
+### Gmail (optional)
+
+With a Gmail account connected, each run also pulls invoice/receipt/PO emails, reads their attachments with the LLM, and adds them to the documents on file.
+
+1. Put a Google OAuth `credentials.json` in `agents/secretary/` (see `agents/secretary/schemas/prompts/gmail_setup_guide.md`) and `pip install -r agents/secretary/requirements.txt`.
+2. Log in once: `cd agents/secretary` then `python -m src.cli --gmail` (opens a browser, saves `token.json`).
+3. Run as usual. The result's `gmail` field (and the Logistics card) shows emails found and documents extracted; Gmail documents have `source_ref` `gmail:<message_id>/<file>`.
+
+Needs an LLM (`.env`) to read attachments. Both JSON files are gitignored.
+
 ### 3D office in Godot (with real agents)
 
 1. Start the bridge: `python frontend/godot-office/bridge/server.py --port 8765`
