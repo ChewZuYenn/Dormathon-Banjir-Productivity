@@ -1,22 +1,22 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>小小办公室 · 可交互 3D 网页</title>
+  <title>Little Office · Interactive 3D</title>
   <link rel="stylesheet" href="styles.css">
   <script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/"}}</script>
 </head>
 <body>
   <main class="workspace">
     <header class="page-header">
-      <div><div class="eyebrow">LITTLE OFFICE / INTERACTIVE 3D</div><h1>你的小小办公室</h1><p>这一次，在浏览器里转一转、靠近看一看。</p></div>
-      <div class="version-badge"><span></span>真实 3D · 可交互</div>
+      <div><div class="eyebrow">LITTLE OFFICE / INTERACTIVE 3D</div><h1>Your Little Office</h1><p>Spin it around and take a closer look, right in your browser.</p></div>
+      <div class="version-badge"><span></span>Real 3D · Interactive</div>
     </header>
 
     <div class="three-col-row">
       <!-- LEFT: AI Summary (workbuddy generated) -->
-      <aside class="side-panel ai-side" aria-label="AI 项目摘要">
+      <aside class="side-panel ai-side" aria-label="AI project summary">
         <div class="ai-panel-header">
           <div class="ai-icon-badge">AI</div>
           <div>
@@ -55,27 +55,27 @@
       </aside>
 
       <!-- CENTER: 3D office -->
-      <section class="office-stage" aria-label="可以旋转和缩放的三维办公室">
-        <canvas id="office-canvas" tabindex="0" aria-label="办公室三维视图：拖动旋转，滚轮缩放，右键或Shift拖动平移；方向键旋转，加减缩放，R复位"></canvas>
-        <div class="scene-tag"><span class="live-dot"></span>我的办公室 <small>本地模型</small></div>
-        <div class="view-controls" aria-label="视角控制">
-          <button id="rotate-toggle" aria-pressed="false" title="自动缓慢转动视角">自动转动</button>
-          <button id="zoom-in" aria-label="放大办公室">＋</button>
-          <button id="zoom-out" aria-label="缩小办公室">−</button>
-          <button id="reset-view" title="回到最初的斜前方镜头">恢复视角</button>
+      <section class="office-stage" aria-label="3D office you can rotate and zoom">
+        <canvas id="office-canvas" tabindex="0" aria-label="3D office view: drag to rotate, scroll to zoom, right-drag or Shift+drag to pan; arrow keys rotate, plus/minus zoom, R resets"></canvas>
+        <div class="scene-tag"><span class="live-dot"></span>My office <small>local model</small></div>
+        <div class="view-controls" aria-label="View controls">
+          <button id="rotate-toggle" aria-pressed="false" title="Slowly rotate the view">Auto-rotate</button>
+          <button id="zoom-in" aria-label="Zoom in">＋</button>
+          <button id="zoom-out" aria-label="Zoom out">−</button>
+          <button id="reset-view" title="Back to the starting angle">Reset view</button>
         </div>
-        <div id="loading" class="loading" role="status"><span class="loader"></span><strong>正在搬入你的办公室</strong><p id="loading-detail">加载本地三维模型…</p></div>
-        <div class="gesture-hint" id="gesture-hint"><span>拖动旋转</span><i></i><span>滚轮缩放</span><i></i><span>右键 / Shift 拖动平移</span></div>
+        <div id="loading" class="loading" role="status"><span class="loader"></span><strong>Moving your office in</strong><p id="loading-detail">Loading the 3D model…</p></div>
+        <div class="gesture-hint" id="gesture-hint"><span>Drag to rotate</span><i></i><span>Scroll to zoom</span><i></i><span>Right / Shift drag to pan</span></div>
         <form id="task-form" class="chatbar">
           <div class="input-mark" aria-hidden="true">AI</div>
-          <label for="task-input" class="sr-only">演示任务目标</label>
-          <input id="task-input" maxlength="500" value="整理本月结账资料" placeholder="今天想让小助理帮你做什么？" autocomplete="off">
-          <button id="start-button" type="submit">开始运行 <span aria-hidden="true">→</span></button>
+          <label for="task-input" class="sr-only">Task goal</label>
+          <input id="task-input" maxlength="500" value="Close out September" placeholder="What should your assistant do today?" autocomplete="off">
+          <button id="start-button" type="submit">Run <span aria-hidden="true">→</span></button>
         </form>
       </section>
 
       <!-- RIGHT: Checklist (workbuddy generated) -->
-      <aside class="side-panel check-side" aria-label="待修复清单">
+      <aside class="side-panel check-side" aria-label="Fix checklist">
         <div class="ai-panel-header">
           <div class="ai-icon-badge todo">&#9745;</div>
           <div>
@@ -120,15 +120,15 @@
       </aside>
     </div>
 
-    <div class="status-heading"><span id="current-step" aria-live="polite">办公室已就绪前，请稍等模型加载。</span><span>调用 app.py · /api/run</span></div>
-    <section class="agent-cards" aria-label="三个 Agent 的运行状态">
-      <article class="agent-card" data-agent="Secretary" data-status="idle"><div class="agent-heading"><div class="agent-icon">S</div><div><h2>Secretary</h2><p>计划与任务协调</p></div><span class="status-badge">等待 · idle</span></div><p class="agent-detail">等待你的任务</p><div class="activity-track"><span></span></div></article>
-      <article class="agent-card" data-agent="Logistics" data-status="idle"><div class="agent-heading"><div class="agent-icon">L</div><div><h2>Logistics</h2><p>文档整理与校验</p></div><span class="status-badge">等待 · idle</span></div><p class="agent-detail">等待你的任务</p><div class="activity-track"><span></span></div></article>
-      <article class="agent-card" data-agent="Financial" data-status="idle"><div class="agent-heading"><div class="agent-icon">F</div><div><h2>Financial</h2><p>账目核对与异常检查</p></div><span class="status-badge">等待 · idle</span></div><p class="agent-detail">等待你的任务</p><div class="activity-track"><span></span></div></article>
+    <div class="status-heading"><span id="current-step" aria-live="polite">Loading the office model…</span><span>Calls app.py · /api/run</span></div>
+    <section class="agent-cards" aria-label="Status of the three agents">
+      <article class="agent-card" data-agent="Secretary" data-status="idle"><div class="agent-heading"><div class="agent-icon">S</div><div><h2>Secretary</h2><p>Planning &amp; task coordination</p></div><span class="status-badge">Idle</span></div><p class="agent-detail">Waiting for your task</p><div class="activity-track"><span></span></div></article>
+      <article class="agent-card" data-agent="Logistics" data-status="idle"><div class="agent-heading"><div class="agent-icon">L</div><div><h2>Logistics</h2><p>Document extraction &amp; checks</p></div><span class="status-badge">Idle</span></div><p class="agent-detail">Waiting for your task</p><div class="activity-track"><span></span></div></article>
+      <article class="agent-card" data-agent="Financial" data-status="idle"><div class="agent-heading"><div class="agent-icon">F</div><div><h2>Financial</h2><p>Ledger reconciliation &amp; exceptions</p></div><span class="status-badge">Idle</span></div><p class="agent-detail">Waiting for your task</p><div class="activity-track"><span></span></div></article>
     </section>
 
-    <footer><p><strong>本轮先完成镜头交互。</strong> 人物仍为静态模型；走动、挥手和纸张拿取还没有移植。任务通过 app.py 的 /api/run 调用真实 Agent。</p><span id="render-status">准备 WebGL</span></footer>
-    <noscript><p class="error-message">请启用 JavaScript 后查看三维办公室。</p></noscript>
+    <footer><p><strong>Camera controls only for now.</strong> Characters are static; walking, waving and paper pick-up aren't ported yet. Tasks run the real agents through app.py's /api/run.</p><span id="render-status">Preparing WebGL</span></footer>
+    <noscript><p class="error-message">Enable JavaScript to view the 3D office.</p></noscript>
   </main>
   <script>
     function moduleLoadFailed() {
@@ -136,9 +136,9 @@
       loading.hidden = false;
       loading.classList.remove("hidden");
       loading.classList.add("error");
-      loading.querySelector("strong").textContent = "请通过本地网页地址打开";
-      document.querySelector("#loading-detail").textContent = "双击"open-3d-web.command"，再访问 http://127.0.0.1:8788。请保留完整的 web-office 文件夹，并使用支持 WebGL 的现代浏览器。";
-      document.querySelector("#render-status").textContent = "网页脚本未加载";
+      loading.querySelector("strong").textContent = "Open this page through a web server";
+      document.querySelector("#loading-detail").textContent = "Start the server (python app.py) and open http://127.0.0.1:5000/web-office/ — keep the whole web-office folder and use a modern browser with WebGL.";
+      document.querySelector("#render-status").textContent = "Page script did not load";
     }
     if (location.protocol === "file:") moduleLoadFailed();
   </script>

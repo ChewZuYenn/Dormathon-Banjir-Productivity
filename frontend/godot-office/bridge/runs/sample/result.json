@@ -1366,10 +1366,10 @@
     }
   ],
   "warnings": [
-    "仅验证代码接通：fixture为仓库样例，records为外部预抽取字段；未实现图片/PDF/OCR。",
-    "原Financial固定检查日期为 2026-10-10；period标签不代表已按月过滤数据。",
-    "Financial与Secretary现金流定义不同，结果分别保留；界面不合并为正式财务结论。",
-    "邮件仅为草稿，无自动审批、无发送接口；任务完成不代表账务正确或异常已解决。"
+    "Code-path check only: fixture is the repo sample, records are pre-extracted fields; no image/PDF/OCR.",
+    "Financial uses a fixed check date of 2026-10-10; the period label does not filter data by month.",
+    "Financial and Secretary define cash flow differently; both are kept and not merged into a formal conclusion.",
+    "Emails are drafts only, no auto-approval or sending; a finished job does not mean the books are correct or exceptions resolved."
   ],
   "counts": {
     "records": 12,

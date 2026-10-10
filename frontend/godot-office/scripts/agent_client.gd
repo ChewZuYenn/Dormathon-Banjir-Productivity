@@ -47,14 +47,14 @@ func start_job(payload: Dictionary) -> bool:
 func _request(kind: String, path: String, method: int = HTTPClient.METHOD_GET, body: String = "") -> bool:
     # Local-only default. Never attach API keys or invoke external services.
     if not bridge_url.begins_with("http://127.0.0.1:") and not bridge_url.begins_with("http://localhost:"):
-        _fail("只允许本机桥接地址")
+        _fail("Only the local bridge address is allowed")
         return false
     operation = kind
     busy = true
     var headers := PackedStringArray(["Content-Type: application/json"])
     var error := request_node.request(bridge_url + path, headers, method, body)
     if error != OK:
-        _fail("无法发起本机请求：" + str(error))
+        _fail("Could not start local request: " + str(error))
         return false
     return true
 
@@ -65,11 +65,11 @@ func _poll() -> void:
 func _completed(result: int, code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
     busy = false
     if result != HTTPRequest.RESULT_SUCCESS:
-        _fail("桥接未连接或请求超时；先启动 bridge/server.py")
+        _fail("Bridge not connected or request timed out; start bridge/server.py first")
         return
     var parsed: Variant = JSON.parse_string(body.get_string_from_utf8())
     if not parsed is Dictionary:
-        _fail("桥接返回了无效 JSON")
+        _fail("Bridge returned invalid JSON")
         return
     var data: Dictionary = parsed
     if code < 200 or code >= 300:
@@ -80,16 +80,16 @@ func _completed(result: int, code: int, _headers: PackedStringArray, body: Packe
     match operation:
         "health":
             connected = data.get("service", "") == "office-agent-bridge"
-            connection_changed.emit(connected, "本机桥接已连接 · 真实模块/测试数据" if connected else "不是预期桥接服务")
+            connection_changed.emit(connected, "Local bridge connected · real modules / test data" if connected else "Not the expected bridge service")
             if connected and not job_id.is_empty():
                 poll_timer.start()
                 _poll()
         "submit":
             job_id = str(data.get("job_id", ""))
             if job_id.is_empty():
-                _fail("桥接没有返回任务编号")
+                _fail("Bridge did not return a job ID")
                 return
-            store.set_current_step("本地任务已提交")
+            store.set_current_step("Local job submitted")
             poll_timer.start()
             _poll()
         "poll":
@@ -100,11 +100,11 @@ func _completed(result: int, code: int, _headers: PackedStringArray, body: Packe
                 store.set_agent_status(str(event.get("agent", "")), str(event.get("status", "")), str(event.get("step", "")))
             events_seen = events.size()
             if not store.apply_snapshot(data):
-                _fail("桥接状态字段不符合约定")
+                _fail("Bridge status fields don't match the contract")
                 return
             if data.get("status") == "error":
                 job_id = ""
-                _fail(str(data.get("error", "Agent 执行失败")))
+                _fail(str(data.get("error", "Agent run failed")))
             elif data.get("status") == "done":
                 poll_timer.stop()
                 _request("result", "/jobs/" + job_id + "/result")
@@ -120,7 +120,7 @@ func _fail(message: String) -> void:
     connected = false
     # Retain an accepted task id so an interrupted poll can be resumed safely.
     if not job_id.is_empty():
-        message += "（任务编号已保留，可点击连接本机桥接恢复）"
+        message += " (job ID kept; click Connect bridge to resume)"
     store.set_current_step(message)
     connection_changed.emit(false, message)
     job_failed.emit(message)

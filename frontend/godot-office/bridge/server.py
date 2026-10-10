@@ -73,8 +73,8 @@ def execute(job_id, request):
             process.stderr.close()
         if return_code != 0:
             (directory / "worker-error.txt").write_text("".join(errors), encoding="utf-8")
-            raise RuntimeError("Agent 执行失败，请查看 bridge/runs 下 worker-error.txt；检查依赖与输入字段")
-        update(job_id, status="done", current_step="本地代码验证完成；结果需人工检查", result_path=str(directory / "result.json"))
+            raise RuntimeError("Agent run failed; see worker-error.txt under bridge/runs and check dependencies and input fields")
+        update(job_id, status="done", current_step="Local code check finished; results need human review", result_path=str(directory / "result.json"))
     except Exception as error:
         with LOCK:
             JOBS[job_id]["status"] = "error"
@@ -155,8 +155,8 @@ class Handler(BaseHTTPRequestHandler):
                 JOBS.pop(ORDER.popleft(), None)  # Memory only; on-disk outputs are retained.
             job_id = uuid.uuid4().hex
             JOBS[job_id] = {"job_id": job_id, "status": "working", "mode": request["mode"], "goal": request["goal"],
-                "current_step": "已接受本地任务", "created_at": time.time(), "events": [], "counts": {}, "warnings": [],
-                "agents": {name: {"status": "idle", "step": "等待执行"} for name in NAMES}}
+                "current_step": "Local job accepted", "created_at": time.time(), "events": [], "counts": {}, "warnings": [],
+                "agents": {name: {"status": "idle", "step": "Waiting"} for name in NAMES}}
             ORDER.append(job_id)
         threading.Thread(target=execute, args=(job_id, request), daemon=True).start()
         self.response(202, {"job_id": job_id, "status": "working"})

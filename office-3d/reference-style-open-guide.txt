@@ -1,63 +1,63 @@
-办公室参考风格布局版 · 阶段 01（人物仍为坐姿占位）
+Office, reference-style layout · Stage 01 (characters are still seated placeholders)
 
-本轮目标
-保留老板、助理各自独立桌椅与电脑的办公室，而不是照搬参考里的钢琴客厅。
-尽量匹配参考的绿色墙板、蜂蜜色拼木地面、圆润家具、奶油色线脚、柔和日照与小屋构图。
-单张参考图不能提供隐藏结构和精确尺寸，因此不声称几何或光照严格 1:1 复原。
-按用户确认：先检查布局，再做五官、发型、服装和手部等人物细节。
+Goal of this round
+An office with separate desks, chairs and computers for the boss and the assistant, not a copy of the piano living room in the reference.
+Match the reference as closely as practical: green wall panels, honey-coloured parquet, rounded furniture, cream trim, soft daylight and a dollhouse composition.
+A single reference image doesn't show hidden structure or exact sizes, so this does not claim a strict 1:1 geometry or lighting match.
+As agreed: check the layout first, then add facial features, hair, clothing and hands.
 
-文件
-- office-reference-layout.blend：可编辑的修订布局场景。
-- office-reference-layout-preview.png：实际 Blender 渲染预览，1600×1200（4:3）。
-- build_office_reference.py：重新生成本版的脚本。
-- reference-style-open-guide.txt：本说明。
-上一版 office-blockout.blend 和 build_office.py 保留，未覆盖。
+Files
+- office-reference-layout.blend: editable revised layout scene.
+- office-reference-layout-preview.png: actual Blender render preview, 1600×1200 (4:3).
+- build_office_reference.py: script that regenerates this version.
+- reference-style-open-guide.txt: this guide.
+The previous office-blockout.blend and build_office.py are kept, not overwritten.
 
-打开
-Blender > File > Open > 选择 office-reference-layout.blend。
-本机 Blender 5.4.0 Alpha 制作，已在该版本验证；其他版本兼容性未实测。
-无需插件或外部贴图。
-小键盘 0 查看主镜头；无小键盘：View > Cameras > Active Camera。
-F12 重新渲染（部分 Mac 键盘需 Fn + F12）。
-主镜头是接近参考图的斜前方略俯视正交布局视角，非平视照片视角。
-本轮用 4:3 构图方便与参考比较；可在 Output Properties 改成其他比例后重新取景。
+Opening
+Blender > File > Open > select office-reference-layout.blend.
+Made and verified with Blender 5.4.0 Alpha; other versions have not been tested.
+No add-ons or external textures needed.
+Numpad 0 for the main camera; without a numpad: View > Cameras > Active Camera.
+F12 to re-render (some Mac keyboards need Fn + F12).
+The main camera is a slightly top-down, front-angled orthographic layout view like the reference, not an eye-level photo view.
+This round uses 4:3 to compare with the reference; change the ratio in Output Properties and reframe if needed.
 
-改布局
-Outliner 里选 Boss_ROOT / move entire workstation，按 G、再按 X/Y 移动。
-Assistant_ROOT / move entire workstation 同理。
-桌椅、电脑及坐姿占位跟随根对象移动。
-按 N 打开 Item 面板，精确输入位置、旋转或缩放。
-仅修改某件家具时，展开对应集合后选择具体 Mesh。
-Tab 进入编辑模式；Bevel 修改器保留，可调整圆角宽度。
-书架选择 BOOKCASE_ROOT，窗户在 05_Window 集合。
-墙上星星挂绳在 06_Plants_Props 集合，可以关闭显示或单独编辑。
+Changing the layout
+In the Outliner select Boss_ROOT / move entire workstation, press G, then X/Y to move.
+Same for Assistant_ROOT / move entire workstation.
+Desk, chair, computer and seated placeholder follow the root object.
+Press N for the Item panel to type exact position, rotation or scale.
+To change one piece of furniture, expand its collection and select the mesh.
+Tab for Edit Mode; Bevel modifiers are kept so you can adjust the rounding.
+Select BOOKCASE_ROOT for the bookcase; the window is in the 05_Window collection.
+The star garland on the wall is in 06_Plants_Props; hide it or edit it separately.
 
-集合
-01_Room：双墙、基础、三角拼木地面、蓝灰色共用地毯。
-02_Boss_Workstation：老板桌椅、电脑、纸张、文件、记事本。
-03_Assistant_Workstation：助理桌椅、电脑、纸张、文件、记事本。
-04_Bookcase：书架、书与收纳盒。
-05_Window：窗框、窗台、淡色窗口插片、占位窗帘。
-06_Plants_Props：盆栽及星星挂绳。
-07_Pose_Placeholders：无五官坐姿占位，不是最终人物。
-08_Cameras：主镜头及低角度备用镜头。
-09_Preview_Lights：基础预览光，不是最终灯光设计。
-10_Studio_Ground：外部棚拍背景地面。
+Collections
+01_Room: two walls, base, herringbone parquet, shared blue-grey rug.
+02_Boss_Workstation: boss desk and chair, computer, paper, files, notebook.
+03_Assistant_Workstation: assistant desk and chair, computer, paper, files, notebook.
+04_Bookcase: bookcase, books and storage boxes.
+05_Window: window frame, sill, pale window insert, placeholder curtains.
+06_Plants_Props: potted plants and star garland.
+07_Pose_Placeholders: faceless seated placeholders, not the final characters.
+08_Cameras: main camera and a low-angle backup camera.
+09_Preview_Lights: basic preview lights, not the final lighting design.
+10_Studio_Ground: outer studio background floor.
 
-通过脚本修改
-在 Blender 的 Scripting 工作区打开 build_office_reference.py。
-修改顶部 ROOM_WIDTH / ROOM_DEPTH、两桌位置、桌面尺寸、镜头和渲染参数。
-点击 Run Script 会清空当前场景，并覆盖同名修订输出文件。
-请先 File > Save As 保存你的修改；不要在未保存场景上直接重跑。
-脚本输出到自身所在文件夹。
-不需要运行脚本也能正常编辑 .blend。
+Changing it by script
+Open build_office_reference.py in Blender's Scripting workspace.
+Edit ROOM_WIDTH / ROOM_DEPTH, both desk positions, desk sizes, camera and render settings at the top.
+Run Script clears the current scene and overwrites the revised outputs with the same name.
+Use File > Save As first; don't re-run on an unsaved scene.
+The script writes to its own folder.
+You can edit the .blend normally without running the script.
 
-检查重点
-1. 老板大桌与助理小桌的大小、间距和前后关系。
-2. 两位占位人物是否各坐在自己的椅子和桌前。
-3. 书架、窗户、植物和通行空间的位置是否合理。
-4. 镜头是否完整展示办公室、两套桌椅。
-5. 紧凑小屋比例和基础配色是否接近你希望的方向。
+What to check
+1. Size, spacing and front/back relationship of the boss's large desk and the assistant's small desk.
+2. Whether each placeholder figure sits in its own chair at its own desk.
+3. Whether the bookcase, window, plants and walking space are sensibly placed.
+4. Whether the camera shows the whole office and both workstations.
+5. Whether the compact dollhouse proportions and base colours are heading the way you want.
 
-确认这些之后，再添加真正的木纹与织物材质、玻璃、灯光细化和卡通人物。
-没有动画绑定，没有复杂人物细节，未修改或接入前端网页。
+Once these are confirmed, add real wood and fabric materials, glass, refined lighting and cartoon characters.
+No animation rig, no detailed characters, and the web frontend was not modified or connected.

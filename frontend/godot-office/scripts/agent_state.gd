@@ -6,7 +6,7 @@ signal current_step_changed(step: String)
 const AGENTS := ["Secretary", "Logistics", "Financial"]
 const VALID_STATUSES := ["idle", "working", "done", "error"]
 var states: Dictionary = {}
-var current_step: String = "等待任务"
+var current_step: String = "Waiting for a task"
 
 func _ready() -> void:
     reset_agents()
@@ -27,8 +27,8 @@ func get_agent_state(agent_name: String) -> Dictionary:
 
 func reset_agents() -> void:
     for agent in AGENTS:
-        set_agent_status(agent, "idle", "等待执行")
-    set_current_step("等待任务")
+        set_agent_status(agent, "idle", "Waiting")
+    set_current_step("Waiting for a task")
 
 func apply_snapshot(snapshot: Dictionary) -> bool:
     var agents: Variant = snapshot.get("agents")

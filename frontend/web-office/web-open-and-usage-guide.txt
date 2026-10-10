@@ -1,42 +1,40 @@
-小小办公室｜真正可操作的 3D 网页（镜头交互阶段）
+Little Office | Interactive 3D web page
 
-为什么之前动不了
-Godot那版是固定镜头桌面演示，没有鼠标控制。这份则是浏览器中的真实WebGL三维模型，不是二维截图。
-本轮只让用户可以观察模型：旋转、缩放、平移、复位和自动转动。人物还是静态，未添加走动/挥手；纸张拿取暂未移植。
+Why the earlier version couldn't be moved
+The Godot version is a fixed-camera desktop demo with no mouse control. This one is a real WebGL 3D model in the browser, not a 2D screenshot.
+You can inspect the model: rotate, zoom, pan, reset and auto-rotate. Characters are still static (no walking or waving); paper pick-up hasn't been ported yet.
 
-如何打开
-当前预览地址：http://127.0.0.1:8788
-若预览服务已停止，双击“open-3d-web.command”，保持终端窗口开启，再在浏览器打开上述地址。
-按 Ctrl+C 停止本地服务。如果端口已占用，先打开该地址确认是否已有网页，不要重复启动。
-不能直接双击index.html：本地GLB和ES模块需要通过HTTP加载。
-不要只拷贝index.html；需保留整个web-office目录，包含assets、vendor、styles.css、app.js。
-本页所有模型与渲染依赖都是本地文件；运行不需要云服务或API密钥。
-换机器需要Python3（或其他静态HTTP服务）；command中的Python路径是为你的Mac设置的。
+How to open it
+Live: https://dormathon-banjir-productivity.vercel.app
+Locally: run python app.py from the repo root and open http://127.0.0.1:5000 (it redirects to /web-office/).
+app.py serves both this page and the /api/run endpoint the "Run" button calls.
+You can't double-click index.html: the local GLB and ES modules must be loaded over HTTP.
+Don't copy index.html on its own; keep the whole web-office folder, including assets, vendor, styles.css and app.js.
+All models and rendering libraries are local files; viewing the page needs no cloud service or API key.
 
-鼠标和触屏怎么操作
-1. 鼠标左键按住办公室画面拖动：绕办公室旋转。
-2. 滚轮或触控板双指滚动：缩放。
-3. 右键拖动，或Shift+左键拖动：平移镜头。
-4. 右上角＋和−：缩放；“恢复视角”：回到初始斜前方。
-5. “自动转动”：缓慢环绕；再次点击停止。
-6. 触屏单指拖动旋转，双指捏合缩放/平移。
-7. 点击三维画面后可用方向键旋转、加减键缩放、R键复位。
-模型是开放两面的小屋，绕到墙后会看到墙背面，这是正常三维几何，不是模型消失。
+Mouse and touch controls
+1. Left-drag on the office: orbit around it.
+2. Scroll wheel or two-finger trackpad scroll: zoom.
+3. Right-drag, or Shift + left-drag: pan the camera.
+4. ＋ and − at the top right: zoom; "Reset view": back to the starting front angle.
+5. "Auto-rotate": slow orbit; click again to stop.
+6. Touch: one-finger drag rotates, two-finger pinch zooms / pans.
+7. After clicking the 3D view: arrow keys rotate, plus/minus zoom, R resets.
+The model is a dollhouse open on two sides; orbiting behind a wall shows its back face. That's normal 3D geometry, not the model disappearing.
 
-任务演示
-场景内部底部输入条：输入一个任务，点击“开始模拟”。
-Secretary、Logistics、Financial依次idle→working→done；仅演示界面，不调用实际Agent、不生成账本。
-之前的Godot项目和Python桥接保留不变；下一步确认镜头交互后，再把实际Agent或纸张点击接入网页。
-人物走动需要动画/骨骼，不是旋转视角就自动会走动，当前没有完成。
+Running the agents
+Type a goal in the bar at the bottom of the scene and click "Run".
+The page calls POST /api/run, which runs Secretary, Logistics and Financial; the cards show record, exception and task counts when it finishes.
+The full result is in the browser console as lastRun.
+Character walking needs animation / rigging; rotating the view doesn't make them walk, and this isn't done yet.
 
-文件
-index.html：网页结构，场景内输入条和下方三卡。
-styles.css：暖色界面与窄屏布局。
-app.js：GLB加载、真实镜头交互及明确标注的模拟状态。
-assets/office.glb：同一办公室模型，原模型未改。
-vendor：Three.js 0.180.0及OrbitControls、GLTFLoader，本地依赖含MIT许可证。
-browser-acceptance-results.json：实际自动化浏览器交互检查。
+Files
+index.html: page structure, the in-scene input bar, side panels and the three agent cards.
+styles.css: warm UI and narrow-screen layout.
+app.js: GLB loading, camera controls, and the /api/run call.
+assets/office.glb: the same office model, unmodified.
+vendor: Three.js 0.180.0 with OrbitControls and GLTFLoader, local copies including the MIT licence.
+browser-acceptance-results.json: automated browser interaction check.
 
-模型和效果
-沿用Godot项目内的GLB（858Mesh）。WebGL灯光与Blender/Cycles不会逐像素一致，不改变原blend/Godot文件。
-没有部署公开网站，本地址仅此电脑可用；分享上线需下一步明确确认。
+Model and rendering
+Uses the GLB from the Godot project (858 meshes). WebGL lighting won't match Blender/Cycles pixel for pixel; the original .blend and Godot files are unchanged.

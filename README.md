@@ -104,8 +104,8 @@ python app.py
 
 Then open **http://127.0.0.1:5000** (redirects to `/web-office/`). `app.py` serves both the 3D office page and the API, so they share one origin. Double-clicking `index.html` won't work.
 
-- Left-drag: rotate · Scroll: zoom · Right-drag or Shift+drag: pan · R or "恢复视角": reset view
-- Type a goal in the bottom bar and click "开始运行". The page calls `POST /api/run`, which runs all three agents;
+- Left-drag: rotate · Scroll: zoom · Right-drag or Shift+drag: pan · R or "Reset view": reset view
+- Type a goal in the bottom bar and click "Run". The page calls `POST /api/run`, which runs all three agents;
   the cards show record / exception / task counts when it finishes. The full result is in the browser console as `lastRun`.
 - `/api/run` returns only when the whole pipeline is done, so all three cards show "working" together.
 - Each run rewrites `agents/logistics/output.json`, `ledger.json` and `exceptions.json`.
@@ -124,7 +124,7 @@ Needs an LLM (`.env`) to read attachments. Both JSON files are gitignored.
 
 1. Start the bridge: `python frontend/godot-office/bridge/server.py --port 8765`
 2. In Godot 4.x, import `frontend/godot-office/project.godot` and run it (F5).
-3. Click "连接本机桥接" (connect bridge), then "运行仓库测试" (run repo test).
+3. Click "Connect bridge", then "Run repo test".
 
 The bridge runs the repo's `agents/` and writes results to `frontend/godot-office/bridge/runs/<job_id>/`.
 Bridge self-test: `python frontend/godot-office/bridge/test_bridge.py`

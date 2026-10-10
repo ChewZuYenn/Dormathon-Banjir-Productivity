@@ -20,7 +20,7 @@ Three AI agents (Secretary, Logistics, Financial) take one prompt — "Close out
 | WorkBuddy skills | Only Secretary is committed. Financial/Logistics `SKILL.md` missing. | `.workbuddy-ai/skills/` |
 | 3D source assets | Blender models, renders, build scripts. | `office-3d/` |
 
-**Demo path that works today:** `pip install -r requirements.txt` → `python app.py` → open http://127.0.0.1:5000 → type a goal → "开始运行".
+**Demo path that works today:** `pip install -r requirements.txt` → `python app.py` → open http://127.0.0.1:5000 → type a goal → "Run".
 
 ---
 
@@ -175,7 +175,7 @@ Suggested order before the 04:00 freeze: fix chase emails (#1) → add results p
 - Architecture doc: [docs/architecture.md](docs/architecture.md) · Shared rules: [rules/rules.md](rules/rules.md)
 - Logistics → Financial contract: [agents/financial/HANDOFF_FROM_LOGISTICS.md](agents/financial/HANDOFF_FROM_LOGISTICS.md)
 - Agent docs: [agents/logistics/README.md](agents/logistics/README.md), [agents/secretary/README.md](agents/secretary/README.md)
-- Godot bridge guide (Chinese): [frontend/godot-office/godot-open-and-integration-guide.txt](frontend/godot-office/godot-open-and-integration-guide.txt)
-- Web viewer guide (Chinese): [frontend/web-office/web-open-and-usage-guide.txt](frontend/web-office/web-open-and-usage-guide.txt)
+- Godot bridge guide: [frontend/godot-office/godot-open-and-integration-guide.txt](frontend/godot-office/godot-open-and-integration-guide.txt)
+- Web viewer guide: [frontend/web-office/web-open-and-usage-guide.txt](frontend/web-office/web-open-and-usage-guide.txt)
 
 **Contributors:** Chew Zu Yenn (zuyenn) — repo, Financial · Colt Tan (coltonthatgood) — Logistics, integration, backend · hyang00122022-spec — Secretary · Xuanyu — 3D office, Godot, web viewer.

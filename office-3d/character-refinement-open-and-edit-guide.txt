@@ -1,63 +1,63 @@
-办公室人物细化版｜本轮只替换老板与助理
+Office with refined characters | This round only replaces the boss and the assistant
 
-一、先打开哪个文件
-在 Blender 中选择 File（文件）→ Open（打开），打开 office-character-detail.blend。
-不需要运行脚本，不需要安装插件或下载贴图。
-本机制作与验证环境：Blender 5.4.0 Alpha。其他版本未实际验证。
+1. Which file to open
+In Blender choose File → Open and open office-character-detail.blend.
+No script, add-ons or texture downloads are needed.
+Made and verified with Blender 5.4.0 Alpha. Other versions have not been tested.
 
-二、查看与运行
-1. 小键盘 0：切到原办公室主镜头；没有小键盘时用 View → Cameras → Active Camera。
-2. F12：使用原相机、原灯光重新渲染 1600×1200 全景。
-3. 中键拖动旋转，滚轮缩放，Shift＋中键平移。
-4. 修改后用 File → Save As 另存文件，避免覆盖认可的布局原稿。
+2. Viewing and rendering
+1. Numpad 0: switch to the original main office camera; without a numpad use View → Cameras → Active Camera.
+2. F12: re-render the 1600×1200 full view with the original camera and lights.
+3. Middle-drag to orbit, scroll to zoom, Shift + middle-drag to pan.
+4. After editing, use File → Save As so you don't overwrite the approved layout.
 
-三、本轮修改的内容
-男性老板参考 IMG_6500.JPG：圆润大头、近黑短发和侧分斜刘海、粗黑眉、黑点眼、桃肤色与柔和腮红、小玫红三角鼻、细红横嘴、深灰蓝西装、白衬衫与蓝领带。
-女性助理参考 IMG_6499.JPG：深棕近黑齐肩侧分发、棕色眉、黑眼睛与小睫毛、桃肤色与柔和腮红、小鼻和细红横嘴、深灰蓝西装与白衬衫，无领带。
-两人均有耳廓、西装翻领及口袋边、袖口、纽扣、布料微纹理、弯曲坐姿裤腿、鞋底与鞋面缝线、独立手指、拇指和细小指甲，一只手握灰色笔。
-原座位和工位父子关系保留。本次为静态可编辑人物，不含骨骼、动作动画或自动表情。
-二维图仅提供正面可见形象；侧面、背面和立体比例是据此设计，不能视为严格几何 1:1 复原。
-为了保留办公室内的原坐姿，持笔手没有移到桌上原交互纸张的位置；桌上纸张、键盘和原有笔均未挪动。
+3. What changed this round
+Male boss, based on IMG_6500.JPG: large round head, near-black short hair with a side-swept fringe, thick black brows, black dot eyes, peach skin with soft blush, small rose triangular nose, thin red mouth, dark slate-blue suit, white shirt and blue tie.
+Female assistant, based on IMG_6499.JPG: dark brown-black shoulder-length side-parted hair, brown brows, black eyes with small lashes, peach skin with soft blush, small nose and thin red mouth, dark slate-blue suit and white shirt, no tie.
+Both have ears, suit lapels and pocket edges, cuffs, buttons, fine fabric texture, bent seated trouser legs, shoe soles and stitching, separate fingers, thumbs and small nails; one hand holds a grey pen.
+Original seats and workstation parenting are kept. These are static editable characters: no rig, animation or automatic expressions.
+The 2D references only show the front; side, back and 3D proportions are designed from them and are not a strict 1:1 reconstruction.
+To keep the original seated pose, the pen hand was not moved to the paper on the desk; the papers, keyboard and original pen are untouched.
 
-四、确认其他东西没有更改
-原稿 office-reference-layout.blend 保留，未覆盖，也未重跑房间生成脚本。
-645 个非人物对象、31 个原有材质、10 个集合、相机、灯光、世界环境、房间地板、星星挂绳、桌椅、电脑、书架、窗户和桌上物件均做了保存前后及重新打开比对。
-检查结果在 character-refinement-scene-consistency-check.json；protected_changes 应为空数组。
-渲染输出路径更换为新版预览文件；画幅、采样、色彩管理、主相机和照明参数保持原值。
-人物体积和材质改变后产生的新投影、遮挡和反射属于正常渲染变化，不代表调整了家具或灯光。
+4. Confirming nothing else changed
+The original office-reference-layout.blend is kept, not overwritten, and the room script was not re-run.
+645 non-character objects, 31 original materials, 10 collections, cameras, lights, world, floor, star garland, desks and chairs, computers, bookcase, window and desk items were compared before and after saving and after reopening.
+Results are in character-refinement-scene-consistency-check.json; protected_changes should be an empty array.
+The render output path points to the new preview file; resolution, samples, colour management, main camera and lighting are unchanged.
+New shadows, occlusion and reflections from the characters' new shapes and materials are normal render changes, not furniture or lighting edits.
 
-五、人物怎么找、怎么修改
-在右上角 Outliner 展开 07_Pose_Placeholders（沿用原集合名称，里面已替换为细化人物）。
-老板总节点：Boss_POSE_ROOT / seated blockout only。
-助理总节点：Assistant_POSE_ROOT / seated blockout only。
-为保持根节点与验证一致，沿用旧名字，但人物不再是无五官占位。
-子对象前缀分别是 Boss character / 和 Assistant character /。
-round face with soft chin：脸。
-short swept side-part hair cap：老板短发。
-shoulder length side-part bob：助理齐肩发。
-tailored jacket body：西装身体。
-notched suit lapel：翻领。
-blue tie knot / blue tie blade：老板领带。
-gray pen held in writing hand：人物手持笔。
-选中某个部件，小键盘 .（句号）：把视口聚焦到该部件。
-选中人物根节点按 G，可移动整个人物；选中 Boss_ROOT 或 Assistant_ROOT 则移动整套工位，包括桌椅人物。
-材质名称以 Character / 开头，修改这些不会改动房间或家具的 Preview / 材质。
+5. Finding and editing the characters
+In the Outliner, expand 07_Pose_Placeholders (old collection name kept; it now holds the refined characters).
+Boss root: Boss_POSE_ROOT / seated blockout only.
+Assistant root: Assistant_POSE_ROOT / seated blockout only.
+The old names are kept so roots match the verification, but the figures are no longer faceless placeholders.
+Child objects are prefixed Boss character / and Assistant character /.
+round face with soft chin: face.
+short swept side-part hair cap: boss's short hair.
+shoulder length side-part bob: assistant's shoulder-length hair.
+tailored jacket body: suit body.
+notched suit lapel: lapel.
+blue tie knot / blue tie blade: boss's tie.
+gray pen held in writing hand: the pen in hand.
+Select a part and press Numpad . (period) to focus the view on it.
+Select a character root and press G to move the whole character; select Boss_ROOT or Assistant_ROOT to move the full workstation, desk, chair and character together.
+Character materials are named Character / ...; editing them doesn't affect the room or furniture Preview / materials.
 
-六、文件清单
-office-character-detail.blend：新版可编辑办公室。
-office-character-detail-preview.png：原镜头、原灯光全景。
-boss-character-closeup.png：老板检查近景。
-assistant-character-closeup.png：助理检查近景。
-character-refinement-scene-consistency-check.json：程序比对报告。
-refine_office_characters.py：仅替换人物的重建脚本。
-office-character-refinement.zip：完整打包，含上述文件及认可布局基准。
-人物近景使用临时镜头，仅用于预览；没有写回最终 .blend，最终场景仍为原办公室镜头。
+6. Files
+office-character-detail.blend: new editable office.
+office-character-detail-preview.png: full view, original camera and lights.
+boss-character-closeup.png: boss close-up check.
+assistant-character-closeup.png: assistant close-up check.
+character-refinement-scene-consistency-check.json: automated comparison report.
+refine_office_characters.py: rebuild script that only replaces the characters.
+office-character-refinement.zip: full bundle with the files above and the approved layout baseline.
+Close-ups use temporary cameras for preview only; they are not saved into the final .blend, which keeps the original office camera.
 
-七、仅在需要重建人物时运行脚本
-一般直接打开 .blend 即可。脚本是可选的。
-将 refine_office_characters.py 与 office-reference-layout.blend 放在同一目录。
-终端命令（macOS）：
-"/Applications/Blender.app/Contents/MacOS/Blender" --background --python-exit-code 1 --python "/完整路径/refine_office_characters.py" -- --refine
-不要把 /完整路径 当作真实路径；替换成脚本实际位置。
-这会读取布局基准，重新生成 office-character-detail.blend 和全景，覆盖同名新版输出；不会覆盖布局基准。
-不要在已有未保存修改的 Blender 窗口运行该脚本；它会加载布局基准并替换当前场景。先另存自己的修改。
+7. Run the script only to rebuild the characters
+Normally just open the .blend. The script is optional.
+Put refine_office_characters.py in the same folder as office-reference-layout.blend.
+Terminal command (macOS):
+"/Applications/Blender.app/Contents/MacOS/Blender" --background --python-exit-code 1 --python "/full/path/refine_office_characters.py" -- --refine
+/full/path is a placeholder; replace it with the script's actual location.
+This reads the layout baseline and regenerates office-character-detail.blend and the full view, overwriting those outputs; the baseline is never overwritten.
+Don't run it in a Blender window with unsaved changes: it loads the baseline and replaces the current scene. Save your work first.

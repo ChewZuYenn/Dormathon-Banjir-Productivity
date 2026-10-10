@@ -11,14 +11,14 @@ let renderer;
 try {
   renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
 } catch (error) {
-  showError("浏览器未能启用 WebGL。请使用 Chrome、Edge 或 Safari，并开启硬件加速。", error);
+  showError("Your browser could not start WebGL. Use Chrome, Edge or Safari with hardware acceleration on.", error);
 }
 
 function showError(message, error) {
   loading.classList.add("error");
-  loading.querySelector("strong").textContent = "办公室暂时没有加载成功";
+  loading.querySelector("strong").textContent = "The office failed to load";
   document.querySelector("#loading-detail").textContent = message;
-  renderStatus.textContent = "加载失败";
+  renderStatus.textContent = "Load failed";
   if (error) console.error(error);
 }
 
@@ -96,7 +96,7 @@ function init(renderer) {
   function resetView() {
     controls.autoRotate = false;
     document.querySelector("#rotate-toggle").setAttribute("aria-pressed", "false");
-    document.querySelector("#rotate-toggle").textContent = "自动转动";
+    document.querySelector("#rotate-toggle").textContent = "Auto-rotate";
     // Drain accumulated rotate/pan inertia before assigning the exact home view.
     // A non-damped update consumes and clears these deltas through the public API.
     const damping = controls.enableDamping;
@@ -123,7 +123,7 @@ function init(renderer) {
   document.querySelector("#rotate-toggle").addEventListener("click", event => {
     controls.autoRotate = !controls.autoRotate;
     event.currentTarget.setAttribute("aria-pressed", String(controls.autoRotate));
-    event.currentTarget.textContent = controls.autoRotate ? "停止转动" : "自动转动";
+    event.currentTarget.textContent = controls.autoRotate ? "Stop rotating" : "Auto-rotate";
   });
   function changeZoom(factor) {
     camera.zoom = THREE.MathUtils.clamp(camera.zoom * factor, controls.minZoom, controls.maxZoom);
@@ -169,11 +169,11 @@ function init(renderer) {
     ready = true;
     loading.classList.add("hidden");
     setTimeout(() => loading.hidden = true, 450);
-    renderStatus.textContent = "WebGL · " + meshCount + " 个网格";
-    document.querySelector("#current-step").textContent = "试试拖动办公室，或滚动放大细节。";
+    renderStatus.textContent = "WebGL · " + meshCount + " meshes";
+    document.querySelector("#current-step").textContent = "Try dragging the office, or scroll to zoom in.";
   }, progress => {
-    if (progress.total > 0) document.querySelector("#loading-detail").textContent = "模型加载 " + Math.round(progress.loaded / progress.total * 100) + "%";
-  }, error => showError("请通过本地网页地址打开，不能直接双击 HTML。也请确认 assets/office.glb 存在。", error));
+    if (progress.total > 0) document.querySelector("#loading-detail").textContent = "Loading model " + Math.round(progress.loaded / progress.total * 100) + "%";
+  }, error => showError("Open this page through a web server, not by double-clicking the HTML. Also check that assets/office.glb exists.", error));
 
   let previous = performance.now();
   renderer.setAnimationLoop(time => {
@@ -191,7 +191,7 @@ function init(renderer) {
 
 const agents = ["Secretary", "Logistics", "Financial"];
 let running = false;
-const labels = { idle: "等待 · idle", working: "执行中 · working", done: "完成 · done", error: "出错 · error" };
+const labels = { idle: "Idle", working: "Working", done: "Done", error: "Error" };
 function setState(name, status, text) {
   const card = document.querySelector('[data-agent="' + name + '"]');
   card.dataset.status = status;
@@ -202,13 +202,13 @@ document.querySelector("#task-form").addEventListener("submit", async event => {
   event.preventDefault();
   if (running) return;
   const task = document.querySelector("#task-input").value.trim();
-  if (!task) { document.querySelector("#current-step").textContent = "请先输入演示任务。"; return; }
+  if (!task) { document.querySelector("#current-step").textContent = "Enter a task goal first."; return; }
   running = true;
   document.querySelector("#start-button").disabled = true;
   const step = document.querySelector("#current-step");
   // ponytail: /api/run is synchronous, so all cards work at once; add job polling for per-agent progress
-  agents.forEach(name => setState(name, "working", "运行中…"));
-  step.textContent = "“" + task + "” 正在运行三个 Agent…";
+  agents.forEach(name => setState(name, "working", "Running…"));
+  step.textContent = "“" + task + "” — running the three agents…";
   try {
     const res = await fetch("/api/run", {
       method: "POST",
@@ -217,16 +217,16 @@ document.querySelector("#task-form").addEventListener("submit", async event => {
     });
     const data = await res.json().catch(() => ({ error: "HTTP " + res.status }));
     if (!res.ok || !data.success) throw new Error(data.error || "HTTP " + res.status);
-    setState("Secretary", "done", data.secretary.tasks.length + " 个待办 · " + data.secretary.chase_emails.length + " 封草稿邮件");
+    setState("Secretary", "done", data.secretary.tasks.length + " tasks · " + data.secretary.chase_emails.length + " draft emails");
     const gmail = data.gmail || {};
-    const gmailNote = gmail.status === "ok" ? " · Gmail " + gmail.emails.length + " 封邮件 / " + gmail.document_count + " 份文件" : " · Gmail 未连接";
-    setState("Logistics", "done", data.logistics.count + " 条记录" + gmailNote);
-    setState("Financial", "done", data.financial.exception_count + " 个异常");
+    const gmailNote = gmail.status === "ok" ? " · Gmail " + gmail.emails.length + " emails / " + gmail.document_count + " documents" : " · Gmail not connected";
+    setState("Logistics", "done", data.logistics.count + " records" + gmailNote);
+    setState("Financial", "done", data.financial.exception_count + " exceptions");
     window.lastRun = data; // full result, for inspection in the console
-    step.textContent = "“" + task + "” 完成。完整结果：控制台 lastRun。";
+    step.textContent = "“" + task + "” done. Full result: lastRun in the browser console.";
   } catch (error) {
     agents.forEach(name => setState(name, "error", error.message));
-    step.textContent = "运行失败：" + error.message + "（请用 python app.py 启动，并通过 http://127.0.0.1:5000/web-office/ 打开）";
+    step.textContent = "Run failed: " + error.message + " (start with python app.py and open http://127.0.0.1:5000/web-office/)";
   } finally {
     running = false;
     document.querySelector("#start-button").disabled = false;

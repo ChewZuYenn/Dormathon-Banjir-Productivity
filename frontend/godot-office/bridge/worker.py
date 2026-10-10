@@ -114,10 +114,10 @@ def run(request, output_dir):
     financial = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(financial)
     secretary = Secretary()
-    emit("Secretary", "working", "生成执行计划（调用仓库 Planner）")
+    emit("Secretary", "working", "Generating plan (repo Planner)")
     plan = secretary.planner.generate_plan(request["goal"])
-    emit("Secretary", "idle", "计划已生成，等待核对结果")
-    emit("Logistics", "working", "校验已抽取的测试记录；本轮不执行 OCR")
+    emit("Secretary", "idle", "Plan ready, waiting for reconciliation")
+    emit("Logistics", "working", "Validating pre-extracted test records; no OCR in this run")
     if request["mode"] == "fixture":
         fixture = read_json(VENDOR / "financial/test/mock_records.json")
         source_records = fixture["records"]
@@ -135,11 +135,11 @@ def run(request, output_dir):
         documents.append({"content": content, "source_ref": rec["source_ref"], "extracted": rec, "filename": Path(rec["source_ref"]).name})
     raw = pipeline.process_batch(documents)
     records = json.loads(pipeline.format_output(raw))
-    emit("Logistics", "done", f"完成 {len(records)} 条结构化记录校验")
-    emit("Financial", "working", "运行原核对引擎：算术、税率、重复项与匹配")
+    emit("Logistics", "done", f"Validated {len(records)} structured records")
+    emit("Financial", "working", "Running the reconciliation engine: arithmetic, tax rates, duplicates, matching")
     ledger, exceptions = financial.FinancialEngine({"period": period, "records": records}).run()
-    emit("Financial", "done", f"生成 {len(ledger['rows'])} 行测试账本、{len(exceptions['exceptions'])} 个异常")
-    emit("Secretary", "working", "转换异常字段，生成待办和邮件草稿（不发送）")
+    emit("Financial", "done", f"Built {len(ledger['rows'])} ledger rows, {len(exceptions['exceptions'])} exceptions")
+    emit("Secretary", "working", "Mapping exceptions, generating tasks and email drafts (not sent)")
     docs, events, warnings, mapping = convert_for_secretary(records, exceptions["exceptions"], models)
     secretary_result = secretary.run(goal=request["goal"], documents=docs, exceptions=events, auto_approve_emails=False).model_dump(mode="json")
     # Preserve two incompatible reporting conventions instead of merging numbers.
@@ -147,15 +147,15 @@ def run(request, output_dir):
         "logistics_summary": pipeline.get_summary(raw), "ledger": ledger, "exceptions": exceptions,
         "secretary": secretary_result, "initial_plan": plan.model_dump(mode="json"), "exception_mapping": mapping,
         "warnings": warnings + [
-            "仅验证代码接通：fixture为仓库样例，records为外部预抽取字段；未实现图片/PDF/OCR。",
-            f"原Financial固定检查日期为 {financial.TODAY}；period标签不代表已按月过滤数据。",
-            "Financial与Secretary现金流定义不同，结果分别保留；界面不合并为正式财务结论。",
-            "邮件仅为草稿，无自动审批、无发送接口；任务完成不代表账务正确或异常已解决。"],
+            "Code-path check only: fixture is the repo sample, records are pre-extracted fields; no image/PDF/OCR.",
+            f"Financial uses a fixed check date of {financial.TODAY}; the period label does not filter data by month.",
+            "Financial and Secretary define cash flow differently; both are kept and not merged into a formal conclusion.",
+            "Emails are drafts only, no auto-approval or sending; a finished job does not mean the books are correct or exceptions resolved."],
         "counts": {"records": len(records), "ledger_rows": len(ledger["rows"]), "exceptions": len(exceptions["exceptions"]),
                    "tasks": len(secretary_result["tasks"]), "email_drafts": len(secretary_result["chase_emails"])}}
     for name, payload in (("records.json", records), ("ledger.json", ledger), ("exceptions.json", exceptions), ("secretary.json", secretary_result), ("result.json", result)):
         (output_dir / name).write_text(json.dumps(payload, ensure_ascii=False, indent=2, allow_nan=False), encoding="utf-8")
-    emit("Secretary", "done", f"生成 {len(secretary_result['tasks'])} 个待办；邮件草稿待人工检查")
+    emit("Secretary", "done", f"Generated {len(secretary_result['tasks'])} tasks; email drafts await human review")
     print(json.dumps({"kind": "result", "counts": result["counts"], "warnings": result["warnings"]}, ensure_ascii=False), flush=True)
 
 
