@@ -61,7 +61,7 @@
           },
           "document_type": {
             "type": ["string", "null"],
-            "enum": ["invoice", "receipt", "order", null]
+            "enum": ["invoice", "receipt", "order", "po", null]
           },
           "vendor_name": {
             "type": ["string", "null"]

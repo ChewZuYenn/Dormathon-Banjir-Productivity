@@ -70,7 +70,8 @@
           },
           "document_type": {
             "type": "string",
-            "enum": ["invoice", "receipt", "order"]
+            "enum": ["invoice", "receipt", "order", "po"],
+            "description": "Type of source document"
           },
           "document_number": {
             "type": "string",
