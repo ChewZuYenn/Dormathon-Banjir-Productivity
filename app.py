@@ -46,6 +46,7 @@ import sys
 import threading
 import time
 import traceback
+from collections import defaultdict, deque
 from pathlib import Path
 
 # Ensure agents/ is importable
@@ -95,6 +96,43 @@ def add_cors_headers(resp):
     resp.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     resp.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
     return resp
+
+
+# ---------------------------------------------------------------------------
+# Rate limit for pipeline runs (each run spends Gemini quota on the server's key)
+# ---------------------------------------------------------------------------
+
+# (runs, seconds) per client IP. A normal run is 2 Gemini calls; a live read is ~38.
+RATE_LIMITS = {
+    False: (int(os.environ.get("RATE_LIMIT_RUNS", "6")), 600),
+    True: (int(os.environ.get("RATE_LIMIT_LIVE_RUNS", "2")), 3600),
+}
+# ponytail: in-memory, so each warm Vercel instance counts separately (real ceiling is
+# limit x instances) and counts reset on cold start; move to Vercel KV/Upstash if abused.
+_run_times: dict[tuple[str, bool], deque] = defaultdict(deque)
+_run_times_lock = threading.Lock()
+
+
+def rate_limit_response(live: bool):
+    """Record a run for this client; return a 429 response if it is over the limit, else None."""
+    limit, window = RATE_LIMITS[live]
+    # Vercel's edge sets X-Forwarded-For (first entry = client); locally fall back to the socket address
+    ip = (request.headers.get("X-Forwarded-For") or request.remote_addr or "unknown").split(",")[0].strip()
+    now = time.time()
+    with _run_times_lock:
+        times = _run_times[(ip, live)]
+        while times and now - times[0] > window:
+            times.popleft()
+        if len(times) >= limit:
+            wait = int(window - (now - times[0])) + 1
+            kind = "live-read runs" if live else "runs"
+            resp = jsonify({"success": False, "error": f"Too many {kind}: limit is {limit} per {window // 60} minutes. "
+                                                       f"Try again in {max(1, wait // 60)} min."})
+            resp.status_code = 429
+            resp.headers["Retry-After"] = str(wait)
+            return resp
+        times.append(now)
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -173,6 +211,9 @@ def run_pipeline():
     data = request.get_json(silent=True) or {}
     goal = data.get("goal", "Close out September")
     use_images = data.get("use_images", False)
+    limited = rate_limit_response(bool(use_images))
+    if limited:
+        return limited
 
     try:
         orch = get_orchestrator()
@@ -209,6 +250,9 @@ def run_pipeline_stream():
     """
     data = request.get_json(silent=True) or {}
     goal = data.get("goal", "Close out September")
+    limited = rate_limit_response(bool(data.get("use_images")))
+    if limited:
+        return limited
     document_images = discover_document_images() if data.get("use_images") else None
     events: queue.Queue = queue.Queue()
 

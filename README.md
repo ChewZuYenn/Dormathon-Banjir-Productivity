@@ -129,6 +129,7 @@ Then open **http://127.0.0.1:5000** (redirects to `/web-office/`). `app.py` serv
   against it (type, vendor, number, dates, references, every printed amount, conflicting-figure flag). Latest live run:
   337/339 fields matched, same 57 exceptions and 2 chase emails as the hand-checked run. Off by default
   to save free-tier quota; turn it on to show real extraction.
+- **Rate limit:** both run endpoints allow 6 runs per 10 minutes and 2 live-read runs per hour per IP (env `RATE_LIMIT_RUNS`, `RATE_LIMIT_LIVE_RUNS`), then return 429. In memory, so on Vercel each warm instance counts separately.
 - `POST /api/run` (same body, one JSON response) still works for scripts. Neither endpoint modifies repo files (Financial works in a temp dir).
 - `python run_pipeline.py` runs the same orchestrator from the command line (same tasks, emails and figures as the site).
 - WorkBuddy skills for all three agents are in `.workbuddy-ai/skills/` (secretary-agent, logistics-coordinator, financial-agent).

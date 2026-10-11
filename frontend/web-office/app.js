@@ -217,6 +217,11 @@ document.querySelector("#task-form").addEventListener("submit", async event => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ goal: task, use_images: live }),
     });
+    if (res.status === 429) {
+      const limit = new Error((await res.json().catch(() => ({}))).error || "Too many runs, try again later.");
+      limit.noHint = true;
+      throw limit;
+    }
     if (!res.ok || !res.body) throw new Error("HTTP " + res.status);
     const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
     let buffer = "", data = null;
@@ -249,7 +254,7 @@ document.querySelector("#task-form").addEventListener("submit", async event => {
     step.textContent = "“" + task + "” done. Results below; full JSON: lastRun in the browser console.";
   } catch (error) {
     agents.forEach(name => setState(name, "error", error.message));
-    step.textContent = "Run failed: " + error.message + " (start with python app.py and open http://127.0.0.1:5000/web-office/)";
+    step.textContent = "Run failed: " + error.message + (error.noHint ? "" : " (start with python app.py and open http://127.0.0.1:5000/web-office/)");
   } finally {
     running = false;
     document.querySelector("#start-button").disabled = false;
