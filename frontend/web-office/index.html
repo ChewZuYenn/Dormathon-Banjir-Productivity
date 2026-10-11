@@ -93,12 +93,15 @@
     </section>
 
     <section class="results" id="results" hidden aria-label="Run results">
+      <div class="results-bar">
       <div class="results-tabs" role="tablist">
         <button type="button" role="tab" data-tab="report" aria-selected="true">Report</button>
         <button type="button" role="tab" data-tab="exceptions" aria-selected="false">Exceptions</button>
         <button type="button" role="tab" data-tab="tasks" aria-selected="false">Tasks</button>
         <button type="button" role="tab" data-tab="emails" aria-selected="false">Chase emails</button>
         <button type="button" role="tab" data-tab="ledger" aria-selected="false">Ledger</button>
+      </div>
+      <button type="button" id="export-autocount" class="export-btn" title="Download the ledger as a CSV laid out for AutoCount's AP invoice import">Export CSV | AutoCount</button>
       </div>
       <div class="results-body" id="results-body" role="tabpanel"></div>
     </section>

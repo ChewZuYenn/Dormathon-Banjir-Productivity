@@ -387,6 +387,36 @@ function table(headers, rows) {
     el("tbody", null, rows.map(r => el("tr", null, r.map(c => el("td", null, c)))))));
 }
 
+// AutoCount AP invoice import layout: one row per ledger line, document fields repeated on each line.
+// CreditorCode is left blank and AccNo carries our category code: both must be mapped to the codes in the
+// AutoCount company during import. DocType and SourceRef are extra columns for traceability.
+const AUTOCOUNT_COLUMNS = ["DocNo", "DocDate", "CreditorCode", "CreditorName", "SupplierInvoiceNo", "Description",
+  "AccNo", "DetailDescription", "Qty", "UnitPrice", "Amount", "TaxCode", "TaxAmt", "CurrencyCode", "DocType", "SourceRef"];
+function csvCell(v) {
+  let s = v == null ? "" : String(v);
+  if (typeof v === "string" && /^[=+\-@]/.test(s)) s = "'" + s; // keep spreadsheet formulas from running
+  return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+}
+function autoCountCsv(data) {
+  // The duplicate copy of an invoice is left out, as in the ledger totals, so it isn't booked twice
+  const rows = ((data.financial.ledger || {}).rows || []).filter(r => !(r.flags || []).includes("duplicate"));
+  const lines = rows.map(r => [r.document_number, r.document_date, "", r.vendor_name, r.document_number,
+    (r.document_type === "receipt" ? "Cash purchase " : "Purchase invoice ") + r.document_number,
+    r.category, r.description, r.quantity, r.unit_price, Number(r.amount || 0).toFixed(2),
+    r.tax_amount ? "SST" : "", Number(r.tax_amount || 0).toFixed(2), "MYR",
+    r.document_type === "receipt" ? "Cash Purchase" : "AP Invoice", r.source_ref]);
+  return "﻿" + [AUTOCOUNT_COLUMNS, ...lines].map(l => l.map(csvCell).join(",")).join("\r\n") + "\r\n";
+}
+function exportAutoCount(data) {
+  const csv = autoCountCsv(data);
+  const a = el("a", { href: URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" })),
+    download: "autocount-ap-" + new Date().toISOString().slice(0, 10) + ".csv" });
+  document.body.append(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
 function renderResults(data, exceptions) {
   const report = data.secretary.final_report || {};
   const ledger = data.financial.ledger || {};
@@ -434,6 +464,7 @@ function renderResults(data, exceptions) {
     body.replaceChildren(views[name]());
   };
   tabs.forEach(b => { b.onclick = () => show(b.dataset.tab); });
+  document.querySelector("#export-autocount").onclick = () => exportAutoCount(data);
   document.querySelector("#results").hidden = false;
   show("report");
 }

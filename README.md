@@ -113,6 +113,7 @@ Then open **http://127.0.0.1:5000** (redirects to `/web-office/`). `app.py` serv
   - **Checklist** (right): one fix item per task; a problem that hits 5+ documents (no due date, PO not on file) is one line
     (`SYSTEMIC_TYPES` in `agents/orchestrator.py`). The Exceptions tab still lists every exception. Ticks are saved in the browser.
   - **Results** (below the cards): Report · Exceptions · Tasks · Chase emails · Ledger. "view" opens the source document image (`/api/documents/test-documents/...`).
+  - **Export CSV | AutoCount** (right of the tabs): downloads the ledger as one row per line in AutoCount's AP invoice import layout (`DocNo`, `DocDate`, `SupplierInvoiceNo`, `AccNo`, `Amount`, `TaxCode`, `TaxAmt`, …), duplicate copy excluded so it matches the ledger total. `CreditorCode` is blank and `AccNo` holds our category code: map both to your AutoCount codes in the import wizard. Built in the browser from the run, no server call.
   The full JSON is in the browser console as `lastRun`.
 - **Gemini locally:** put `LLM_API_URL=https://generativelanguage.googleapis.com/v1beta/openai`, `LLM_API_KEY=<your key>` and
   `LLM_MODEL=gemini-3.1-flash-lite` in a repo-root `.env` (gitignored). Without it the plan and report fall back to rules and
